@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk Variable", "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-forge-50: #fff7ed;
+  --color-forge-100: #ffedd5;
+  --color-forge-200: #fed7aa;
+  --color-forge-300: #fdba74;
+  --color-forge-400: #fb923c;
+  --color-forge-500: #f97316;
+  --color-forge-600: #ea580c;
+  --color-forge-700: #c2410c;
+  --color-forge-800: #9a3412;
+  --color-forge-900: #7c2d12;
+
+  --color-carbon-950: #0a0e13;
+  --color-carbon-900: #0f141b;
+  --color-carbon-800: #18202b;
+  --color-carbon-700: #243040;
+  --color-carbon-600: #364559;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    color: #0f141b;
+    background-color: #f8f9fb;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Subtle architectural blueprint grid utility */
+.bg-blueprint-light {
+  background-size: 36px 36px;
+  background-image:
+    linear-gradient(to right, rgba(15, 20, 27, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 20, 27, 0.045) 1px, transparent 1px);
+}
+
+.bg-blueprint-dark {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+}
