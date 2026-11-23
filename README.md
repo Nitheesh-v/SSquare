@@ -1,38 +1,63 @@
 # S Square Engineering Services — Full-Stack Monorepo (`ssquareengg.com`)
 
-Modern full-stack web platform for **S Square Engineering Services** (Peelamedu, Coimbatore, India), featuring a **Next.js + Tailwind CSS** frontend (`frontend/`) and a modular **NestJS + Mongoose** REST API backend (`backend/`).
+Modern full-stack industrial B2B platform for **S Square Engineering Services** (Peelamedu, Coimbatore, India), featuring a feature-sliced **Next.js (App Router) + Tailwind CSS** frontend (`frontend/`) and a modular **NestJS + Mongoose** REST API backend (`backend/`).
 
 ## Repository Structure
 
 ```text
 SSquare/
-├── backend/                     # NestJS REST API + Swagger (/api/docs)
+├── backend/
 │   ├── src/
-│   │   ├── config/              # Typed environment configuration (app, database, jwt)
-│   │   ├── database/            # MongoDB / Mongoose module + local seeded fallback store
+│   │   ├── config/
+│   │   ├── database/
 │   │   ├── common/
-│   │   │   ├── guards/          # JwtAuthGuard, RolesGuard
-│   │   │   ├── decorators/      # @Public, @Roles, @CurrentUser
-│   │   │   ├── filters/         # GlobalHttpExceptionFilter
-│   │   │   ├── interceptors/    # TransformInterceptor
-│   │   │   └── pipes/           # ParseObjectIdPipe
+│   │   │   ├── guards/
+│   │   │   ├── decorators/
+│   │   │   ├── filters/
+│   │   │   ├── interceptors/
+│   │   │   └── pipes/
 │   │   ├── modules/
-│   │   │   ├── users/           # DTOs, Mongoose UserSchema, Controller, Service, Module
-│   │   │   ├── auth/            # JWT Login, Register, /auth/me, Passport JwtStrategy
-│   │   │   ├── products/        # Rubber, Steel & Aluminium catalog CRUD + search/pagination
-│   │   │   ├── categories/      # Manufacturing divisions CRUD
-│   │   │   ├── cart/            # Authenticated B2B component cart
-│   │   │   └── orders/          # Cart checkout, order status tracking & public RFQ endpoint
+│   │   │   ├── users/
+│   │   │   ├── auth/
+│   │   │   ├── products/
+│   │   │   ├── categories/
+│   │   │   ├── cart/
+│   │   │   └── orders/
 │   │   ├── app.module.ts
 │   │   └── main.ts
 │   └── package.json
 │
-└── frontend/                    # Next.js (App Router) + Tailwind CSS Website
-    ├── public/images/
+└── frontend/
+    ├── public/
     ├── src/
-    │   ├── app/                 # /, /products, /products/[rubber|steel|aluminium], /about, /infrastructure, /faq, /contact
-    │   ├── components/          # Precision industrial UI, MaterialSelector, QuoteForm, Catalog
-    │   └── data/                # S Square company & technical specification catalog
+    │   ├── app/
+    │   │   ├── (store)/
+    │   │   │   ├── page.tsx
+    │   │   │   ├── products/
+    │   │   │   └── categories/
+    │   │   ├── (auth)/
+    │   │   │   ├── login/
+    │   │   │   └── register/
+    │   │   ├── account/
+    │   │   ├── admin/
+    │   │   ├── layout.tsx
+    │   │   └── globals.css
+    │   ├── components/
+    │   │   ├── ui/
+    │   │   ├── layout/
+    │   │   └── shared/
+    │   ├── features/
+    │   │   ├── products/
+    │   │   ├── cart/
+    │   │   ├── auth/
+    │   │   └── checkout/
+    │   ├── services/
+    │   ├── store/
+    │   ├── hooks/
+    │   ├── lib/
+    │   ├── types/
+    │   └── utils/
+    ├── .env.local
     └── package.json
 ```
 
@@ -42,13 +67,12 @@ SSquare/
 
 ```bash
 cd backend
-cp .env.example .env   # Optional: set MONGODB_URI for MongoDB/Atlas; runs pre-seeded out of the box if omitted
 npm install
 npm run start:dev
 ```
 
 - REST API Base: `http://localhost:4000/api/v1`
-- Interactive Swagger Docs: `http://localhost:4000/api/docs`
+- Swagger API Docs: `http://localhost:4000/api/docs`
 
 ### 2. Start the Next.js Frontend (`http://localhost:3000`)
 
@@ -58,4 +82,6 @@ npm install
 npm run dev
 ```
 
-Next.js automatically proxies `/api/v1/*` and `/api/quote` requests to the NestJS backend.
+### Demo Accounts
+- **OEM Buyer**: `buyer@example.com` / `Buyer@123` (`/account`)
+- **Admin Console**: `sales@ssquareengg.com` / `Admin@123` (`/admin`)

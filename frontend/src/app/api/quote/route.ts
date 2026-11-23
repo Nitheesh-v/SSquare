@@ -33,15 +33,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Please enter a valid email address." },
-        { status: 400 }
-      );
-    }
-
-    // Forward to NestJS Orders RFQ service when running alongside backend
     try {
       const backendRes = await fetch(`${BACKEND_URL}/api/v1/orders/rfq`, {
         method: "POST",
@@ -69,22 +60,13 @@ export async function POST(req: NextRequest) {
           ok: true,
           referenceId: refId,
           submittedAt: payload?.timestamp || new Date().toISOString(),
-          summary: {
-            name,
-            company,
-            division,
-            partName,
-            quantity,
-            country,
-          },
         });
       }
     } catch {
-      // Fallback to local store if NestJS backend is offline
+      // Fallback to local file persistence if backend is offline
     }
 
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const id = `SSQ-RFQ-${randomNum}`;
+    const id = `SSQ-RFQ-${Math.floor(1000 + Math.random() * 9000)}`;
     const submittedAt = new Date().toISOString();
 
     try {
@@ -115,27 +97,19 @@ export async function POST(req: NextRequest) {
         "utf-8"
       );
     } catch {
-      // Non-fatal in read-only environments
+      // Non-fatal
     }
 
     return NextResponse.json({
       ok: true,
       referenceId: id,
       submittedAt,
-      summary: {
-        name,
-        company,
-        division,
-        partName,
-        quantity,
-        country,
-      },
     });
   } catch {
     return NextResponse.json(
       {
         error:
-          "Unable to process quote request. Please try again or call +91 75300 80040.",
+          "Unable to process quote request. Please call +91 75300 80040.",
       },
       { status: 500 }
     );
