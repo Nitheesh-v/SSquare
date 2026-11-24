@@ -1,4 +1,4 @@
-# Industrial redesign — QA and handover
+# S Square — travelling-component homepage QA
 
 Review date: **2026-11-23**
 
@@ -6,88 +6,100 @@ Branch: `arena/8987795b-ssquare`
 
 ## Delivery status
 
-The redesigned website is built and running in the live preview. **The current Chromium suite passes 56/56 tests**, including the follow-up rubber imagery and scroll-driven 3D backdrop. This is a verified preview, not an unconditional production-launch approval.
+The live preview now has the four-section animation pattern adapted to **Rubber, Steel and Aluminium**, not the fictional food brand. **The final production-build Chromium run passes 81 checks, with three intentional duplicate-matrix skips and no failures** (84 configured cases, one worker, approximately 9.9 minutes).
 
-**Launch gates remain:** approved company imagery/CAD and copy, configured and verified enquiry delivery/retention, real-device/cross-browser review, and dependency remediation before publicly deploying the optional NestJS backend. See [the launch checklist](LAUNCH-CHECKLIST.md).
+This is a verified preview, **not unconditional production-launch approval**. Company-approved imagery/CAD/copy, real-device/cross-browser review, operational enquiry delivery/retention and the optional backend dependency gate remain. See [the launch checklist](LAUNCH-CHECKLIST.md).
+
+## What changed
+
+1. **Materials:** seven visible genuine 3D components on a repeating arc; live drag/flick and raycast selection, arrows, optional 3.2s autoplay, per-letter title transitions, outline counter and a feathered circular material-colour reveal. The actual S Square logo has a short, skippable first-visit entrance. There is no food-video asset or invented nutrition information.
+2. **Inside:** the selected component retains the same Three.js object identity while travelling into a native-scroll pinned four-step frame. Time-based sine flips reach 0°, 180°, 360° and 720°. The final segment darkens the background, spins the object and sends one wave of 20 material fragments outward.
+3. **Divisions:** that same component lands on the selected division card's DOM anchor. Its position, height, tilt and squash follow the card. Other cards use SVGs of the illustrative parts. The updated rubber reference image remains labelled as AI-generated/illustrative rather than being presented as an approved company photo.
+4. **Your brief:** the three-slot builder starts with the active material and the next two; supports removals, duplicate choices, counts, glow and flights to a brief badge. The completed combination flies in sequence, then opens the actual RFQ with a contextual prefill. It does not create a cart/order, imply an approved quotation, automatically submit an enquiry or clear the visitor's editable selection.
+
+The detailed aluminium/CAD story is preserved on **`/products/aluminium`**; `S_SQUARE_CAD_MODEL_URL` still applies there, not to the three homepage models. The genuine primary navigation, dark-navy footer and direct phone/WhatsApp paths are retained.
 
 ## Build and dependency checks
 
-| Check                                 | Result                                                                                                   |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Frontend `npm run typecheck`          | Pass                                                                                                     |
-| Frontend `npm run build`              | Pass — Next.js 15.5.29; 18 generated static pages                                                        |
-| Backend `npm run build`               | Pass                                                                                                     |
-| Frontend `npm audit`                  | **0 findings**, including development dependencies                                                       |
-| Backend `npm audit`                   | **26 findings: 11 high, 12 moderate, 3 low**                                                             |
-| Backend `npm audit --omit=dev`        | **12 findings: 7 high, 5 moderate**                                                                      |
-| `git diff --check`                    | Pass                                                                                                     |
-| Proposed-file credential-pattern scan | No private keys or provider/GitHub token patterns found; not a substitute for a dedicated secret scanner |
+| Check                                 | Result                                                                                                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Frontend `npm run typecheck`          | Pass                                                                                                                       |
+| Frontend `npm run build`              | Pass — Next.js 15.5.29; 18 generated static pages                                                                          |
+| Homepage build estimate               | 11.7 kB route / 119 kB first-load JS; 103 kB shared                                                                        |
+| Frontend `npm audit`                  | **0 findings**, including development dependencies                                                                         |
+| Prettier and `git diff --check`       | Pass                                                                                                                       |
+| Proposed-text credential-pattern scan | No private key/provider/GitHub token patterns found; not a dedicated secret scanner                                        |
+| Optional backend                      | Unchanged; stopped in this preview. Previous build passed, but deployment remains blocked by the dependency findings below |
 
-Next.js reports an **11.4 kB homepage route / 129 kB first-load JS**, with 103 kB shared JS. These are build-tool estimates, not a Lighthouse score or a real-device performance guarantee. Both Three.js scenes are separate dynamic imports. The new hero waits for a visible/nearby stage and an idle opportunity; it is skipped for reduced motion and disposed when offscreen. It renders on demand rather than continuously while idle. Pixel ratios are capped at 1.25 for the mobile hero and 1.35 for the mobile aluminium story (the latter was measured in the earlier supplemental check).
+Archivo Black 400, Inter variable and DM Mono 400/500 are self-hosted through Fontsource with swap display. Tests load/check all four required font faces. New home assets and scripts are local to the application; no Higgsfield/CDN request, protein-bar sprite or remote intro video is needed. Other unchanged catalog pages still use official-site photos with labelled local fallbacks.
+
+Build sizes are framework estimates, **not** Lighthouse scores or real-device speed guarantees.
 
 ## Automated browser results
 
-Test source: [`frontend/tests/industrial-site.spec.ts`](../frontend/tests/industrial-site.spec.ts). Configuration: [`frontend/playwright.config.ts`](../frontend/playwright.config.ts).
+Sources: [`industrial-site.spec.ts`](../frontend/tests/industrial-site.spec.ts), [`material-journey.spec.ts`](../frontend/tests/material-journey.spec.ts). Configuration: [`playwright.config.ts`](../frontend/playwright.config.ts).
 
-| Chromium project     | Viewport                             | Final result                              |
-| -------------------- | ------------------------------------ | ----------------------------------------- |
-| Desktop              | 1440 × 1000                          | 14/14 pass                                |
-| Tablet / touch       | 768 × 1024                           | 14/14 pass                                |
-| Mobile / touch       | 390 × 844                            | 14/14 pass                                |
-| Small mobile / touch | 320 × 844                            | 14/14 pass                                |
-| **Total**            | One worker; production website build | **56/56 pass, approximately 5.5 minutes** |
+| Project              | Viewport                       | Result                                       |
+| -------------------- | ------------------------------ | -------------------------------------------- |
+| Desktop              | 1440 × 1000                    | 21 pass                                      |
+| Tablet / touch       | 768 × 1024                     | 20 pass; one duplicate matrix skip           |
+| Mobile / touch       | 390 × 844                      | 20 pass; one duplicate matrix skip           |
+| Small mobile / touch | 320 × 844                      | 20 pass; one duplicate matrix skip           |
+| **Total**            | Production website; one worker | **81 pass, 3 intentional skips, 0 failures** |
+
+The supplemental layout matrix runs **once** from the desktop project at **1440 × 900, 390 × 844, 320 × 844, 844 × 390 and 768 × 1024**. Its three duplicate invocations are explicitly skipped, not silently treated as passed.
 
 Coverage includes:
 
-1. Ten public routes return successfully with one main H1, no unintended horizontal page overflow, no commerce/account links and no restored blanket QC/free-delivery guarantees. Removed cart, checkout, login, registration, account and admin URLs return 404. Legacy material category details redirect permanently to their division pages.
-2. Skip link, desktop product disclosure, mobile navigation, Escape dismissal, manual hero controls, contextual quote selection, native modal focus containment and focus restoration.
-3. Catalog division filtering, search/no-results/reset, keyboard-opened quick details and product-specific quotation prefills.
-4. Actual test RFQ submissions report backend/local storage separately from delivery. Storage-only responses explicitly state that the enquiry has **not** been automatically emailed or delivered, and offer pre-filled WhatsApp/email handoffs. The 320px confirmation state is included in overflow checks.
-5. A mocked 503 verifies that failed submissions retain entered contact/drawing details, focus the error message and provide direct-contact alternatives. It also checks dialog overflow. This mock does not send an email or create a real enquiry.
-6. Reduced-motion content remains readable as four stages, without a canvas. The technical SVG remains available.
-7. The aluminium canvas remains unloaded at the top of the page even though the hero now has its own 3D background. One aluminium scene appears near the story. A live change to reduced motion removes all canvases and restores static views.
-8. Simulated unavailable WebGL retains the labelled technical drawing and explanatory status.
-9. Axe scans of home, catalog, contact, FAQ and the open quote dialog find **zero WCAG 2 A/AA / 2.1 AA tagged violations** at all four viewports. This is an automated subset, not a WCAG conformance certification.
-10. RFQ input validation rejects malformed fields, invalid email/phone, short messages and the honeypot; successful replies expose truthful reference/storage/delivery fields.
-11. The hero has a real WebGL canvas. Native scrolling advances its camera/gear progress and changes the photo-plane transform; the GPU render counter stays unchanged while idle. Pause removes the canvas, resume recreates it, and a live reduced-motion change disables it consistently.
-12. Rubber visuals use the new local elastomer assortment in the hero, homepage, division index and rubber material page. The asset loads and remains explicitly labelled as illustrative.
-13. All three material-card image planes change perspective with native scrolling and return to a still view with reduced motion. Rubber provenance-label bounds remain inside the static card frame instead of being clipped by the moving image.
-14. A simulated lost hero WebGL context removes its canvas and restores the SVG background, without blocking the quote CTA or dialog.
+- Ten public pages, one main H1, viewport-relative page-overflow checks, permanent legacy material redirects and removed commerce/auth/admin routes returning 404.
+- Disclosure/mobile navigation, skip link, Escape handling, manual material selection, contextual quote fields, modal focus containment and focus restoration.
+- Catalog filter/search/reset, keyboard-opened component details and product-specific quotation prefills.
+- Actual isolated QA RFQ writes with backend/local persistence reported separately from delivery; direct WhatsApp/email handoffs and 320px success-state overflow checks.
+- Mocked RFQ failure retains contact/drawing notes, focuses the error and offers direct-contact alternatives. The mock does not send or store a real enquiry.
+- The preserved aluminium scene's near-viewport lazy load, four accessible static stages, live reduced-motion transition and unavailable-WebGL drawing.
+- **Zero axe WCAG 2 A/AA / 2.1 AA tagged violations** on home, catalog, contact, FAQ and the open quote dialog across the four projects. This is an automated subset, **not** WCAG conformance certification.
+- RFQ bounds/validation/honeypot and truthful response flags.
+- A single home WebGL canvas with at least seven visible arc instances; material/title/colour/counter changes; unchanged traveller UUID; stable rendering when paused; live reduced motion removes the canvas.
+- Fractional drag tracking, pointer release/flick snapping and keyboard material changes.
+- Correct pinned flip endpoints, a 20-piece non-looping scroll burst, frame fade and no storm after the section ends.
+- Exact selected-card landing coordinates/height within **one CSS pixel**, with the same object identity, hidden flat live-card SVG, card tilt and poke interaction.
+- Card-to-brief flights, the automatic initial brief, removals/repeated material choices, sequential three-part flight and the precise three-material RFQ prefill. No cart or checkout links are introduced.
+- First-visit intro Skip unlocks the body; the four required fonts load; unavailable/lost home WebGL restores the SVGs without blocking the quote dialog.
+- New rubber imagery and persistent illustrative labels remain on the home references, division index and rubber material page.
 
-Third-party company photos are intentionally made invalid during this suite to exercise labelled fallbacks. The two cached official-site photos still load normally. There were no application `pageerror` events in the final run.
+There were no application `pageerror` events in the final run. Third-party catalog photos are deliberately made invalid in the original site suite to exercise fallbacks; cached local references still load normally. Outbound email/webhooks are disabled and the optional backend is offline, exercising the frontend's local recovery path. Test RFQs are explicitly marked `ARENA_QA`; cleanup removes only those marked records, preserving other local data.
 
-The current full run leaves the internal backend offline to exercise the local recovery path. Keyed backend storage was separately verified during the preceding redesign handover; those backend files are unchanged by this visual follow-up. No live sales delivery was attempted.
+## Supplementary visual / fallback review
 
-## Supplementary checks
+- Reviewed 1440px/390px screenshots through the hero, front/back story steps, storm, selected-card landing and brief. Other hero items fade out before the pinned story; only the traveller continues.
+- Additional real-WebGL layouts checked at **320 × 844, 844 × 390 and 768 × 1024**. Document width matches the configured width; the long Aluminium title and Request a Quote action remain within viewport bounds. No application errors occurred.
+- A **JavaScript-disabled 390px** check exposes four readable story articles, three division cards and direct phone links, with no horizontal page overflow. Interactive selection/quote dialogs still require JavaScript; direct contact and division-page links do not.
+- Supplementary card measurements at 1440px and 390px match the traveller's centre/height to the selected DOM anchor. The phone snap strip is intentionally internally scrollable; the page itself is not horizontally inflated.
+- The intro was adjusted so shader compilation cannot block Skip. GPU fence/back-pressure avoids accumulating obsolete render frames on slow/software GPUs.
 
-- The current full suite checks public-route overflow at **320, 390, 768 and 1440px** against the configured viewport, not an already inflated `innerWidth`. Supplementary desktop/mobile screenshots verified native hero progress moving from 0 to approximately 0.53/0.56 after 320px of scrolling, with no horizontal overflow or application errors. The earlier redesign also included 1024/1920px layout spot checks.
-- Reviewed desktop/mobile hero and story-stage screenshots. The real S Square logo and dark-navy three-column footer are retained. Illustrative images/models remain clearly identified.
-- Corrected story ambient overflow and comparison-table positioning, the narrow-screen header CTA, small-screen metric wrapping, and the enquiry confirmation card. Overflow is not concealed with a global body clipping rule; the comparison table and featured strip retain intentional native horizontal scrolling.
-- Backend production controller: missing key configuration refuses storage with 503; wrong key returns 401; a matching key is accepted. Real HTTP checks verified missing/wrong keys return 401, invalid DTOs return 400, and a keyed QA enquiry is stored.
-- Backend cart, purchase-order list, user, product and login endpoints return 404. Cross-origin access is not enabled by default. This reduces exposed functionality; it is **not** remediation of vulnerable dependencies.
-- Next.js-to-backend key forwarding verified: backend storage true; local/email/webhook flags false. With the backend stopped, verified local append-only persistence, 0600 file permissions and false delivery flags.
-- RFQ route: oversized input returns 413; unsupported GET returns 405; the eleventh request in a test rate-limit window returns 429 with `Retry-After: 600`.
-- The production website accepts the preview host. Browsers submit to relative `/api/quote`; internal backend origins and keys are not exposed in browser-facing API calls.
-- Local environment files, preview keys, runtime enquiries, browser tooling, traces and screenshots are excluded from Git. Only explicitly `ARENA_QA`-marked records were removed after testing; other local records were preserved.
+## Runtime and accessibility design
 
-## Unresolved backend security gate
+`MaterialJourney.tsx` composes the four sections. `journey-engine.ts` owns scroll/gesture/time state and DOM anchors. `journey-scene.ts` owns one dynamically loaded renderer, shared geometry, its instance pool and one persistent traveller. Inline component/fragment SVGs are original illustrative artwork, not actual company CAD or photographed offcuts.
 
-**Do not publicly deploy the optional NestJS backend in its current dependency state.** The inherited NestJS 10 dependency tree has the audit findings listed above, including production findings involving Nest core/platform/config/Swagger and transitive body-parser, multer, lodash and js-yaml packages. Development tooling contributes additional CLI/schematics/glob-related findings.
+The renderer starts after entering/skipping the intro, is capped at **45fps desktop / 30fps phone**, uses DPR caps of **2 / 1.75**, stops when the scene is no longer visible or the tab is hidden, and releases resources/listeners on unmount. An idle float/bob is intentional while the visible journey is active. Pause stops autonomous motion and autoplay. Reduced motion bypasses the intro, slides, circle reveal, float, flips, storm and flights, exposes the four static story articles and preserves all usable links/controls.
 
-`npm audit fix` did not resolve these findings. Suggested fixes include major framework/tooling migrations; no blind `--force` upgrade was applied as part of the redesign. Upgrade to a mutually compatible, supported NestJS/config/Mongoose/Swagger/tooling set, resolve remaining transitive advisories, rerun both audits and repeat DTO, authentication and persistence regression tests before deployment. An RFQ key, CORS restrictions and private networking do not repair vulnerable parsers or dependencies.
+Native touch/keyboard scrolling is preserved. Desktop fine-pointer wheel gliding yields to keys/pointer presses, dialogs, ctrl/sideways wheels, inputs, coarse pointers, reduced motion and the intro lock. These behaviours and headless software WebGL are not proof of smooth performance on every device.
 
-`start:prod` explicitly sets `NODE_ENV=production`, so a copied development `.env` cannot silently bypass the production key requirement. Only the RFQ module is registered; legacy commerce/auth modules remain unused source, not active endpoints.
+## Backend / delivery launch gate (unchanged)
 
-The website does **not** require publicly deploying this backend: a configured email provider or authenticated sales-system webhook can handle delivery without it. Verify the chosen workflow's retention, access controls and operational monitoring. Local `.data` files are a development/recovery mechanism, not durable serverless CRM storage.
+**Do not publicly deploy the optional inherited NestJS 10 backend until its dependencies are remediated and regression-tested.** The earlier audit reports **26 findings overall (11 high, 12 moderate, 3 low)** and **12 production findings (7 high, 5 moderate)**, including framework/parser/transitive advisories. `npm audit fix` did not resolve them; a blind forced major migration was not performed during a visual update. An API key, CORS restrictions and private networking do not fix vulnerable dependencies.
 
-## Not verified / required before launch
+The preceding redesign verified keyed storage/DTO rejection, removed commerce endpoints, production fail-closed behaviour, key forwarding, 0600 local log permissions and 413/405/429 API paths. Those backend/API files are unchanged here. Current RFQ tests again verify local storage and explicitly false delivery flags with notifications disabled.
 
-- **Live email/webhook acceptance and actual inbox delivery:** no provider is configured in this preview; outbound notifications were disabled for QA. Provider acceptance alone does not prove inbox receipt. The UI does not pretend otherwise.
-- **Production MongoDB or multi-instance durability:** tests use local development storage, not a connected production database.
-- **Real CAD integration:** the hero gears are a separate labelled illustrative procedural study; its photos are depth-layered planes, not real CAD reconstructed from images. The aluminium procedural model is labelled “Illustrative Concept Model · Replaceable with S Square CAD.” No approved company GLB was supplied. A real multipart model needs part/transform mapping for its own accurate exploded view.
-- **Image permissions and deployment-region availability:** the replacement rubber assortment is an explicitly labelled AI-generated illustration. Two lead photos are cached from the official site; other remote photos can fail and then use labelled illustrative assets. Company approval and final replacements remain necessary.
-- **Safari/iOS, Firefox, Chrome/Android hardware and assistive technology:** automated checks used headless Chromium with software WebGL in this sandbox. Touch emulation is not a real low-powered device or GPU/FPS benchmark. Screen-reader usability, real-device frame rate, actual hardware context-loss recovery (only the hero UI event was simulated) and final visual approval still require human review.
-- **Deployment operations:** edge/shared abuse protection, HTTPS/network isolation, monitoring, privacy/retention approval, backups and actual sales-inbox ownership. Included rate limiting is per instance and assumes a trusted deployment proxy.
+The frontend can use a correctly configured email provider or authenticated sales webhook without deploying the optional backend. **Local storage is not delivered mail or durable production CRM retention.** Provider acceptance alone does not guarantee inbox receipt. Verify real delivery, retention, access controls, monitoring, shared rate limiting and backups before launch.
+
+## Still requires approval / human verification
+
+- Company-approved photographs, representative CAD for all three home components, manufacturing copy, address/contact/inbox ownership and usage permissions.
+- Real email/webhook acceptance **and inbox receipt**; no live provider is configured in this preview.
+- Production database / multi-instance durability, retention and operational monitoring.
+- Current Safari/iOS, Firefox, Chrome/Android, assistive technology and a real lower-powered mobile device. Touch emulation is not a hardware/GPU benchmark; context-loss checks simulate the UI event, not hardware recovery.
+- Final visual approval, shared/edge abuse protection, HTTPS/network isolation and privacy/legal wording.
 
 ## Reproduce
 
@@ -97,18 +109,10 @@ npm ci
 npx playwright install chromium
 npm run typecheck
 npm run build
-# Start the production website separately, then:
+# Start the production site separately, then:
 npm run test:e2e
 ```
 
-Tests reuse an existing local server by default; otherwise Playwright starts the dev server. Set `QA_BASE_URL` to target a running test preview. On an isolated test instance **with outbound email/webhooks disabled**, set `QA_ALLOW_RFQ_WRITES=1` to include actual RFQ writes; otherwise those two tests per project are skipped. Never enable write tests against a live sales inbox. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` is available for sandbox-specific browser installations.
+Tests reuse an existing local server by default; otherwise Playwright starts the dev server. `QA_BASE_URL` targets another test preview. Only on an isolated instance **with notifications disabled**, enable `QA_ALLOW_RFQ_WRITES=1` for the eight real-write cases. Never use write tests against a live sales inbox. A custom sandbox Chromium path can be supplied with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
 
-```sh
-cd backend
-npm ci
-npm run build
-npm audit
-npm audit --omit=dev
-```
-
-Launch inputs, environment variables and photo/CAD provenance are documented in [the launch checklist](LAUNCH-CHECKLIST.md), [README](../README.md), both `.env.example` files and the [official-photo notes](../frontend/public/images/ssquare/README.md).
+Launch inputs and secret configuration are in [README](../README.md), [the launch checklist](LAUNCH-CHECKLIST.md), the two `.env.example` files and [the asset provenance notes](../frontend/public/images/ssquare/README.md). Secrets, runtime enquiries, browser tooling, traces and screenshots are excluded from Git.

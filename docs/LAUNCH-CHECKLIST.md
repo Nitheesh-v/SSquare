@@ -14,7 +14,8 @@
 - Source STEP/IGES/CAD supplied through the company’s approved secure channel, not committed to the repository.
 - A mobile-ready GLB with clear part names, sensible topology, surface normals and materials. Provide the real assembly/explosion relationships, desired finish and any annotations that may be published.
 - Hook: server `S_SQUARE_CAD_MODEL_URL` or `src/lib/visual-config.ts`. Current profile/collar assembly is explicitly **Illustrative Concept Model · Replaceable with S Square CAD**. It is not a real component specification and has no tolerances or dimensions.
-- The hero gear backdrop in `IndustrialBackdropScene.tsx` is a separate illustrative procedural assembly with SVG fallback. The current `S_SQUARE_CAD_MODEL_URL` hook applies to the aluminium story, not the hero. A company-approved hero model would need camera/part mapping in that component; the photo-plane depth effects do not reconstruct real product geometry.
+- The new homepage has three separate illustrative procedural parts (rubber gasket, steel flange, aluminium profile) in `src/features/journey/journey-scene.ts`, with matching inline SVG fallbacks. Supply and approve representative CAD for **all three** before removing their illustrative labels. The `S_SQUARE_CAD_MODEL_URL` hook applies only to the detailed story on `/products/aluminium`, not this home scene.
+- Approve the four-step manufacturing language and the three-component brief workflow. The builder is a selection/prefill tool, not a cart, quotation, order acknowledgement or dispatch confirmation. No food/health claims, protein-bar artwork, discount pricing or fictional nutrition data are included.
 
 ## 3. Company and commercial sign-off
 

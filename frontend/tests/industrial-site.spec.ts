@@ -4,6 +4,9 @@ import AxeBuilder from "@axe-core/playwright";
 let errors: string[];
 test.beforeEach(async ({ page }) => {
   errors = [];
+  await page.addInitScript(() =>
+    sessionStorage.setItem("ssquare-journey-intro", "seen"),
+  );
   page.on("pageerror", (error) => errors.push(error.message));
   // Deliberately unavailable third-party photos exercise the labelled fallback.
   // Local copies of official S Square photos still load normally.
@@ -113,10 +116,10 @@ test("navigation, hero controls, and quote dialog keyboard access", async ({
     await page.keyboard.press("Escape");
     await expect(toggle).toBeFocused();
   }
-  await page.getByRole("button", { name: /04 Aluminium/ }).click();
-  await expect(page.locator("h1")).toContainText("Less weight.");
+  await page.getByRole("button", { name: /03 Aluminium/ }).click();
+  await expect(page.locator("h1")).toContainText("Aluminium");
   await expect(
-    page.getByRole("button", { name: /04 Aluminium/ }),
+    page.getByRole("button", { name: /03 Aluminium/ }),
   ).toHaveAttribute("aria-pressed", "true");
   const quote = page
     .locator("main")
@@ -287,7 +290,7 @@ test("reduced motion exposes all story content without loading WebGL", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/products/aluminium");
   await page.locator("#engineering-story").scrollIntoViewIfNeeded();
   await expect(page.locator("#engineering-story")).toContainText(
     "Reduced motion is respected",
@@ -302,8 +305,8 @@ test("3D loads near the story and respects live preference changes", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  // The hero now has its own genuine 3D backdrop; the aluminium scene is still lazy.
+  await page.goto("/products/aluminium");
+  // The detailed CAD story now lives on the aluminium division page.
   await expect(page.locator("#engineering-story canvas")).toHaveCount(0);
   await page.locator("#aluminium-stage-1").scrollIntoViewIfNeeded();
   await expect(page.locator("#engineering-story canvas")).toHaveCount(1);
@@ -333,7 +336,7 @@ test("WebGL-unavailable devices retain the technical drawing", async ({
       return Reflect.apply(original, this, [type, ...args]);
     } as typeof original;
   });
-  await page.goto("/");
+  await page.goto("/products/aluminium");
   await page.locator("#aluminium-stage-1").scrollIntoViewIfNeeded();
   await expect(page.locator("#engineering-story")).toContainText(
     "WebGL is unavailable",
@@ -411,158 +414,4 @@ test("RFQ API validates input and preserves truthful status flags", async ({
   expect(data.savedToBackend || data.savedLocally).toBeTruthy();
   expect(typeof data.emailDispatched).toBe("boolean");
   expect(typeof data.webhookDispatched).toBe("boolean");
-});
-
-test("hero background is real scroll-driven 3D with pause and reduced-motion controls", async ({
-  page,
-}) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const canvas = page.getByTestId("hero-depth-canvas");
-  const backdrop = page.getByTestId("hero-depth-backdrop");
-  await expect(backdrop).toHaveAttribute("data-renderer", "webgl");
-  await expect(canvas).toHaveCount(1);
-  const before = Number(await canvas.getAttribute("data-scroll-progress"));
-  const photo = page.getByTestId("hero-photo-plane");
-  const photoBefore = await photo.evaluate(
-    (node) => getComputedStyle(node).transform,
-  );
-  await page.evaluate(() => window.scrollBy(0, 190));
-  await expect
-    .poll(async () => Number(await canvas.getAttribute("data-scroll-progress")))
-    .toBeGreaterThan(before + 0.04);
-  const photoAfter = await photo.evaluate(
-    (node) => getComputedStyle(node).transform,
-  );
-  expect(photoAfter).not.toBe(photoBefore);
-  await page.waitForTimeout(400);
-  const count = await canvas.getAttribute("data-render-count");
-  await page.waitForTimeout(250);
-  expect(
-    await canvas.getAttribute("data-render-count"),
-    "No endless GPU render loop while idle",
-  ).toBe(count);
-  await noHorizontalOverflow(page);
-  await page.getByRole("button", { name: "Pause background motion" }).click();
-  await expect(canvas).toHaveCount(0);
-  await expect(backdrop).toHaveAttribute("data-motion", "still");
-  await page.getByRole("button", { name: "Play background motion" }).click();
-  await expect(backdrop).toHaveAttribute("data-renderer", "webgl");
-  await expect(canvas).toHaveCount(1);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(canvas).toHaveCount(0);
-  await expect(backdrop).toHaveAttribute("data-motion", "still");
-  await expect(
-    page.getByRole("button", { name: "Reduced motion enabled" }),
-  ).toBeDisabled();
-});
-
-test("rubber hero and division photography use the new labelled elastomer assortment", async ({
-  page,
-}) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  await page.getByRole("button", { name: /02 Rubber/ }).click();
-  const image = page
-    .getByTestId("hero-photo-plane")
-    .locator('img[aria-hidden="false"]');
-  await expect(image).toHaveAttribute("src", "/images/division-rubber.jpg");
-  await expect(image).toHaveAttribute(
-    "alt",
-    /Rubber gaskets, O-rings, bellows/,
-  );
-  await expect(page.getByTestId("hero-photo-plane")).toContainText(
-    "Illustrative Visual · Replaceable",
-  );
-  for (const path of ["/", "/categories", "/products/rubber"]) {
-    await page.goto(path);
-    const material =
-      path === "/products/rubber"
-        ? page.locator("main section").first()
-        : page.getByRole("link", {
-            name: "Explore Rubber Products",
-            exact: true,
-          });
-    const source = material
-      .locator('img[src="/images/division-rubber.jpg"]')
-      .last();
-    await source.scrollIntoViewIfNeeded();
-    await expect
-      .poll(() =>
-        source.evaluate((node: HTMLImageElement) => node.naturalWidth),
-      )
-      .toBeGreaterThan(0);
-    await expect(material).toContainText("Illustrative Visual · Replaceable");
-  }
-});
-
-test("material image planes change depth with native scrolling", async ({
-  page,
-}) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const planes = page.locator('[data-depth-image="true"]');
-  await expect(planes).toHaveCount(3);
-  const first = planes.first();
-  await first.scrollIntoViewIfNeeded();
-  // Provenance stays outside the moving/cropped image plane.
-  const badge = first.locator("..").getByTestId("illustrative-visual-label");
-  await expect(badge).toBeVisible();
-  const frame = (await first.boundingBox())!;
-  const label = (await badge.boundingBox())!;
-  expect(label.x).toBeGreaterThanOrEqual(frame.x);
-  expect(label.y).toBeGreaterThanOrEqual(frame.y);
-  expect(label.x + label.width).toBeLessThanOrEqual(frame.x + frame.width);
-  expect(label.y + label.height).toBeLessThanOrEqual(frame.y + frame.height);
-  const surface = first.locator(":scope > div");
-  await expect
-    .poll(() => surface.getAttribute("style"))
-    .toContain("perspective");
-  await page.waitForTimeout(750);
-  const before = await surface.evaluate(
-    (node) => getComputedStyle(node).transform,
-  );
-  await page.evaluate(() => window.scrollBy(0, 170));
-  await page.waitForTimeout(850);
-  expect(
-    await surface.evaluate((node) => getComputedStyle(node).transform),
-  ).not.toBe(before);
-  await noHorizontalOverflow(page);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect
-    .poll(() => surface.evaluate((node) => getComputedStyle(node).transform))
-    .toBe("none");
-});
-
-test("a lost hero WebGL context restores the non-blocking background artwork", async ({
-  page,
-}) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const canvas = page.getByTestId("hero-depth-canvas");
-  await expect(page.getByTestId("hero-depth-backdrop")).toHaveAttribute(
-    "data-renderer",
-    "webgl",
-  );
-  await canvas.evaluate((node) =>
-    node.dispatchEvent(new Event("webglcontextlost", { cancelable: true })),
-  );
-  await expect(canvas).toHaveCount(0);
-  await expect(page.getByTestId("hero-depth-backdrop")).toHaveAttribute(
-    "data-renderer",
-    "fallback",
-  );
-  await expect(page.getByTestId("hero-depth-backdrop")).toHaveAttribute(
-    "data-webgl",
-    "unavailable",
-  );
-  await expect(page.locator(".hero-gear-fallback")).toHaveCSS("opacity", "1");
-  await page
-    .locator("main")
-    .getByRole("button", { name: "Request a Quote", exact: true })
-    .first()
-    .click();
-  await expect(
-    page.getByRole("dialog", { name: "Request a Quote", exact: true }),
-  ).toBeVisible();
 });
