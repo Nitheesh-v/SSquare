@@ -3,19 +3,19 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  CheckCircle2,
   Wrench,
   ShieldCheck,
   Truck,
   Phone,
 } from "lucide-react";
-import { HeroShowcase } from "@/features/products/HeroShowcase";
+import { Hero3DKeychain } from "@/features/products/Hero3DKeychain";
+import { ScrollBoostTicker } from "@/features/products/ScrollBoostTicker";
+import { TimelineStatementSection } from "@/features/products/TimelineStatementSection";
 import { FeaturedProductsCarousel } from "@/features/products/FeaturedProductsCarousel";
-import { MaterialSelector } from "@/features/products/MaterialSelector";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { StatsAndQuickService } from "@/components/shared/StatsAndQuickService";
 import { QuoteForm } from "@/features/checkout/QuoteForm";
-import { COMPANY_INFO, INDUSTRIES_SERVED } from "@/lib/company-data";
+import { COMPANY_INFO } from "@/lib/company-data";
 import { DIVISIONS } from "@/lib/catalog-data";
 
 const OUR_SERVICES = [
@@ -47,103 +47,17 @@ export default function StoreHomePage() {
 
   return (
     <>
-      <HeroShowcase />
+      {/* 1. Curtain Loader + Live 3D Rigid-Body Industrial Keychain Hero */}
+      <Hero3DKeychain />
 
-      {/* Who We Are + What We Do */}
-      <section className="py-18 lg:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-                About Us · Who We Are
-              </span>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-carbon-950 leading-tight">
-                Custom Manufacturer &amp; Supplier in Rubber, Steel &amp; Aluminium
-              </h2>
-              <p className="text-base text-slate-600 leading-relaxed">
-                We are a{" "}
-                <strong className="text-carbon-950">
-                  custom manufacturer and supplier specializing in Rubber, Steel,
-                  and Aluminium products
-                </strong>
-                , serving industrial, commercial, and OEM clients. Our
-                manufacturing capabilities, combined with technical expertise,
-                enable us to deliver{" "}
-                <strong className="text-carbon-950">
-                  tailor-made solutions
-                </strong>{" "}
-                that meet complex operational requirements.
-              </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                With years of industry experience, we have built a reputation
-                for{" "}
-                <strong className="text-carbon-950">
-                  reliability, precision, and long-term partnerships
-                </strong>
-                . Every product is developed with strict quality control and
-                tested to ensure strength, accuracy, and performance.
-              </p>
+      {/* 2. Scroll-Velocity Boosted Capabilities & Materials Ticker */}
+      <ScrollBoostTicker />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                {[
-                  "Custom Rubber Components & Molded Products",
-                  "Steel Fabricated Parts & Structures",
-                  "Aluminium Profiles, Sheets & Machined Components",
-                  "Industrial Assemblies & Special-Purpose Parts",
-                ].map((point) => (
-                  <div
-                    key={point}
-                    className="flex items-start gap-2.5 rounded-lg border border-slate-200 bg-slate-50/70 p-3 text-xs font-semibold text-carbon-950"
-                  >
-                    <CheckCircle2 className="h-4 w-4 text-forge-600 shrink-0 mt-0.5" />
-                    <span>{point}</span>
-                  </div>
-                ))}
-              </div>
+      {/* 3. Interactive Multi-Track Production Timeline ⇄ Statement FLIP Flight */}
+      <TimelineStatementSection />
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-md bg-carbon-950 px-5 py-3 text-sm font-semibold text-white hover:bg-carbon-800 transition-colors"
-                >
-                  More About Us
-                  <ArrowRight className="h-4 w-4 text-forge-400" />
-                </Link>
-                <Link
-                  href="/infrastructure"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-forge-600 transition-colors"
-                >
-                  Explore Infrastructure
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 shadow-xs">
-                <div className="aspect-[16/10] overflow-hidden rounded-lg bg-carbon-900">
-                  <img
-                    src="/images/quality-metrology.jpg"
-                    alt="Precision inspection at S Square Engineering Services"
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex items-center justify-between px-2 pt-2.5 pb-1 text-xs font-medium text-slate-600">
-                  <span>100% Conformity to Technical Specifications</span>
-                  <span className="font-semibold text-carbon-950">
-                    Coimbatore, India
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Explore Our Products (3 Divisions) */}
-      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
+      {/* 4. Explore Our Products (Rubber, Steel & Aluminium Divisions) */}
+      <section className="py-18 lg:py-24 bg-white border-t border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="max-w-2xl">
@@ -238,14 +152,14 @@ export default function StoreHomePage() {
         </div>
       </section>
 
-      {/* Featured Custom Components Carousel */}
-      <section className="py-16 lg:py-20 bg-white border-b border-slate-200">
+      {/* 5. Featured Custom Components Carousel */}
+      <section className="py-16 lg:py-20 bg-[#f8fafc] border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FeaturedProductsCarousel />
         </div>
       </section>
 
-      {/* Our Services (3 White Cards Over Deep Navy, matching ssquareengg.com) */}
+      {/* 6. Our Services (3 White Cards Over Deep Navy) */}
       <section className="py-18 lg:py-22 bg-[#0d1324]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -284,64 +198,10 @@ export default function StoreHomePage() {
         </div>
       </section>
 
-      {/* Stats Band (7 / 50+ / 15+) + Split Crimson "QUICK SERVICE ON YOUR NEEDS" Banner */}
+      {/* 7. Stats Band (7 / 50+ / 15+) + Split Crimson "QUICK SERVICE ON YOUR NEEDS" Banner */}
       <StatsAndQuickService />
 
-      {/* Material Matrix */}
-      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="max-w-2xl">
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Technical Reference · Material Selection
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-950">
-              Select the Right Elastomer, Steel, or Aluminium Alloy
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Filter across our core production grades below or send us your
-              operating temperature and chemical environment for an engineering
-              recommendation.
-            </p>
-          </div>
-
-          <MaterialSelector />
-        </div>
-      </section>
-
-      {/* Industries */}
-      <section className="py-18 lg:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Sectors · Applications
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-950">
-              Trusted Across Heavy-Duty Industrial Sectors
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {INDUSTRIES_SERVED.map((ind) => (
-              <div
-                key={ind.code}
-                className="rounded-xl border border-slate-200 bg-slate-50/60 p-6 hover:border-slate-300 hover:bg-white transition-colors"
-              >
-                <span className="text-[11px] font-semibold text-forge-600">
-                  {ind.code}
-                </span>
-                <h3 className="mt-1.5 font-display text-lg font-bold text-carbon-950">
-                  {ind.name}
-                </h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                  {ind.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Direct RFQ */}
+      {/* 8. Direct RFQ Form */}
       <section id="rfq" className="py-18 lg:py-24 bg-[#f8fafc]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
