@@ -8,9 +8,9 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('app.port') || 4000;
-  const apiPrefix = configService.get<string>('app.apiPrefix') || 'api/v1';
+  const configService: ConfigService = app.get(ConfigService);
+  const port = Number(configService.get('app.port')) || 4000;
+  const apiPrefix = String(configService.get('app.apiPrefix') || 'api/v1');
 
   app.enableCors({
     origin: true,

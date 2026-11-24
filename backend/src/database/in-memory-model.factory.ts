@@ -1,7 +1,11 @@
-import { Types } from 'mongoose';
+import { randomBytes } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createInitialSeedStore } from './seed.data';
+
+function generateObjectId(): string {
+  return randomBytes(12).toString('hex');
+}
 
 const STORE_DIR = path.join(process.cwd(), '.data');
 const STORE_PATH = path.join(STORE_DIR, 'store.json');
@@ -289,7 +293,7 @@ export function createInMemoryMongooseModel(modelName: string) {
       const collection = ensureCollection();
       const now = new Date().toISOString();
       const doc = {
-        _id: payload._id || new Types.ObjectId().toHexString(),
+        _id: payload._id || generateObjectId(),
         ...clone(payload),
         createdAt: payload.createdAt || now,
         updatedAt: now,
@@ -347,7 +351,7 @@ export function createInMemoryMongooseModel(modelName: string) {
           if (idx === -1) {
             if (!options.upsert) return null;
             const created = {
-              _id: new Types.ObjectId().toHexString(),
+              _id: generateObjectId(),
               ...clone(filter),
               ...clone(patch),
               createdAt: now,
