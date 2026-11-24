@@ -1,12 +1,13 @@
 @import "tailwindcss";
-@import "@fontsource-variable/plus-jakarta-sans";
-@import "@fontsource-variable/space-grotesk";
-@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Space Grotesk Variable", "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --color-forge-50: #fff7ed;
   --color-forge-100: #ffedd5;
@@ -19,38 +20,55 @@
   --color-forge-800: #9a3412;
   --color-forge-900: #7c2d12;
 
-  --color-carbon-950: #0a0e13;
-  --color-carbon-900: #0f141b;
-  --color-carbon-800: #18202b;
-  --color-carbon-700: #243040;
-  --color-carbon-600: #364559;
+  --color-carbon-950: #0b0f17;
+  --color-carbon-900: #111827;
+  --color-carbon-800: #1e293b;
+  --color-carbon-700: #334155;
+  --color-carbon-600: #475569;
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     font-family: var(--font-sans);
-    color: #0f141b;
-    background-color: #f8f9fb;
+    color: #111827;
+    background-color: #f8fafc;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, .font-display {
+  body {
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
   }
 }
 
+/* Lightweight GPU-friendly section surfaces (no multi-layer repeating grid repaints) */
 .bg-blueprint-light {
-  background-size: 36px 36px;
-  background-image:
-    linear-gradient(to right, rgba(15, 20, 27, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 20, 27, 0.045) 1px, transparent 1px);
+  background-color: #f8fafc;
 }
 
 .bg-blueprint-dark {
-  background-size: 40px 40px;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-color: #0b0f17;
+}
+
+@keyframes carouselProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-carousel-progress {
+  transform-origin: left center;
+  animation: carouselProgress 5.5s linear forwards;
 }

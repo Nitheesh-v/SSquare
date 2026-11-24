@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "@/store/providers";
-import { CartDrawer } from "@/features/cart/CartDrawer";
 import { QuoteSlideOver } from "@/features/checkout/QuoteSlideOver";
 import { COMPANY_INFO } from "@/lib/company-data";
 
@@ -21,10 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-[#f8f9fb] text-carbon-900 antialiased">
+      <body className="min-h-screen flex flex-col bg-[#f8fafc] text-carbon-900 antialiased">
         <AppProviders>
           {children}
-          <CartDrawer />
           <QuoteSlideOver />
         </AppProviders>
       </body>

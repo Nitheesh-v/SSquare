@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { HeroShowcase } from "@/features/products/HeroShowcase";
+import { FeaturedProductsCarousel } from "@/features/products/FeaturedProductsCarousel";
 import { MaterialSelector } from "@/features/products/MaterialSelector";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { QuoteForm } from "@/features/checkout/QuoteForm";
@@ -60,13 +61,20 @@ export default function StoreHomePage() {
     <>
       <HeroShowcase />
 
+      {/* Featured Custom Components Carousel */}
+      <section className="py-16 lg:py-20 bg-white border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <FeaturedProductsCarousel />
+        </div>
+      </section>
+
       {/* Manufacturing Divisions Showcase */}
-      <section className="py-18 lg:py-24 bg-blueprint-light border-b border-slate-200">
+      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="max-w-2xl">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-                Manufacturing Categories // Under One Roof
+              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
+                Manufacturing Categories · Under One Roof
               </span>
               <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
                 Custom Rubber, Steel &amp; Aluminium Engineered to Specification
@@ -75,13 +83,13 @@ export default function StoreHomePage() {
             <div className="flex items-center gap-4 shrink-0">
               <Link
                 href="/categories"
-                className="text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-carbon-900"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-carbon-900"
               >
                 All Categories
               </Link>
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 font-display text-sm font-bold text-carbon-900 hover:text-forge-600 transition"
+                className="inline-flex items-center gap-2 font-display text-sm font-bold text-carbon-900 hover:text-forge-600 transition-colors"
               >
                 Browse Full Catalog
                 <ArrowRight className="h-4 w-4 text-forge-600" />
@@ -93,7 +101,7 @@ export default function StoreHomePage() {
             {divisionList.map((div) => (
               <div
                 key={div.slug}
-                className="group flex flex-col rounded-sm border border-slate-200 bg-white overflow-hidden shadow-xs hover:border-slate-300 hover:shadow-lg transition"
+                className="group flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs hover:border-slate-300 hover:shadow-lg transition-shadow"
               >
                 <Link
                   href={`/products/${div.slug}`}
@@ -102,14 +110,16 @@ export default function StoreHomePage() {
                   <img
                     src={div.heroImage}
                     alt={div.name}
-                    className="h-full w-full object-cover group-hover:scale-103 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-carbon-950/75 via-transparent to-transparent" />
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-forge-400">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-forge-400">
                       {div.code}
                     </span>
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-xs bg-white/15 backdrop-blur-xs text-white group-hover:bg-forge-600 transition">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-carbon-900/80 text-white group-hover:bg-forge-600 transition-colors">
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </div>
@@ -117,7 +127,7 @@ export default function StoreHomePage() {
 
                 <div className="flex flex-1 flex-col p-6">
                   <Link href={`/products/${div.slug}`}>
-                    <h3 className="font-display text-2xl font-bold text-carbon-900 group-hover:text-forge-600 transition">
+                    <h3 className="font-display text-2xl font-bold text-carbon-900 group-hover:text-forge-600 transition-colors">
                       {div.name}
                     </h3>
                   </Link>
@@ -132,7 +142,7 @@ export default function StoreHomePage() {
                     {div.keyMaterials.slice(0, 5).map((mat) => (
                       <span
                         key={mat}
-                        className="rounded-xs border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] font-medium text-slate-700"
+                        className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
                       >
                         {mat}
                       </span>
@@ -142,7 +152,7 @@ export default function StoreHomePage() {
                   <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                     <Link
                       href={`/products/${div.slug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-carbon-900 hover:text-forge-600 transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-carbon-900 hover:text-forge-600 transition-colors"
                     >
                       Explore {div.name}
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -152,7 +162,7 @@ export default function StoreHomePage() {
                       label="Quote"
                       variant="outline"
                       prefill={{ division: div.name }}
-                      className="!px-3 !py-1.5 !text-xs"
+                      className="!px-3.5 !py-1.5 !text-xs !rounded-md"
                     />
                   </div>
                 </div>
@@ -167,7 +177,7 @@ export default function StoreHomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6 space-y-6">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
+              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
                 About S Square Engineering Services
               </span>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-carbon-900 leading-tight">
@@ -201,7 +211,7 @@ export default function StoreHomePage() {
                 ].map((point) => (
                   <div
                     key={point}
-                    className="flex items-start gap-2.5 rounded-xs border border-slate-200 bg-slate-50/70 p-3 text-xs font-semibold text-carbon-900"
+                    className="flex items-start gap-2.5 rounded-lg border border-slate-200 bg-slate-50/70 p-3 text-xs font-semibold text-carbon-900"
                   >
                     <CheckCircle2 className="h-4 w-4 text-forge-600 shrink-0 mt-0.5" />
                     <span>{point}</span>
@@ -212,14 +222,14 @@ export default function StoreHomePage() {
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-2 rounded-xs bg-carbon-900 px-5 py-3 text-sm font-semibold text-white hover:bg-carbon-800 transition"
+                  className="inline-flex items-center gap-2 rounded-md bg-carbon-900 px-5 py-3 text-sm font-semibold text-white hover:bg-carbon-800 transition-colors"
                 >
                   More About Our Capabilities
                   <ArrowRight className="h-4 w-4 text-forge-500" />
                 </Link>
                 <Link
                   href="/infrastructure"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-forge-600 transition"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-forge-600 transition-colors"
                 >
                   Tour Our Infrastructure
                   <ArrowUpRight className="h-4 w-4" />
@@ -229,24 +239,26 @@ export default function StoreHomePage() {
 
             <div className="lg:col-span-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-sm border border-slate-200 bg-slate-50 p-2 shadow-xs sm:col-span-2">
-                  <div className="aspect-[16/9] overflow-hidden bg-carbon-900">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 shadow-xs sm:col-span-2">
+                  <div className="aspect-[16/9] overflow-hidden rounded-lg bg-carbon-900">
                     <img
                       src="/images/quality-metrology.jpg"
                       alt="Precision metrology inspection at S Square Engineering"
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="flex items-center justify-between px-2 pt-2 pb-1 font-mono text-[11px] text-slate-500">
-                    <span>QUALITY ASSURANCE // 100% DIMENSIONAL VERIFICATION</span>
+                  <div className="flex items-center justify-between px-2 pt-2 pb-1 text-[11px] font-medium text-slate-500">
+                    <span>QUALITY ASSURANCE · 100% DIMENSIONAL VERIFICATION</span>
                     <span className="font-semibold text-carbon-900">
                       COIMBATORE HQ
                     </span>
                   </div>
                 </div>
 
-                <div className="rounded-sm border border-slate-200 bg-carbon-900 p-5 text-white">
-                  <div className="font-mono text-xs text-forge-400">
+                <div className="rounded-xl border border-slate-200 bg-carbon-900 p-5 text-white">
+                  <div className="text-xs font-semibold text-forge-400">
                     EXPERIENCE
                   </div>
                   <div className="mt-1 font-display text-3xl font-bold">
@@ -257,8 +269,8 @@ export default function StoreHomePage() {
                   </p>
                 </div>
 
-                <div className="rounded-sm border border-slate-200 bg-slate-50 p-5">
-                  <div className="font-mono text-xs font-semibold text-forge-600">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="text-xs font-semibold text-forge-600">
                     EXPRESS EXPORT
                   </div>
                   <div className="mt-1 font-display text-3xl font-bold text-carbon-900">
@@ -275,11 +287,11 @@ export default function StoreHomePage() {
       </section>
 
       {/* Core Services + 4-Step Custom Workflow */}
-      <section className="py-18 lg:py-24 bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800">
+      <section className="py-18 lg:py-24 bg-carbon-950 text-white border-b border-carbon-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-12">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-500">
-              Service Commitments // OEM Execution
+            <span className="text-xs font-semibold uppercase tracking-widest text-forge-500">
+              Service Commitments · OEM Execution
             </span>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-white">
               Built for Zero-Defect Reliability &amp; Global Speed
@@ -290,11 +302,11 @@ export default function StoreHomePage() {
             {CORE_SERVICES.map((srv) => (
               <div
                 key={srv.number}
-                className="rounded-sm border border-carbon-800 bg-carbon-900/90 p-7 flex flex-col justify-between"
+                className="rounded-xl border border-carbon-800 bg-carbon-900 p-7 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between border-b border-carbon-800 pb-4 mb-5">
-                    <span className="font-mono text-2xl font-bold text-forge-500">
+                    <span className="text-2xl font-bold text-forge-500">
                       {srv.number}.
                     </span>
                     <ShieldCheck className="h-5 w-5 text-slate-400" />
@@ -302,7 +314,7 @@ export default function StoreHomePage() {
                   <h3 className="font-display text-xl font-bold text-white">
                     {srv.title}
                   </h3>
-                  <p className="mt-1 font-mono text-xs text-forge-400">
+                  <p className="mt-1 text-xs font-medium text-forge-400">
                     {srv.subtitle}
                   </p>
                   <p className="mt-3.5 text-sm text-slate-300 leading-relaxed">
@@ -322,12 +334,12 @@ export default function StoreHomePage() {
             ))}
           </div>
 
-          <div className="rounded-sm border border-carbon-800 bg-carbon-900/60 p-6 sm:p-8">
+          <div className="rounded-xl border border-carbon-800 bg-carbon-900 p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
               <h3 className="font-display text-lg font-bold text-white">
                 How Custom Orders Move From Drawing to Your Doorstep
               </h3>
-              <span className="font-mono text-xs text-slate-400">
+              <span className="text-xs font-medium text-slate-400">
                 TYPICAL RFQ RESPONSE: &lt; 24 HOURS
               </span>
             </div>
@@ -338,10 +350,10 @@ export default function StoreHomePage() {
                 return (
                   <div key={w.step} className="relative space-y-2.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xs bg-forge-600/15 border border-forge-500/40 text-forge-400">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-forge-600/15 border border-forge-500/40 text-forge-400">
                         <Icon className="h-4 w-4" />
                       </div>
-                      <span className="font-mono text-xs font-bold text-slate-400">
+                      <span className="text-xs font-bold text-slate-400">
                         STEP {w.step}
                       </span>
                     </div>
@@ -360,11 +372,11 @@ export default function StoreHomePage() {
       </section>
 
       {/* Material Matrix */}
-      <section className="py-18 lg:py-24 bg-[#f8f9fb] border-b border-slate-200">
+      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="max-w-2xl">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Technical Reference // Material Selection
+            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
+              Technical Reference · Material Selection
             </span>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
               Select the Right Elastomer, Steel, or Aluminium Alloy
@@ -382,8 +394,8 @@ export default function StoreHomePage() {
       <section className="py-18 lg:py-24 bg-white border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-12">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Sectors // Applications
+            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
+              Sectors · Applications
             </span>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
               Trusted Across Heavy-Duty Industrial Sectors
@@ -394,9 +406,9 @@ export default function StoreHomePage() {
             {INDUSTRIES_SERVED.map((ind) => (
               <div
                 key={ind.code}
-                className="rounded-sm border border-slate-200 bg-slate-50/60 p-6 hover:border-slate-300 hover:bg-white transition"
+                className="rounded-xl border border-slate-200 bg-slate-50/60 p-6 hover:border-slate-300 hover:bg-white transition-colors"
               >
-                <span className="font-mono text-[11px] font-semibold text-forge-600">
+                <span className="text-[11px] font-semibold text-forge-600">
                   {ind.code}
                 </span>
                 <h3 className="mt-1.5 font-display text-lg font-bold text-carbon-900">
@@ -412,11 +424,11 @@ export default function StoreHomePage() {
       </section>
 
       {/* Direct RFQ */}
-      <section id="rfq" className="py-18 lg:py-24 bg-blueprint-light">
+      <section id="rfq" className="py-18 lg:py-24 bg-[#f8fafc]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             <div className="lg:col-span-5 space-y-6">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
+              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
                 Quick Service On Your Needs
               </span>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-carbon-900">
@@ -426,14 +438,14 @@ export default function StoreHomePage() {
                 Reach out to our engineering team Monday through Saturday for custom tooling estimates, compound recommendations, and rapid export scheduling.
               </p>
 
-              <div className="rounded-sm border border-slate-200 bg-white p-6 space-y-4 shadow-2xs">
+              <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4 shadow-2xs">
                 <div>
-                  <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Direct Engineering Desk (Mon – Sat)
                   </div>
                   <a
                     href={`tel:${COMPANY_INFO.phoneRaw}`}
-                    className="mt-1 inline-flex items-center gap-2 font-display text-2xl font-bold text-carbon-900 hover:text-forge-600 transition"
+                    className="mt-1 inline-flex items-center gap-2 font-display text-2xl font-bold text-carbon-900 hover:text-forge-600 transition-colors"
                   >
                     <Phone className="h-5 w-5 text-forge-600" />
                     {COMPANY_INFO.phone}
@@ -441,19 +453,19 @@ export default function StoreHomePage() {
                 </div>
 
                 <div className="pt-3 border-t border-slate-100">
-                  <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Sales &amp; CAD Drawing Submissions
                   </div>
                   <a
                     href={`mailto:${COMPANY_INFO.emails.sales}`}
-                    className="mt-1 block font-mono text-sm font-semibold text-forge-600 hover:underline"
+                    className="mt-1 block text-sm font-semibold text-forge-600 hover:underline"
                   >
                     {COMPANY_INFO.emails.sales}
                   </a>
                 </div>
 
                 <div className="pt-3 border-t border-slate-100">
-                  <div className="font-mono text-[11px] uppercase tracking-wider text-slate-400">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     Manufacturing Facility
                   </div>
                   <p className="mt-1 text-xs text-slate-600 leading-relaxed">
@@ -463,7 +475,7 @@ export default function StoreHomePage() {
               </div>
             </div>
 
-            <div className="lg:col-span-7 rounded-sm border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
               <div className="mb-5 pb-4 border-b border-slate-100">
                 <h3 className="font-display text-xl font-bold text-carbon-900">
                   Submit Custom Part Specifications

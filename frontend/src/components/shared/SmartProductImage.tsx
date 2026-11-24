@@ -23,6 +23,7 @@ export function SmartProductImage({
       src={imgSrc}
       alt={alt}
       loading="lazy"
+      decoding="async"
       referrerPolicy="no-referrer"
       onError={() => {
         if (!usedFallback) {

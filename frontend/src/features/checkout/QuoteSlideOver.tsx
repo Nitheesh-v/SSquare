@@ -23,7 +23,7 @@ export function QuoteSlideOver() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-carbon-950/70 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex justify-end bg-carbon-950/75"
       onClick={closeQuoteModal}
       role="dialog"
       aria-modal="true"
@@ -35,8 +35,8 @@ export function QuoteSlideOver() {
       >
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-carbon-900 px-6 py-4 text-white">
           <div>
-            <span className="font-mono text-[11px] uppercase tracking-widest text-forge-400">
-              RFQ // Direct Factory Estimation
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-forge-400">
+              Direct Factory Estimation
             </span>
             <h2 className="font-display text-lg font-bold">
               Request a Custom Manufacturing Quote
@@ -46,7 +46,7 @@ export function QuoteSlideOver() {
             type="button"
             onClick={closeQuoteModal}
             aria-label="Close quote modal"
-            className="rounded-xs p-2 text-slate-300 hover:bg-carbon-800 hover:text-white transition cursor-pointer"
+            className="rounded-md p-2 text-slate-300 hover:bg-carbon-800 hover:text-white transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -71,7 +71,7 @@ export function QuoteSlideOver() {
           <span>Prefer speaking directly with an engineer?</span>
           <a
             href={`tel:${COMPANY_INFO.phoneRaw}`}
-            className="inline-flex items-center gap-1.5 font-mono font-semibold text-carbon-900 hover:text-forge-600 transition"
+            className="inline-flex items-center gap-1.5 font-semibold text-carbon-900 hover:text-forge-600 transition-colors"
           >
             <Phone className="h-3.5 w-3.5 text-forge-600" />
             {COMPANY_INFO.phone}
