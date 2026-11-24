@@ -38,16 +38,19 @@ export function Reveal({
   children,
   className = "",
   delay = 0,
+  paused = false,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
+  paused?: boolean;
 }) {
   const element = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
     const node = element.current;
-    if (!node || reduced || !("IntersectionObserver" in window)) return;
+    if (!node || reduced || paused || !("IntersectionObserver" in window))
+      return;
     let animation: Animation | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -72,7 +75,7 @@ export function Reveal({
       observer.disconnect();
       animation?.cancel();
     };
-  }, [reduced, delay]);
+  }, [reduced, delay, paused]);
   return (
     <div ref={element} className={className}>
       {children}
@@ -85,17 +88,19 @@ export function ParallaxVisual({
   children,
   className = "",
   depth = false,
+  paused = false,
 }: {
   children: ReactNode;
   className?: string;
   /** Scroll-driven perspective for material photography, never the link or its label. */
   depth?: boolean;
+  paused?: boolean;
 }) {
   const outer = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
-    if (reduced) {
+    if (reduced || paused) {
       // GSAP can restore a computed scale snapshot after React removes the
       // motion class. Clear that snapshot as well when the preference changes.
       inner.current?.style.removeProperty("transform");
@@ -151,7 +156,7 @@ export function ParallaxVisual({
       observer.disconnect();
       dispose?.();
     };
-  }, [reduced, depth]);
+  }, [reduced, depth, paused]);
   return (
     <div
       ref={outer}
@@ -160,7 +165,7 @@ export function ParallaxVisual({
     >
       <div
         ref={inner}
-        className={`h-full w-full ${reduced ? "" : depth ? "scale-[1.22]" : "scale-[1.10]"}`}
+        className={`h-full w-full ${reduced || paused ? "" : depth ? "scale-[1.22]" : "scale-[1.10]"}`}
       >
         {children}
       </div>

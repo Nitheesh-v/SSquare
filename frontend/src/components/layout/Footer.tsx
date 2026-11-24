@@ -1,151 +1,104 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MessageSquare, Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { COMPANY_INFO } from "@/lib/company-data";
 
+const FOOTER_LINKS = [
+  { href: "/about", label: "Our company" },
+  { href: "/products", label: "Component catalog" },
+  { href: "/products/rubber", label: "Rubber products" },
+  { href: "/products/steel", label: "Steel components" },
+  { href: "/products/aluminium", label: "Aluminium products" },
+  { href: "/infrastructure", label: "Infrastructure" },
+  { href: "/material-experience", label: "3D material experience" },
+];
+
 export function Footer() {
   return (
-    <footer className="bg-[#0d1324] text-slate-200 border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          {/* Column 1: Brand Logo, Tagline & Social Icons */}
-          <div className="md:col-span-5 space-y-6">
-            <Link href="/" className="inline-block focus:outline-none">
+    <footer className="site-footer">
+      <div className="studio-shell">
+        <div className="footer-topline">
+          <span>CUSTOM ENGINEERING. CONSIDERED MANUFACTURING.</span>
+          <Link href="/contact">
+            Let’s make something work <ArrowUpRight size={15} />
+          </Link>
+        </div>
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <Link href="/" aria-label="S Square Engineering Services — Home">
               <Logo theme="dark" />
             </Link>
-
-            <p className="text-[15px] text-slate-200 leading-relaxed max-w-md">
-              Specializing in custom rubber, steel, and aluminium manufacturing
-              with a commitment to precision, durability, and timely delivery.
+            <p>
+              Rubber, steel and aluminium components.
+              <br />
+              Manufactured to your drawing or sample.
+              <br />
+              Made around your requirement.
             </p>
-
-            {/* Verified contact actions; no invented social profiles. */}
-            <div className="flex items-center gap-3 pt-1">
+            <div className="footer-contact-icons">
               <a
                 href={COMPANY_INFO.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp S Square"
-                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <MessageSquare size={17} />
+                <MessageSquare size={16} />
               </a>
               <a
                 href={`mailto:${COMPANY_INFO.emails.sales}`}
                 aria-label="Email S Square sales"
-                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <Mail size={17} />
+                <Mail size={16} />
               </a>
               <a
                 href={`tel:${COMPANY_INFO.phoneRaw}`}
                 aria-label="Call S Square"
-                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <Phone size={17} />
+                <Phone size={16} />
               </a>
             </div>
           </div>
-
-          {/* Column 2: QUICK LINKS */}
-          <div className="md:col-span-3">
-            <h4 className="font-display text-lg font-semibold uppercase tracking-wide text-white mb-5">
-              QUICK LINKS
-            </h4>
-            <ul className="space-y-3 text-[15px] text-slate-200">
-              <li>
-                <Link
-                  href="/"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/aluminium"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  Aluminium
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/rubber"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  Rubber
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/steel"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  Steel
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  Contact
-                </Link>
-              </li>
+          <div>
+            <h2>EXPLORE S SQUARE</h2>
+            <ul className="footer-links">
+              {FOOTER_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
-
-          {/* Column 3: CONTACT INFO */}
-          <div className="md:col-span-4">
-            <h4 className="font-display text-lg font-semibold uppercase tracking-wide text-white mb-5">
-              CONTACT INFO
-            </h4>
-            <div className="space-y-2.5 text-[15px] text-slate-200 leading-relaxed">
-              <p>S Square Engineering services</p>
-              <p>58, Jeganathapuram,</p>
-              <p>Avarampalayam road,</p>
-              <p>Peelamedu, Coimbatore 641004</p>
-              <p>
-                <a
-                  href={`mailto:${COMPANY_INFO.emails.sales}`}
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  {COMPANY_INFO.emails.sales}
-                </a>
-              </p>
-              <p>
-                <a
-                  href={`tel:${COMPANY_INFO.phoneRaw}`}
-                  className="hover:text-forge-400 transition-colors"
-                >
-                  {COMPANY_INFO.phone}
-                </a>
-              </p>
-            </div>
+          <div className="footer-address">
+            <h2>BASED IN COIMBATORE. BUILT AROUND YOU.</h2>
+            <address>
+              <strong>{COMPANY_INFO.name}</strong>
+              <span>
+                {COMPANY_INFO.address.line1},<br />
+                {COMPANY_INFO.address.locality}, {COMPANY_INFO.address.city}{" "}
+                {COMPANY_INFO.address.pincode}
+                <br />
+                Tamil Nadu, India.
+              </span>
+            </address>
+            <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="footer-phone">
+              {COMPANY_INFO.phone} <ArrowUpRight size={18} />
+            </a>
+            <a href={`mailto:${COMPANY_INFO.emails.sales}`}>
+              {COMPANY_INFO.emails.sales}
+            </a>
+            <span className="footer-hours">{COMPANY_INFO.hours}</span>
           </div>
         </div>
-
-        {/* Bottom Copyright */}
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="footer-bottom">
           <p>
             © {new Date().getFullYear()} {COMPANY_INFO.name}. All rights
             reserved.
           </p>
-          <p className="text-[11px] font-medium tracking-wider uppercase">
-            Rubber · Steel · Aluminium · Coimbatore, India
-          </p>
+          <div>
+            <Link href="/faq">FAQs</Link>
+            <Link href="/contact">Contact</Link>
+            <span>RUBBER / STEEL / ALUMINIUM</span>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { INFRASTRUCTURE_PILLARS } from "@/lib/company-data";
+import { PageIntro } from "@/components/shared/PageIntro";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
-import { ParallaxVisual, Reveal } from "@/components/shared/MotionPrimitives";
+import { Reveal } from "@/components/shared/MotionPrimitives";
 
 export const metadata: Metadata = {
   title: "Manufacturing Infrastructure, Quality & Responsibility",
@@ -13,27 +14,20 @@ export const metadata: Metadata = {
 export default function InfrastructurePage() {
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
-        <div className="shell flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <p className="eyebrow text-forge-300">
-              INFRASTRUCTURE / COIMBATORE, INDIA
-            </p>
-            <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-              A considered environment
-              <br />
-              for custom manufacturing.
-            </h1>
-            <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
-              Manufacturing capability, responsible resource use and
-              people-focused operations. The foundations behind our rubber,
-              steel and aluminium components.
-            </p>
-          </div>
-          <OpenQuoteButton label="Discuss your project" />
-        </div>
-      </section>
-      <section className="bg-[#f7f8fa] py-16 lg:py-24">
+      <PageIntro
+        eyebrow="Infrastructure / Coimbatore"
+        title={
+          <>
+            The right environment.
+            <br />
+            <span>For the right result.</span>
+          </>
+        }
+        description="Manufacturing capability, responsible resource use and people-focused operations. The foundations behind our rubber, steel and aluminium components."
+      >
+        <OpenQuoteButton label="Discuss your project" />
+      </PageIntro>
+      <section className="studio-infrastructure-area bg-[#f7f8fa] py-16 lg:py-24">
         <div className="shell space-y-14 lg:space-y-20">
           {INFRASTRUCTURE_PILLARS.map((pillar, index) => (
             <Reveal
@@ -65,16 +59,17 @@ export default function InfrastructurePage() {
                   ))}
                 </ul>
               </div>
-              <ParallaxVisual
-                className={`aspect-[5/4] border border-slate-300 bg-white ${index % 2 ? "lg:order-1" : ""}`}
+              <div
+                className={`aspect-[5/4] overflow-hidden rounded-xl border border-slate-300 bg-white ${index % 2 ? "lg:order-1" : ""}`}
               >
                 <SmartProductImage
                   src={pillar.remoteImage}
                   fallbackSrc={pillar.fallbackImage}
                   alt={pillar.title}
+                  depth
                   className="h-full w-full object-cover"
                 />
-              </ParallaxVisual>
+              </div>
             </Reveal>
           ))}
         </div>

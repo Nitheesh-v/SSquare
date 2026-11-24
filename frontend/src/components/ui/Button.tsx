@@ -14,7 +14,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variantClasses = {
-    primary: "bg-forge-600 text-white hover:bg-forge-700 shadow-xs",
+    primary: "bg-[#b74315] text-white hover:bg-[#99350e] shadow-xs",
     dark: "bg-carbon-900 text-white hover:bg-carbon-800",
     outline:
       "border border-slate-300 bg-white text-carbon-900 hover:border-forge-600 hover:text-forge-600",
@@ -30,7 +30,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-3 rounded-none text-xs font-semibold transition-colors disabled:opacity-60 cursor-pointer",
+        "inline-flex min-h-[46px] items-center justify-center gap-3 rounded text-xs font-semibold transition-colors disabled:opacity-60 cursor-pointer",
         variantClasses,
         sizeClasses,
         className,

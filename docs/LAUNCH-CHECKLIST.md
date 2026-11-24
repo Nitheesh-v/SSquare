@@ -6,7 +6,7 @@
 - Original rubber, steel and aluminium component photos, identified by material/product type. Where a pictured part is customer-owned, confirm permission and remove identifying marks if necessary.
 - Approved hero imagery/crops for desktop and mobile. Two lead photos are currently cached from the official website; other catalog images use original-site URLs and explicitly labelled illustrative fallbacks.
 - Replace the six illustrative JPEGs in `frontend/public/images/` or update the dataset paths. The updated rubber assortment (`division-rubber.jpg`) is AI-generated, not an official product photo. **Do not remove placeholder labelling before replacements are approved.**
-- Photo provenance: `frontend/public/images/ssquare/README.md`; mappings: `src/lib/photo-sources.ts`, `src/lib/company-data.ts`, `src/lib/catalog-data.ts`.
+- Photo provenance: `frontend/public/images/ssquare/README.md`; mappings: `src/lib/photo-sources.ts`, `src/lib/company-data.ts`, `src/lib/catalog-data.ts`, `src/features/studio/materials.ts`. The new home hero/cards and catalog material previews use explicitly labelled local illustrative scenes, not the cached official-site photographs.
 
 ## 2. Approved CAD / 3D asset
 
@@ -14,8 +14,8 @@
 - Source STEP/IGES/CAD supplied through the company’s approved secure channel, not committed to the repository.
 - A mobile-ready GLB with clear part names, sensible topology, surface normals and materials. Provide the real assembly/explosion relationships, desired finish and any annotations that may be published.
 - Hook: server `S_SQUARE_CAD_MODEL_URL` or `src/lib/visual-config.ts`. Current profile/collar assembly is explicitly **Illustrative Concept Model · Replaceable with S Square CAD**. It is not a real component specification and has no tolerances or dimensions.
-- The new homepage has three separate illustrative procedural parts (rubber gasket, steel flange, aluminium profile) in `src/features/journey/journey-scene.ts`, with matching inline SVG fallbacks. Supply and approve representative CAD for **all three** before removing their illustrative labels. The `S_SQUARE_CAD_MODEL_URL` hook applies only to the detailed story on `/products/aluminium`, not this home scene.
-- Approve the four-step manufacturing language and the three-component brief workflow. The builder is a selection/prefill tool, not a cart, quotation, order acknowledgement or dispatch confirmation. No food/health claims, protein-bar artwork, discount pricing or fictional nutrition data are included.
+- The homepage study and the full `/material-experience` route share three separate illustrative procedural parts (rubber gasket, steel flange, aluminium profile) in `src/features/journey/journey-scene.ts`, with matching inline SVG fallbacks. Supply and approve representative CAD for **all three** before removing their illustrative labels. The `S_SQUARE_CAD_MODEL_URL` hook applies only to the detailed story on `/products/aluminium`, not those shared material models.
+- Approve the four-step manufacturing language and the three-component brief workflow on `/material-experience`. The builder is a selection/prefill tool, not a cart, quotation, order acknowledgement or dispatch confirmation. No food/health claims, protein-bar artwork, discount pricing or fictional nutrition data are included.
 
 ## 3. Company and commercial sign-off
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, MessageSquare, Phone } from "lucide-react";
+import { PageIntro } from "@/components/shared/PageIntro";
 import { FaqAccordion } from "@/components/shared/FaqAccordion";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { COMPANY_INFO } from "@/lib/company-data";
@@ -12,24 +13,18 @@ export const metadata: Metadata = {
 export default function FaqPage() {
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
-        <div className="shell">
-          <p className="eyebrow text-forge-300">
-            ENGINEERING / PROCUREMENT / PRACTICAL ANSWERS
-          </p>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-            Before we
+      <PageIntro
+        eyebrow="Engineering & procurement FAQ"
+        title={
+          <>
+            Good questions.
             <br />
-            make your component.
-          </h1>
-          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
-            A few useful answers about drawings, material options, inspection
-            and delivery. For a specific application, speak directly with the S
-            Square team.
-          </p>
-        </div>
-      </section>
-      <section className="bg-[#f7f8fa] py-16 lg:py-20">
+            <span>Practical answers.</span>
+          </>
+        }
+        description="A few useful answers about drawings, material options, inspection and delivery. For a specific application, speak directly with the S Square team."
+      />
+      <section className="studio-faq-area bg-[#f7f8fa] py-16 lg:py-20">
         <div className="shell grid items-start gap-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <FaqAccordion />

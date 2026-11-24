@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowUpRight, Mail, MapPin, MessageSquare, Phone } from "lucide-react";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { QuoteForm } from "@/features/checkout/QuoteForm";
+import { PageIntro } from "@/components/shared/PageIntro";
 
 export const metadata: Metadata = {
   title: "Contact S Square & Request a Quote",
@@ -11,23 +12,19 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
-        <div className="shell">
-          <p className="eyebrow text-forge-300">
-            DIRECT COMMUNICATION / CUSTOM COMPONENTS
-          </p>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-            Bring the challenge.
+      <PageIntro
+        eyebrow="Let’s talk components"
+        title={
+          <>
+            Your idea.
             <br />
-            Let’s work on the component.
-          </h1>
-          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
-            Rubber, steel or aluminium. A drawing, sample or idea. Tell our
-            Coimbatore team what you need to make.
-          </p>
-        </div>
-      </section>
-      <section className="bg-[#f7f8fa] py-16 lg:py-20">
+            <span>Our next conversation.</span>
+          </>
+        }
+        description="Rubber, steel or aluminium. A drawing, sample or challenge to solve. Tell our Coimbatore team what you need to make."
+        label="DIRECT TO OUR TEAM / NO ACCOUNT REQUIRED"
+      />
+      <section className="studio-contact-area bg-[#f7f8fa] py-16 lg:py-20">
         <div className="shell grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="space-y-7 lg:col-span-5">
             <div className="border-b border-slate-300 pb-7">

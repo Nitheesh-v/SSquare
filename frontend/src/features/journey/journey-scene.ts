@@ -9,6 +9,7 @@ export type JourneyScene = ReturnType<typeof createJourneyScene>;
 export function createJourneyScene(
   canvas: HTMLCanvasElement,
   lost: () => void,
+  poolSize = 11,
 ) {
   const context = canvas.getContext("webgl2", {
     alpha: true,
@@ -226,7 +227,8 @@ export function createJourneyScene(
     scene.add(shadow);
     return { root, models, ownMaterials, shadow };
   };
-  const pool = Array.from({ length: 11 }, makeItem);
+  // The contained homepage study needs no copies; the full journey retains its pool.
+  const pool = Array.from({ length: poolSize }, makeItem);
   const traveller = makeItem();
   canvas.dataset.travellerId = traveller.root.uuid;
   const raycaster = new THREE.Raycaster();

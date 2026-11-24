@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowDown,
-  ArrowLeft,
+  ArrowUpRight,
   Check,
   MessageSquare,
   Phone,
@@ -24,59 +24,78 @@ export function DivisionPageTemplate({
   technicalNoteTitle: string;
   technicalNoteParagraphs: string[];
 }) {
+  const headlines = {
+    rubber: ["Rubber products.", "Made to fit."],
+    steel: ["Steel components.", "Strength in detail."],
+    aluminium: ["Aluminium.", "Lightweight thinking."],
+  };
+  const heading = headlines[division.slug];
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-12 text-white lg:py-20">
-        <div className="shell">
-          <Link
-            href="/categories"
-            className="inline-flex min-h-11 items-center gap-2 font-mono text-[10px] tracking-wide text-slate-300 hover:text-forge-300"
-          >
-            <ArrowLeft size={13} />
-            ALL MANUFACTURING DIVISIONS
-          </Link>
-          <div className="mt-6 grid items-center gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <p className="eyebrow text-forge-300">{division.code}</p>
-              <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-                {division.shortTitle}
+      <section className="division-hero">
+        <div className="studio-shell">
+          <div className="studio-breadcrumb">
+            <Link href="/">Home</Link>
+            <span>/</span>
+            <Link href="/categories">Divisions</Link>
+            <span>/</span>
+            <span>{division.slug}</span>
+          </div>
+          <div className="division-hero-grid">
+            <div className="division-hero-copy">
+              <p className="studio-kicker">{division.code}</p>
+              <h1>
+                {heading[0]}
+                <br />
+                <span>{heading[1]}</span>
               </h1>
-              <p className="mt-6 max-w-2xl text-sm leading-[1.9] text-slate-300">
-                {division.heroTagline}
+              <p>
+                {division.heroTagline} Made to your drawing or sample, with the
+                specification agreed for your application.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="studio-actions">
                 <OpenQuoteButton
                   label="Request a Quote"
                   prefill={{ division: division.name }}
                 />
                 <a href="#division-components" className="button-dark-outline">
-                  Explore components
-                  <ArrowDown size={15} />
+                  Explore components <ArrowDown size={15} />
                 </a>
               </div>
-              <p className="mt-7 font-mono text-[10px] tracking-wide text-slate-400">
-                CUSTOM MANUFACTURE / DRAWING OR SAMPLE BASED
-              </p>
-            </div>
-            <div className="lg:col-span-5">
-              <div className="aspect-square border border-white/20 bg-slate-100">
-                <SmartProductImage
-                  src={division.heroImage}
-                  illustrative={division.illustrative}
-                  fallbackSrc={division.fallbackImage}
-                  alt={`${division.name} — S Square Engineering Services`}
-                  priority
-                  className="h-full w-full object-cover"
-                />
+              <div className="studio-material-tags">
+                {division.keyMaterials.slice(0, 3).map((material) => (
+                  <span key={material}>{material}</span>
+                ))}
               </div>
-              <p className="mt-3 font-mono text-[9px] text-slate-400">
+            </div>
+            <div className="division-hero-visual">
+              <div className="division-photo-frame">
+                <div>
+                  <SmartProductImage
+                    src={division.heroImage}
+                    illustrative={division.illustrative}
+                    fallbackSrc={division.fallbackImage}
+                    alt={`${division.name} — S Square Engineering Services`}
+                    priority
+                    depth
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <p className="division-photo-label">
+                  <span>{division.code}</span>
+                  <span>
+                    MADE FOR YOUR APPLICATION <ArrowUpRight size={12} />
+                  </span>
+                </p>
+              </div>
+              <p className="division-reference-note">
                 MATERIAL & GEOMETRY CONFIRMED AGAINST YOUR REQUIREMENT
               </p>
             </div>
           </div>
         </div>
       </section>
-      <section className="border-b border-slate-200 bg-white py-16 lg:py-20">
+      <section className="division-overview border-b border-slate-200 bg-white py-16 lg:py-20">
         <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-7">
             <p className="eyebrow text-forge-700">ENGINEERING OVERVIEW</p>
@@ -97,7 +116,7 @@ export function DivisionPageTemplate({
               application.
             </p>
           </Reveal>
-          <Reveal className="border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:col-span-5">
+          <Reveal className="division-capabilities border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:col-span-5">
             <p className="eyebrow text-forge-700">
               CAPABILITIES / {division.slug.toUpperCase()}
             </p>
@@ -127,7 +146,7 @@ export function DivisionPageTemplate({
       </section>
       <section
         id="division-components"
-        className="border-b border-slate-200 bg-[#f7f8fa] py-16 lg:py-20"
+        className="division-range border-b border-slate-200 bg-[#f7f8fa] py-16 lg:py-20"
       >
         <div className="shell">
           <div className="mb-8">
@@ -144,7 +163,7 @@ export function DivisionPageTemplate({
           <ProductCatalogView items={products} />
         </div>
       </section>
-      <section className="bg-white py-12">
+      <section className="division-bottom-cta bg-white py-12">
         <div className="shell flex flex-wrap items-center justify-between gap-7">
           <div>
             <h2 className="font-display text-3xl font-semibold">

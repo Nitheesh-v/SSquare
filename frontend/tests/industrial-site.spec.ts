@@ -50,6 +50,7 @@ test("public pages, legacy redirects and enquiry-only routes", async ({
     "/products/aluminium",
     "/faq",
     "/contact",
+    "/material-experience",
   ]) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
@@ -117,7 +118,11 @@ test("navigation, hero controls, and quote dialog keyboard access", async ({
     await expect(toggle).toBeFocused();
   }
   await page.getByRole("button", { name: /03 Aluminium/ }).click();
-  await expect(page.locator("h1")).toContainText("Aluminium");
+  await expect(page.locator(".precision-hero")).toHaveAttribute(
+    "data-active-material",
+    "aluminium",
+  );
+  await expect(page.locator("h1")).toContainText("Big possibilities.");
   await expect(
     page.getByRole("button", { name: /03 Aluminium/ }),
   ).toHaveAttribute("aria-pressed", "true");

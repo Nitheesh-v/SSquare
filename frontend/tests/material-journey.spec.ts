@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }, info) => {
 test.afterEach(() => expect(errors, "Application runtime errors").toEqual([]));
 
 async function enter(page: Page) {
-  await page.goto("/");
+  await page.goto("/material-experience");
   await expect(page.getByTestId("material-journey")).toHaveAttribute(
     "data-entered",
     "true",
@@ -315,7 +315,7 @@ test("the brief initially fills, allows removal and repeated material choices wi
 test("intro skip unlocks the page and all four requested font faces load locally", async ({
   page,
 }) => {
-  await page.goto("/", { waitUntil: "commit" });
+  await page.goto("/material-experience", { waitUntil: "commit" });
   const skip = page.getByRole("button", { name: "Skip intro" });
   await expect(skip).toBeVisible();
   await skip.click();
@@ -351,7 +351,7 @@ test("unavailable WebGL retains labelled component views and usable selection an
       return Reflect.apply(original, this, [type, ...args]);
     } as typeof original;
   });
-  await page.goto("/");
+  await page.goto("/material-experience");
   await expect(page.getByTestId("material-journey")).toHaveAttribute(
     "data-webgl",
     "unavailable",
@@ -391,7 +391,7 @@ test("reduced motion skips intro, exposes all four steps and keeps the new rubbe
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/material-experience");
   await expect(page.locator("canvas")).toHaveCount(0);
   await expect(page.locator(".journey-intro")).toHaveCount(0);
   await expect(page.locator(".journey-static-story article")).toHaveCount(4);
@@ -433,7 +433,7 @@ test("prescribed viewport layouts keep title, quote action and document within b
     [768, 1024],
   ]) {
     await page.setViewportSize({ width, height });
-    await page.goto("/");
+    await page.goto("/material-experience");
     await page
       .getByRole("button", { name: "03 Aluminium", exact: true })
       .click();

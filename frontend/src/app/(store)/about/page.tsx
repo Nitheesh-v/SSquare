@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
-import { COMPANY_INFO, INFRASTRUCTURE_PILLARS } from "@/lib/company-data";
+import { COMPANY_INFO } from "@/lib/company-data";
+import { PageIntro } from "@/components/shared/PageIntro";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
-import { ParallaxVisual, Reveal } from "@/components/shared/MotionPrimitives";
+import { Reveal } from "@/components/shared/MotionPrimitives";
 
 export const metadata: Metadata = {
   title: "About S Square — Custom Manufacturing in Coimbatore",
@@ -34,41 +35,32 @@ const STRENGTHS = [
   },
 ];
 export default function AboutPage() {
-  const facility = INFRASTRUCTURE_PILLARS[0];
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
-        <div className="shell">
-          <p className="eyebrow text-forge-300">
-            THE COMPANY / S SQUARE ENGINEERING SERVICES
-          </p>
-          <h1 className="mt-5 max-w-4xl font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
-            Different materials.
+      <PageIntro
+        eyebrow="The company / S Square"
+        title={
+          <>
+            A partner in the parts.
             <br />
-            One manufacturing mindset.
-          </h1>
-          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
-            Based in Peelamedu, Coimbatore, we manufacture custom rubber, steel
-            and aluminium components for industrial requirements. Bring us a
-            drawing or a physical sample—and let’s define the component you
-            need.
-          </p>
-          <div className="mt-10 grid max-w-3xl grid-cols-3 border-t border-white/15 pt-6">
-            {[
-              { value: "20+", label: "Years of experience" },
-              { value: "03", label: "Material divisions" },
-              { value: "Custom", label: "Drawing or sample based" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className="font-display text-4xl font-semibold text-white">
-                  {stat.value}
-                </p>
-                <p className="mt-2 text-[10px] text-slate-400">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+            <span>And in the possibilities.</span>
+          </>
+        }
+        description="Based in Peelamedu, Coimbatore, we manufacture custom rubber, steel and aluminium components for industrial requirements. Bring us a drawing or a physical sample—and let’s define the component you need."
+      >
+        <div className="company-metrics">
+          {[
+            { value: "20+", label: "Years of experience" },
+            { value: "03", label: "Material disciplines" },
+            { value: "Custom", label: "Drawing or sample based" },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
         </div>
-      </section>
+      </PageIntro>
       <section className="border-b border-slate-200 bg-white py-16 lg:py-24">
         <div className="shell grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
@@ -99,21 +91,23 @@ export default function AboutPage() {
             </div>
           </Reveal>
           <Reveal>
-            <ParallaxVisual className="aspect-[5/4] border border-slate-200">
+            <div className="company-facility-photo aspect-[5/4] overflow-hidden rounded-xl border border-slate-200">
               <SmartProductImage
-                src={facility.remoteImage}
-                fallbackSrc={facility.fallbackImage}
-                alt="S Square Engineering Services manufacturing"
+                src="/images/infrastructure-facility.jpg"
+                fallbackSrc="/images/infrastructure-facility.jpg"
+                illustrative
+                depth
+                alt="Manufacturing facility concept"
                 className="h-full w-full object-cover"
               />
-            </ParallaxVisual>
+            </div>
             <p className="mt-4 font-mono text-[9px] leading-relaxed text-slate-500">
               PEELAMEDU / COIMBATORE / TAMIL NADU / INDIA
             </p>
           </Reveal>
         </div>
       </section>
-      <section className="bg-[#f7f8fa] py-16 lg:py-24">
+      <section className="studio-company-values bg-[#f7f8fa] py-16 lg:py-24">
         <div className="shell">
           <Reveal>
             <p className="eyebrow text-forge-700">WHAT GUIDES THE WORK</p>
@@ -123,7 +117,7 @@ export default function AboutPage() {
               Considered execution.
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2">
+          <div className="company-values-grid mt-10 grid gap-5 sm:grid-cols-2">
             {STRENGTHS.map((item, index) => (
               <Reveal
                 key={item.title}

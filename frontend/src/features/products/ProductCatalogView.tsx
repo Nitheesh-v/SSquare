@@ -63,8 +63,8 @@ export function ProductCatalogView({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4 border border-slate-200 bg-white p-4 sm:p-5">
+    <div className="catalog-view space-y-6">
+      <div className="catalog-controls space-y-4 border border-slate-200 bg-white p-4 sm:p-5">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           {showDivisionFilter ? (
             <div
@@ -189,7 +189,7 @@ export function ProductCatalogView({
           {filteredItems.map((item) => (
             <article
               key={item.id}
-              className="group flex flex-col overflow-hidden border border-slate-200 bg-white transition-shadow hover:shadow-md"
+              className="catalog-card group flex flex-col overflow-hidden border border-slate-200 bg-white transition-shadow hover:shadow-md"
             >
               <button
                 type="button"
@@ -237,7 +237,7 @@ export function ProductCatalogView({
                   <button
                     type="button"
                     onClick={() => requestQuote(item)}
-                    className="inline-flex min-h-11 items-center gap-2 border border-slate-300 px-3 py-2 text-[11px] font-semibold hover:border-forge-600 hover:text-forge-700"
+                    className="catalog-quote inline-flex min-h-11 items-center gap-2 border border-slate-300 px-3 py-2 text-[11px] font-semibold hover:border-forge-600 hover:text-forge-700"
                   >
                     Request a Quote
                     <ArrowUpRight size={14} />

@@ -5,6 +5,7 @@ import { DIVISIONS } from "@/lib/catalog-data";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
 import { Reveal } from "@/components/shared/MotionPrimitives";
+import { PageIntro } from "@/components/shared/PageIntro";
 
 export const metadata: Metadata = {
   title: "Manufacturing Divisions — Rubber, Steel & Aluminium",
@@ -14,26 +15,26 @@ export const metadata: Metadata = {
 export default function CategoriesPage() {
   return (
     <>
-      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
-        <div className="shell">
-          <p className="eyebrow text-forge-300">OUR MANUFACTURING DIVISIONS</p>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+      <PageIntro
+        eyebrow="Our manufacturing divisions"
+        title={
+          <>
             Three materials.
-            <br />A world of custom possibilities.
-          </h1>
-          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
-            Explore the material families and component types we manufacture.
-            Your drawing, sample and application set the final specification.
-          </p>
-        </div>
-      </section>
-      <section className="bg-[#f7f8fa] py-16 lg:py-24">
+            <br />
+            <span>One considered approach.</span>
+          </>
+        }
+        description="Explore the material families and component types we manufacture. Your drawing, sample and application set the final specification."
+      >
+        <OpenQuoteButton label="Discuss your project" />
+      </PageIntro>
+      <section className="studio-categories-area bg-[#f7f8fa] py-16 lg:py-24">
         <div className="shell space-y-12">
           {[DIVISIONS.rubber, DIVISIONS.steel, DIVISIONS.aluminium].map(
             (division, index) => (
               <Reveal
                 key={division.slug}
-                className="grid items-center gap-8 border border-slate-200 bg-white p-5 sm:p-8 lg:grid-cols-2 lg:gap-12"
+                className="division-list-card grid items-center gap-8 border border-slate-200 bg-white p-5 sm:p-8 lg:grid-cols-2 lg:gap-12"
               >
                 <Link
                   href={`/products/${division.slug}`}
@@ -45,6 +46,7 @@ export default function CategoriesPage() {
                     illustrative={division.illustrative}
                     fallbackSrc={division.fallbackImage}
                     alt={division.name}
+                    depth
                     className="h-full w-full object-cover"
                   />
                 </Link>

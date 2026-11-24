@@ -14,6 +14,7 @@ interface SmartProductImageProps {
   illustrative?: boolean;
   /** Only the image planes move; provenance labels remain outside the crop. */
   depth?: boolean;
+  motionPaused?: boolean;
   priority?: boolean;
 }
 
@@ -34,6 +35,7 @@ function ResolvedImage({
   showPlaceholderBadge = true,
   illustrative = false,
   depth = false,
+  motionPaused = false,
   priority = false,
 }: SmartProductImageProps) {
   const hasSource = Boolean(src);
@@ -89,7 +91,7 @@ function ResolvedImage({
   return (
     <div className="relative h-full w-full overflow-hidden">
       {depth ? (
-        <ParallaxVisual depth className="h-full w-full">
+        <ParallaxVisual depth paused={motionPaused} className="h-full w-full">
           {images}
         </ParallaxVisual>
       ) : (
