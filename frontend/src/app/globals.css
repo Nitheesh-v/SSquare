@@ -9,28 +9,30 @@
   --font-display: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --color-forge-50: #fff7ed;
-  --color-forge-100: #ffedd5;
-  --color-forge-200: #fed7aa;
-  --color-forge-300: #fdba74;
-  --color-forge-400: #fb923c;
-  --color-forge-500: #f97316;
-  --color-forge-600: #ea580c;
-  --color-forge-700: #c2410c;
-  --color-forge-800: #9a3412;
-  --color-forge-900: #7c2d12;
+  /* S Square Brand Crimson Red Palette */
+  --color-forge-50: #fdeaea;
+  --color-forge-100: #fbd5d5;
+  --color-forge-200: #f8b4b4;
+  --color-forge-300: #f48080;
+  --color-forge-400: #f05252;
+  --color-forge-500: #e11d48;
+  --color-forge-600: #d3112b;
+  --color-forge-700: #b00d23;
+  --color-forge-800: #8f0b1d;
+  --color-forge-900: #750a19;
 
-  --color-carbon-950: #0b0f17;
-  --color-carbon-900: #111827;
-  --color-carbon-800: #1e293b;
-  --color-carbon-700: #334155;
-  --color-carbon-600: #475569;
+  /* S Square Deep Navy Palette */
+  --color-carbon-950: #0d1324;
+  --color-carbon-900: #131b31;
+  --color-carbon-800: #1e2942;
+  --color-carbon-700: #2d3b59;
+  --color-carbon-600: #425273;
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
-    color: #111827;
+    color: #0d1324;
     background-color: #f8fafc;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -50,13 +52,12 @@
   }
 }
 
-/* Lightweight GPU-friendly section surfaces (no multi-layer repeating grid repaints) */
 .bg-blueprint-light {
   background-color: #f8fafc;
 }
 
 .bg-blueprint-dark {
-  background-color: #0b0f17;
+  background-color: #0d1324;
 }
 
 @keyframes carouselProgress {

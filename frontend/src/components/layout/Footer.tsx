@@ -2,221 +2,175 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin, Phone, Mail, Clock, Truck, ArrowUpRight } from "lucide-react";
 import { Logo } from "./Logo";
 import { COMPANY_INFO } from "@/lib/company-data";
-import { useQuoteModal } from "@/hooks";
 
 export function Footer() {
-  const { openQuoteModal } = useQuoteModal();
-
   return (
-    <footer className="bg-carbon-950 text-slate-300 border-t border-carbon-800">
-      {/* Top Express RFQ Banner Strip */}
-      <div className="border-b border-carbon-800 bg-carbon-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-500">
-              Direct OEM &amp; Custom Manufacturing Partner
-            </span>
-            <h3 className="mt-1 font-display text-2xl font-bold text-white">
-              Have a Technical Drawing or Sample Part Ready?
-            </h3>
-            <p className="mt-1 text-sm text-slate-400">
-              Get factory-direct pricing with 100% dimensional conformity and free 3–4 day global DHL / FedEx delivery.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={() => openQuoteModal()}
-              className="inline-flex items-center gap-2 rounded-md bg-forge-600 px-5 py-3 text-sm font-semibold text-white hover:bg-forge-700 transition-colors cursor-pointer"
-            >
-              Start Custom RFQ
-              <ArrowUpRight className="h-4 w-4" />
-            </button>
-            <a
-              href={`tel:${COMPANY_INFO.phoneRaw}`}
-              className="inline-flex items-center gap-2 rounded-md border border-carbon-700 bg-carbon-800 px-5 py-3 text-sm font-semibold text-white hover:border-forge-500 transition-colors"
-            >
-              <Phone className="h-4 w-4 text-forge-500" />
-              {COMPANY_INFO.phone}
-            </a>
-          </div>
-        </div>
-      </div>
+    <footer className="bg-[#0d1324] text-slate-200 border-t border-white/10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+          {/* Column 1: Brand Logo, Tagline & Social Icons */}
+          <div className="md:col-span-5 space-y-6">
+            <Link href="/" className="inline-block focus:outline-none">
+              <Logo theme="dark" />
+            </Link>
 
-      {/* Main Footer Grid */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
-          {/* Col 1: Brand & Mission */}
-          <div className="lg:col-span-4 space-y-4">
-            <Logo theme="dark" />
-            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
-              Custom manufacturer and global exporter specializing in precision{" "}
-              <strong className="text-slate-200">
-                Rubber, Steel, and Aluminium
-              </strong>{" "}
-              components for industrial, commercial, automotive, and OEM applications.
+            <p className="text-[15px] text-slate-200 leading-relaxed max-w-md">
+              Specializing in custom rubber, steel, and aluminium manufacturing
+              with a commitment to precision, durability, and timely delivery.
             </p>
-            <div className="inline-flex items-center gap-2 rounded-md border border-carbon-800 bg-carbon-900 px-3.5 py-2 text-xs text-slate-300">
-              <Truck className="h-4 w-4 text-forge-500 shrink-0" />
-              <span>DHL / FedEx Global Door Delivery in 3–4 Days</span>
+
+            {/* Social Links (Facebook, Twitter, YouTube) */}
+            <div className="flex items-center gap-3 pt-1">
+              <a
+                href="https://ssquareengg.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.24-1.46 1.49-1.46H16.5V4.46c-.27-.04-1.2-.11-2.28-.11-2.26 0-3.81 1.38-3.81 3.91v2.24H8v3h2.41V21h3.09Z" />
+                </svg>
+              </a>
+
+              <a
+                href="https://ssquareengg.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M21.54 7.11c.01.18.01.36.01.54 0 5.49-4.18 11.82-11.82 11.82-2.35 0-4.53-.69-6.37-1.87.33.04.65.05.99.05 1.95 0 3.74-.66 5.16-1.78a4.16 4.16 0 0 1-3.88-2.88c.26.04.51.07.78.07.37 0 .74-.05 1.09-.14A4.15 4.15 0 0 1 4.17 8.85v-.05c.55.31 1.19.5 1.87.52a4.15 4.15 0 0 1-1.85-3.46c0-.77.21-1.48.57-2.09a11.8 11.8 0 0 0 8.56 4.34 4.68 4.68 0 0 1-.1-.95 4.15 4.15 0 0 1 7.18-2.84 8.2 8.2 0 0 0 2.64-1.01 4.14 4.14 0 0 1-1.82 2.29 8.32 8.32 0 0 0 2.39-.65 8.93 8.93 0 0 1-2.07 2.16Z" />
+                </svg>
+              </a>
+
+              <a
+                href="https://ssquareengg.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M21.58 7.19a2.51 2.51 0 0 0-1.77-1.78C18.25 5 12 5 12 5s-6.25 0-7.81.41a2.51 2.51 0 0 0-1.77 1.78C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.9 1.54 1.77 1.78C5.75 19 12 19 12 19s6.25 0 7.81-.41a2.51 2.51 0 0 0 1.77-1.78C22 15.25 22 12 22 12s0-3.25-.42-4.81ZM10 15V9l5.2 3L10 15Z" />
+                </svg>
+              </a>
             </div>
           </div>
 
-          {/* Col 2: Product Divisions */}
-          <div className="lg:col-span-3">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
-              Product Divisions
+          {/* Column 2: QUICK LINKS */}
+          <div className="md:col-span-3">
+            <h4 className="font-display text-lg font-semibold uppercase tracking-wide text-white mb-5">
+              QUICK LINKS
             </h4>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-3 text-[15px] text-slate-200">
               <li>
                 <Link
-                  href="/categories"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  href="/"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Manufacturing Categories
+                  Home
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/products/rubber"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  href="/about"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Custom Molded Rubber &amp; Seals
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/steel"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
-                >
-                  Stainless &amp; Alloy Steel CNC Parts
+                  About
                 </Link>
               </li>
               <li>
                 <Link
                   href="/products/aluminium"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Aluminium Die Molds &amp; 6061 Parts
+                  Aluminium
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/products"
-                  className="inline-flex items-center gap-1 font-semibold text-white hover:text-forge-400 transition-colors pt-1"
+                  href="/products/rubber"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Explore Full Catalog
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Company */}
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
-              Company
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link
-                  href="/about"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
-                >
-                  About S Square
+                  Rubber
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/infrastructure"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  href="/products/steel"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Infrastructure &amp; ESG
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
-                >
-                  Engineering FAQ
+                  Steel
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  Contact &amp; RFQ Desk
+                  Contact
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Manufacturing HQ */}
-          <div className="lg:col-span-3 space-y-3.5 text-sm">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-white mb-4">
-              Manufacturing HQ
+          {/* Column 3: CONTACT INFO */}
+          <div className="md:col-span-4">
+            <h4 className="font-display text-lg font-semibold uppercase tracking-wide text-white mb-5">
+              CONTACT INFO
             </h4>
-            <div className="flex items-start gap-2.5 text-slate-400">
-              <MapPin className="h-4 w-4 text-forge-500 shrink-0 mt-1" />
-              <address className="not-italic leading-relaxed">
-                <strong className="text-slate-200 block">
-                  {COMPANY_INFO.name}
-                </strong>
-                {COMPANY_INFO.address.line1},<br />
-                {COMPANY_INFO.address.locality}, {COMPANY_INFO.address.city} –{" "}
-                {COMPANY_INFO.address.pincode},<br />
-                {COMPANY_INFO.address.state}, {COMPANY_INFO.address.country}
-              </address>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 text-forge-500 shrink-0" />
-              <a
-                href={`tel:${COMPANY_INFO.phoneRaw}`}
-                className="font-medium text-slate-200 hover:text-forge-400 transition-colors"
-              >
-                {COMPANY_INFO.phone}
-              </a>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <Mail className="h-4 w-4 text-forge-500 shrink-0 mt-0.5" />
-              <div className="flex flex-col space-y-1 text-xs">
+            <div className="space-y-2.5 text-[15px] text-slate-200 leading-relaxed">
+              <p>S Square Engineering services</p>
+              <p>58, Jeganathapuram,</p>
+              <p>Avarampalayam road,</p>
+              <p>Peelamedu, Coimbatore 641004</p>
+              <p>
                 <a
                   href={`mailto:${COMPANY_INFO.emails.sales}`}
-                  className="text-slate-300 hover:text-forge-400 transition-colors"
+                  className="hover:text-forge-400 transition-colors"
                 >
                   {COMPANY_INFO.emails.sales}
                 </a>
+              </p>
+              <p>
                 <a
-                  href={`mailto:${COMPANY_INFO.emails.info}`}
-                  className="text-slate-400 hover:text-forge-400 transition-colors"
+                  href={`tel:${COMPANY_INFO.phoneRaw}`}
+                  className="hover:text-forge-400 transition-colors"
                 >
-                  {COMPANY_INFO.emails.info}
+                  {COMPANY_INFO.phone}
                 </a>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 text-xs text-slate-400 pt-1">
-              <Clock className="h-4 w-4 text-forge-500 shrink-0" />
-              <span>{COMPANY_INFO.hours}</span>
+              </p>
             </div>
           </div>
         </div>
 
         {/* Bottom Copyright */}
-        <div className="mt-12 pt-6 border-t border-carbon-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>
             © {new Date().getFullYear()} {COMPANY_INFO.name}. All rights
             reserved.
           </p>
-          <p className="text-[11px] font-medium tracking-wider">
-            RUBBER · STAINLESS STEEL · ALUMINIUM · COIMBATORE, INDIA
+          <p className="text-[11px] font-medium tracking-wider uppercase">
+            Rubber · Steel · Aluminium · Coimbatore, India
           </p>
         </div>
       </div>

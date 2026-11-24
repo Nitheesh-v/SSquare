@@ -34,8 +34,8 @@ const CAROUSEL_SLIDES = [
     divisionPrefill: "Multi-Material OEM Assembly",
     icon: Factory,
     metrics: [
-      { value: "20+ Years", label: "Engineering Expertise" },
-      { value: "100%", label: "Spec Conformity" },
+      { value: "15+ Years", label: "Years of Experience" },
+      { value: "50+ Clients", label: "Industrial & OEM Partners" },
       { value: "3–4 Days", label: "Free Global DHL / FedEx" },
     ],
   },

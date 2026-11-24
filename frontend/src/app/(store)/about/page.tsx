@@ -69,10 +69,10 @@ export default function AboutPage() {
 
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: Award, value: "20+ Years", label: "Industry Heritage" },
-              { icon: ShieldCheck, value: "100%", label: "Spec Conformity" },
-              { icon: Globe2, value: "3–4 Days", label: "Global DHL / FedEx" },
-              { icon: Users, value: "3 Divisions", label: "Rubber · Steel · Aluminium" },
+              { icon: Award, value: "15+ Years", label: "Years of Experience" },
+              { icon: Users, value: "50+", label: "Industrial Clients" },
+              { icon: ShieldCheck, value: "7", label: "Factory Industrial" },
+              { icon: Globe2, value: "100%", label: "Spec Conformity" },
             ].map((stat) => {
               const Icon = stat.icon;
               return (
