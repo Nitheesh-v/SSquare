@@ -67,6 +67,7 @@ export default function HomePage() {
     <>
       <HeroShowcase />
       <section
+        id="material-divisions"
         className="border-b border-slate-200 bg-[#f7f8fa] py-16 lg:py-24"
         aria-labelledby="divisions-heading"
       >
@@ -101,8 +102,10 @@ export default function HomePage() {
                 >
                   <SmartProductImage
                     src={division.heroImage}
+                    illustrative={division.illustrative}
                     fallbackSrc={division.fallbackImage}
                     alt={division.name}
+                    depth
                     className="product-card-image h-full w-full object-cover"
                   />
                   <span className="absolute bottom-3 left-3 bg-carbon-950 px-3 py-1.5 font-mono text-[10px] text-white">

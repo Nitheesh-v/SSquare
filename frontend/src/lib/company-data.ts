@@ -28,7 +28,14 @@ export const COMPANY_INFO = {
 
 // Only displayed, source-backed fields are retained. Do not restore legacy
 // blanket QC percentages or free/global delivery guarantees without sign-off.
-export const HERO_SLIDES = [
+export const HERO_SLIDES: {
+  id: string;
+  description: string;
+  remoteImage: string;
+  fallbackImage: string;
+  imageCaption: string;
+  illustrative?: boolean;
+}[] = [
   {
     id: "overview",
     description:
@@ -41,9 +48,10 @@ export const HERO_SLIDES = [
     id: "rubber",
     description:
       "Over 20 years of expertise producing bespoke rubber seals, gaskets, washers, O-rings, cords, sheets, and rubber-to-metal bonded components tailored to your sealing and vibration requirements.",
-    remoteImage: "https://ssquareengg.com/storage/2025/12/rubber-26.jpg",
+    remoteImage: "/images/division-rubber.jpg",
     fallbackImage: "/images/division-rubber.jpg",
-    imageCaption: "Metal-to-elastomer bonded seals & molded rubber parts",
+    illustrative: true,
+    imageCaption: "Rubber gaskets, O-rings, bellows & molded components",
   },
   {
     id: "steel",

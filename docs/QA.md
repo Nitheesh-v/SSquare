@@ -6,7 +6,7 @@ Branch: `arena/8987795b-ssquare`
 
 ## Delivery status
 
-The redesigned website is built and running in the live preview. **The final Chromium suite passes 40/40 tests.** This is a verified preview, not an unconditional production-launch approval.
+The redesigned website is built and running in the live preview. **The current Chromium suite passes 56/56 tests**, including the follow-up rubber imagery and scroll-driven 3D backdrop. This is a verified preview, not an unconditional production-launch approval.
 
 **Launch gates remain:** approved company imagery/CAD and copy, configured and verified enquiry delivery/retention, real-device/cross-browser review, and dependency remediation before publicly deploying the optional NestJS backend. See [the launch checklist](LAUNCH-CHECKLIST.md).
 
@@ -23,7 +23,7 @@ The redesigned website is built and running in the live preview. **The final Chr
 | `git diff --check`                    | Pass                                                                                                     |
 | Proposed-file credential-pattern scan | No private keys or provider/GitHub token patterns found; not a substitute for a dedicated secret scanner |
 
-Next.js reports a **10.1 kB homepage route / 128 kB first-load JS**, with 103 kB shared JS. These are build-tool estimates, not a Lighthouse score or a real-device performance guarantee. The Three.js scene is a separate dynamic import. A supplementary high-DPR mobile check measured the canvas at approximately **1.35× CSS width**, matching its mobile cap.
+Next.js reports an **11.4 kB homepage route / 129 kB first-load JS**, with 103 kB shared JS. These are build-tool estimates, not a Lighthouse score or a real-device performance guarantee. Both Three.js scenes are separate dynamic imports. The new hero waits for a visible/nearby stage and an idle opportunity; it is skipped for reduced motion and disposed when offscreen. It renders on demand rather than continuously while idle. Pixel ratios are capped at 1.25 for the mobile hero and 1.35 for the mobile aluminium story (the latter was measured in the earlier supplemental check).
 
 ## Automated browser results
 
@@ -31,11 +31,11 @@ Test source: [`frontend/tests/industrial-site.spec.ts`](../frontend/tests/indust
 
 | Chromium project     | Viewport                             | Final result                              |
 | -------------------- | ------------------------------------ | ----------------------------------------- |
-| Desktop              | 1440 × 1000                          | 10/10 pass                                |
-| Tablet / touch       | 768 × 1024                           | 10/10 pass                                |
-| Mobile / touch       | 390 × 844                            | 10/10 pass                                |
-| Small mobile / touch | 320 × 844                            | 10/10 pass                                |
-| **Total**            | One worker; production website build | **40/40 pass, approximately 2.3 minutes** |
+| Desktop              | 1440 × 1000                          | 14/14 pass                                |
+| Tablet / touch       | 768 × 1024                           | 14/14 pass                                |
+| Mobile / touch       | 390 × 844                            | 14/14 pass                                |
+| Small mobile / touch | 320 × 844                            | 14/14 pass                                |
+| **Total**            | One worker; production website build | **56/56 pass, approximately 5.5 minutes** |
 
 Coverage includes:
 
@@ -45,18 +45,22 @@ Coverage includes:
 4. Actual test RFQ submissions report backend/local storage separately from delivery. Storage-only responses explicitly state that the enquiry has **not** been automatically emailed or delivered, and offer pre-filled WhatsApp/email handoffs. The 320px confirmation state is included in overflow checks.
 5. A mocked 503 verifies that failed submissions retain entered contact/drawing details, focus the error message and provide direct-contact alternatives. It also checks dialog overflow. This mock does not send an email or create a real enquiry.
 6. Reduced-motion content remains readable as four stages, without a canvas. The technical SVG remains available.
-7. No initial canvas; one scene appears near the story. A live change to reduced motion removes it and restores the static view.
+7. The aluminium canvas remains unloaded at the top of the page even though the hero now has its own 3D background. One aluminium scene appears near the story. A live change to reduced motion removes all canvases and restores static views.
 8. Simulated unavailable WebGL retains the labelled technical drawing and explanatory status.
 9. Axe scans of home, catalog, contact, FAQ and the open quote dialog find **zero WCAG 2 A/AA / 2.1 AA tagged violations** at all four viewports. This is an automated subset, not a WCAG conformance certification.
 10. RFQ input validation rejects malformed fields, invalid email/phone, short messages and the honeypot; successful replies expose truthful reference/storage/delivery fields.
+11. The hero has a real WebGL canvas. Native scrolling advances its camera/gear progress and changes the photo-plane transform; the GPU render counter stays unchanged while idle. Pause removes the canvas, resume recreates it, and a live reduced-motion change disables it consistently.
+12. Rubber visuals use the new local elastomer assortment in the hero, homepage, division index and rubber material page. The asset loads and remains explicitly labelled as illustrative.
+13. All three material-card image planes change perspective with native scrolling and return to a still view with reduced motion. Rubber provenance-label bounds remain inside the static card frame instead of being clipped by the moving image.
+14. A simulated lost hero WebGL context removes its canvas and restores the SVG background, without blocking the quote CTA or dialog.
 
 Third-party company photos are intentionally made invalid during this suite to exercise labelled fallbacks. The two cached official-site photos still load normally. There were no application `pageerror` events in the final run.
 
-The final full run deliberately left the internal backend offline to exercise the local recovery path. Keyed backend storage was separately tested over HTTP and through the Next.js route; a preceding complete browser run also passed with the keyed backend running.
+The current full run leaves the internal backend offline to exercise the local recovery path. Keyed backend storage was separately verified during the preceding redesign handover; those backend files are unchanged by this visual follow-up. No live sales delivery was attempted.
 
 ## Supplementary checks
 
-- Home, products and contact layouts checked at **320, 390, 768, 1024, 1440 and 1920px**. Document width and `innerWidth` matched each configured viewport, rather than comparing against an already inflated mobile viewport. No runtime/console errors occurred in this supplemental check.
+- The current full suite checks public-route overflow at **320, 390, 768 and 1440px** against the configured viewport, not an already inflated `innerWidth`. Supplementary desktop/mobile screenshots verified native hero progress moving from 0 to approximately 0.53/0.56 after 320px of scrolling, with no horizontal overflow or application errors. The earlier redesign also included 1024/1920px layout spot checks.
 - Reviewed desktop/mobile hero and story-stage screenshots. The real S Square logo and dark-navy three-column footer are retained. Illustrative images/models remain clearly identified.
 - Corrected story ambient overflow and comparison-table positioning, the narrow-screen header CTA, small-screen metric wrapping, and the enquiry confirmation card. Overflow is not concealed with a global body clipping rule; the comparison table and featured strip retain intentional native horizontal scrolling.
 - Backend production controller: missing key configuration refuses storage with 503; wrong key returns 401; a matching key is accepted. Real HTTP checks verified missing/wrong keys return 401, invalid DTOs return 400, and a keyed QA enquiry is stored.
@@ -80,9 +84,9 @@ The website does **not** require publicly deploying this backend: a configured e
 
 - **Live email/webhook acceptance and actual inbox delivery:** no provider is configured in this preview; outbound notifications were disabled for QA. Provider acceptance alone does not prove inbox receipt. The UI does not pretend otherwise.
 - **Production MongoDB or multi-instance durability:** tests use local development storage, not a connected production database.
-- **Real CAD integration:** the procedural model is labelled “Illustrative Concept Model · Replaceable with S Square CAD.” No approved company GLB was supplied. A real multipart model needs part/transform mapping for its own accurate exploded view.
-- **Image permissions and deployment-region availability:** two lead photos are cached from the official site; other remote photos can fail and then use labelled illustrative assets. Company approval and final replacements remain necessary.
-- **Safari/iOS, Firefox, Chrome/Android hardware and assistive technology:** automated checks used headless Chromium with software WebGL in this sandbox. Touch emulation is not a real low-powered device or GPU/FPS benchmark. Screen-reader usability, real-device frame rate, WebGL context-loss recovery and final visual approval still require human review.
+- **Real CAD integration:** the hero gears are a separate labelled illustrative procedural study; its photos are depth-layered planes, not real CAD reconstructed from images. The aluminium procedural model is labelled “Illustrative Concept Model · Replaceable with S Square CAD.” No approved company GLB was supplied. A real multipart model needs part/transform mapping for its own accurate exploded view.
+- **Image permissions and deployment-region availability:** the replacement rubber assortment is an explicitly labelled AI-generated illustration. Two lead photos are cached from the official site; other remote photos can fail and then use labelled illustrative assets. Company approval and final replacements remain necessary.
+- **Safari/iOS, Firefox, Chrome/Android hardware and assistive technology:** automated checks used headless Chromium with software WebGL in this sandbox. Touch emulation is not a real low-powered device or GPU/FPS benchmark. Screen-reader usability, real-device frame rate, actual hardware context-loss recovery (only the hero UI event was simulated) and final visual approval still require human review.
 - **Deployment operations:** edge/shared abuse protection, HTTPS/network isolation, monitoring, privacy/retention approval, backups and actual sales-inbox ownership. Included rate limiting is per instance and assumes a trusted deployment proxy.
 
 ## Reproduce

@@ -62,6 +62,7 @@ export function DivisionPageTemplate({
               <div className="aspect-square border border-white/20 bg-slate-100">
                 <SmartProductImage
                   src={division.heroImage}
+                  illustrative={division.illustrative}
                   fallbackSrc={division.fallbackImage}
                   alt={`${division.name} — S Square Engineering Services`}
                   priority

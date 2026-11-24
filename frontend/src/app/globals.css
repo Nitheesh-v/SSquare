@@ -160,12 +160,231 @@
 .bg-blueprint-dark {
   background-color: #0b1019;
 }
-.hero-grid {
+/* A native-scroll 3D stage: the backdrop moves, the buyer's controls stay usable. */
+.hero-depth-section {
+  --hero-progress: 0;
+  position: relative;
+  isolation: isolate;
+  background: #0b1019;
+}
+.hero-depth-stage {
+  position: relative;
+  overflow: clip;
+  background: #0b1019;
+}
+.hero-depth-content {
+  min-height: calc(100svh - 113px);
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+}
+.hero-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 40px;
+  flex: 1;
+  align-items: center;
+  padding-block: clamp(30px, 5svh, 64px);
+}
+.hero-title {
+  font-size: clamp(3.5rem, 7.15vw, 6.7rem);
+  text-wrap: balance;
+}
+.hero-depth-backdrop,
+.hero-webgl-scene,
+.hero-depth-light,
+.hero-depth-shade,
+.hero-depth-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hero-depth-backdrop {
+  overflow: hidden;
+}
+.hero-gear-fallback {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 66% 45%;
+  transform: perspective(1500px)
+    translate3d(0, calc(var(--hero-progress) * 55px), 0)
+    scale(calc(1 + var(--hero-progress) * 0.13))
+    rotateY(calc(var(--hero-progress) * -8deg));
+}
+.hero-webgl-scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-webgl-scene {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.hero-depth-backdrop[data-renderer="webgl"] .hero-webgl-scene {
+  opacity: 1;
+}
+.hero-depth-backdrop[data-renderer="webgl"] .hero-gear-fallback {
+  opacity: 0;
+}
+.hero-depth-light {
+  background:
+    radial-gradient(ellipse at 90% 25%, #fb923c12, transparent 45%),
+    radial-gradient(ellipse at 65% 40%, #538db412, transparent 60%);
+}
+.hero-depth-shade {
+  background:
+    linear-gradient(
+      90deg,
+      #0b1019 0%,
+      #0b1019f5 28%,
+      #0b1019b8 47%,
+      #0b10191a 73%,
+      #0b101926 100%
+    ),
+    linear-gradient(
+      0deg,
+      #0b1019 0%,
+      #0b101900 23%,
+      #0b101900 85%,
+      #0b101975 100%
+    );
+}
+.hero-depth-grid {
   background-image:
-    linear-gradient(#ffffff03 1px, transparent 1px),
-    linear-gradient(90deg, #ffffff03 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: linear-gradient(to right, transparent 15%, #000);
+    linear-gradient(#a7c8df07 1px, transparent 1px),
+    linear-gradient(90deg, #a7c8df07 1px, transparent 1px);
+  background-size: 90px 90px;
+  mask-image: linear-gradient(90deg, transparent 30%, #000 100%);
+  transform: translateY(calc(var(--hero-progress) * -40px));
+}
+.hero-product-orbit {
+  display: flex;
+  min-width: 0;
+  min-height: 490px;
+  position: relative;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  perspective: 1400px;
+}
+.hero-depth-coordinate {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: right;
+  background: #0b1019e6;
+  padding: 8px 10px;
+  border-right: 1px solid #fb923c80;
+}
+.hero-photo-plane {
+  position: relative;
+  width: min(100%, 310px);
+  transform-style: preserve-3d;
+  transform: translate3d(
+      calc(var(--hero-progress) * -22px),
+      calc(var(--hero-progress) * -52px),
+      0
+    )
+    rotateX(calc(4deg + var(--hero-progress) * -9deg))
+    rotateY(calc(-12deg + var(--hero-progress) * 22deg));
+  transform-origin: 50% 65%;
+}
+.hero-photo-backing {
+  position: absolute;
+  inset: -12px 12px 12px -12px;
+  border: 1px solid #b9d4e23d;
+  background: #26374728;
+  transform: translateZ(-35px);
+}
+.hero-model-note {
+  transform: translateY(calc(var(--hero-progress) * -35px));
+}
+.hero-scroll-track {
+  display: block;
+  width: 44px;
+  height: 2px;
+  background: #ffffff25;
+}
+.hero-scroll-track span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(calc(0.08 + var(--hero-progress) * 0.92));
+  background: #fb923c;
+}
+@media (min-width: 1024px) and (min-height: 850px) {
+  .hero-depth-section {
+    min-height: calc(160svh - 113px);
+  }
+  .hero-depth-stage {
+    position: sticky;
+    top: 113px;
+  }
+}
+@media (max-width: 1023px) {
+  .hero-main-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.65fr);
+    gap: 28px;
+  }
+  .hero-title {
+    font-size: clamp(3.5rem, 7.4vw, 5.5rem);
+  }
+  .hero-product-orbit {
+    min-height: 470px;
+  }
+  .hero-depth-coordinate {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+}
+@media (max-width: 639px) {
+  .hero-main-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 38px;
+    padding-block: 32px 25px;
+  }
+  .hero-title {
+    font-size: clamp(3.2rem, 12.8vw, 5rem);
+  }
+  .hero-topline {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  .hero-product-orbit {
+    min-height: 0;
+    align-items: center;
+  }
+  .hero-depth-coordinate {
+    display: none;
+  }
+  .hero-photo-plane {
+    width: min(100% - 16px, 340px);
+    transform: translate3d(0, calc(var(--hero-progress) * -14px), 0)
+      rotateX(calc(var(--hero-progress) * 5deg))
+      rotateY(calc(-5deg + var(--hero-progress) * 10deg));
+  }
+  .hero-model-note {
+    text-align: center;
+    transform: none;
+  }
+  .hero-depth-backdrop {
+    height: 780px;
+    max-height: 100svh;
+  }
+  .hero-depth-backdrop[data-renderer="webgl"] .hero-webgl-scene {
+    opacity: 0.62;
+  }
+  .hero-depth-shade {
+    background:
+      linear-gradient(90deg, #0b1019f5 0%, #0b1019bf 70%, #0b101973 100%),
+      linear-gradient(0deg, #0b1019 0%, #0b101925 65%);
+  }
+  .hero-depth-strip {
+    padding-block: 16px;
+  }
 }
 .hero-visual {
   animation: visual-enter 0.55s ease-out both;
@@ -372,6 +591,17 @@
     min-height: auto;
     padding-block: 36px;
   }
+  .hero-depth-section {
+    min-height: 0;
+  }
+  .hero-depth-stage {
+    position: relative;
+    top: auto;
+  }
+  .hero-photo-plane,
+  .hero-model-note,
+  .hero-gear-fallback,
+  .hero-depth-grid,
   .hero-visual,
   .product-card-image {
     transform: none !important;

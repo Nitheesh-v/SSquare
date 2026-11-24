@@ -42,6 +42,7 @@ export default function CategoriesPage() {
                 >
                   <SmartProductImage
                     src={division.heroImage}
+                    illustrative={division.illustrative}
                     fallbackSrc={division.fallbackImage}
                     alt={division.name}
                     className="h-full w-full object-cover"

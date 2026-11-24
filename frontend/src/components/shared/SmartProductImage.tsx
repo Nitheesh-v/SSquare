@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { OFFICIAL_PHOTO_CACHE } from "@/lib/photo-sources";
+import { ParallaxVisual } from "./MotionPrimitives";
 
 interface SmartProductImageProps {
   src?: string;
@@ -9,11 +10,20 @@ interface SmartProductImageProps {
   alt: string;
   className?: string;
   showPlaceholderBadge?: boolean;
+  /** Illustrations stay labelled even after their local/remote source loads. */
+  illustrative?: boolean;
+  /** Only the image planes move; provenance labels remain outside the crop. */
+  depth?: boolean;
   priority?: boolean;
 }
 
 export function SmartProductImage(props: SmartProductImageProps) {
-  return <ResolvedImage key={`${props.src}:${props.fallbackSrc}`} {...props} />;
+  return (
+    <ResolvedImage
+      key={`${props.src}:${props.fallbackSrc}:${props.illustrative}`}
+      {...props}
+    />
+  );
 }
 
 function ResolvedImage({
@@ -22,9 +32,11 @@ function ResolvedImage({
   alt,
   className = "",
   showPlaceholderBadge = true,
+  illustrative = false,
+  depth = false,
   priority = false,
 }: SmartProductImageProps) {
-  const remote = Boolean(src?.startsWith("http"));
+  const hasSource = Boolean(src);
   const image = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -35,8 +47,8 @@ function ResolvedImage({
       else setFailed(true);
     }
   }, []);
-  return (
-    <div className="relative h-full w-full overflow-hidden">
+  const images = (
+    <>
       <img
         src={fallbackSrc}
         alt={
@@ -49,11 +61,15 @@ function ResolvedImage({
         decoding="async"
         className={className}
       />
-      {remote && !failed && (
+      {hasSource && !failed && (
         <img
           ref={image}
           src={src ? OFFICIAL_PHOTO_CACHE[src] || src : undefined}
-          alt={alt}
+          alt={
+            illustrative
+              ? `${alt} — illustrative visual, not an actual S Square product photograph`
+              : alt
+          }
           aria-hidden={!loaded}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
@@ -68,8 +84,22 @@ function ResolvedImage({
           className={`absolute inset-0 ${className}`}
         />
       )}
-      {!loaded && showPlaceholderBadge && (
-        <span className="pointer-events-none absolute right-2 top-2 max-w-[90%] border border-white/20 bg-carbon-950/90 px-2 py-1 font-mono text-[9px] font-medium uppercase tracking-wide text-white">
+    </>
+  );
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      {depth ? (
+        <ParallaxVisual depth className="h-full w-full">
+          {images}
+        </ParallaxVisual>
+      ) : (
+        images
+      )}
+      {(!loaded || illustrative) && showPlaceholderBadge && (
+        <span
+          data-testid="illustrative-visual-label"
+          className="pointer-events-none absolute right-2 top-2 max-w-[90%] border border-white/20 bg-carbon-950/90 px-2 py-1 font-mono text-[9px] font-medium uppercase tracking-wide text-white"
+        >
           Illustrative Visual · Replaceable
         </span>
       )}

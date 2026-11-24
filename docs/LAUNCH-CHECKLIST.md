@@ -5,7 +5,7 @@
 - High-resolution photographs of the actual Coimbatore facility, machines, inspection equipment and people, with permission to publish.
 - Original rubber, steel and aluminium component photos, identified by material/product type. Where a pictured part is customer-owned, confirm permission and remove identifying marks if necessary.
 - Approved hero imagery/crops for desktop and mobile. Two lead photos are currently cached from the official website; other catalog images use original-site URLs and explicitly labelled illustrative fallbacks.
-- Replace the six illustrative JPEGs in `frontend/public/images/` or update the dataset paths. **Do not remove placeholder labelling before replacements are approved.**
+- Replace the six illustrative JPEGs in `frontend/public/images/` or update the dataset paths. The updated rubber assortment (`division-rubber.jpg`) is AI-generated, not an official product photo. **Do not remove placeholder labelling before replacements are approved.**
 - Photo provenance: `frontend/public/images/ssquare/README.md`; mappings: `src/lib/photo-sources.ts`, `src/lib/company-data.ts`, `src/lib/catalog-data.ts`.
 
 ## 2. Approved CAD / 3D asset
@@ -14,6 +14,7 @@
 - Source STEP/IGES/CAD supplied through the company’s approved secure channel, not committed to the repository.
 - A mobile-ready GLB with clear part names, sensible topology, surface normals and materials. Provide the real assembly/explosion relationships, desired finish and any annotations that may be published.
 - Hook: server `S_SQUARE_CAD_MODEL_URL` or `src/lib/visual-config.ts`. Current profile/collar assembly is explicitly **Illustrative Concept Model · Replaceable with S Square CAD**. It is not a real component specification and has no tolerances or dimensions.
+- The hero gear backdrop in `IndustrialBackdropScene.tsx` is a separate illustrative procedural assembly with SVG fallback. The current `S_SQUARE_CAD_MODEL_URL` hook applies to the aluminium story, not the hero. A company-approved hero model would need camera/part mapping in that component; the photo-plane depth effects do not reconstruct real product geometry.
 
 ## 3. Company and commercial sign-off
 

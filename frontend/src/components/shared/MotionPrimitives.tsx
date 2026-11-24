@@ -1,18 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 
-/** Default to still content during SSR and before the browser preference is known. */
+// One browser subscription for every motion surface. A live preference change
+// must stop the hero, photo planes and aluminium story together, not piecemeal.
+let motionQuery: MediaQueryList | undefined;
+const motionListeners = new Set<() => void>();
+const getMotionQuery = () =>
+  (motionQuery ??= window.matchMedia("(prefers-reduced-motion: reduce)"));
+const notifyMotionChange = () =>
+  motionListeners.forEach((listener) => listener());
+const subscribeMotion = (listener: () => void) => {
+  const query = getMotionQuery();
+  if (!motionListeners.size)
+    query.addEventListener("change", notifyMotionChange);
+  motionListeners.add(listener);
+  return () => {
+    motionListeners.delete(listener);
+    if (!motionListeners.size)
+      query.removeEventListener("change", notifyMotionChange);
+  };
+};
+const motionSnapshot = () => getMotionQuery().matches;
+const serverMotionSnapshot = () => true;
+
+/** Static during SSR; a single shared snapshot keeps all live motion in sync. */
 export function useReducedMotion() {
-  const [reduced, setReduced] = useState(true);
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReduced(media.matches);
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
-  return reduced;
+  return useSyncExternalStore(
+    subscribeMotion,
+    motionSnapshot,
+    serverMotionSnapshot,
+  );
 }
 
 /** Content is always visible/accessible. Motion is enhancement, never a gate. */
@@ -66,15 +84,25 @@ export function Reveal({
 export function ParallaxVisual({
   children,
   className = "",
+  depth = false,
 }: {
   children: ReactNode;
   className?: string;
+  /** Scroll-driven perspective for material photography, never the link or its label. */
+  depth?: boolean;
 }) {
   const outer = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   useEffect(() => {
-    if (reduced || !outer.current) return;
+    if (reduced) {
+      // GSAP can restore a computed scale snapshot after React removes the
+      // motion class. Clear that snapshot as well when the preference changes.
+      inner.current?.style.removeProperty("transform");
+      inner.current?.style.removeProperty("transform-origin");
+      return;
+    }
+    if (!outer.current) return;
     let dispose: (() => void) | undefined;
     let cancelled = false;
     const observer = new IntersectionObserver(
@@ -86,11 +114,21 @@ export function ParallaxVisual({
             if (cancelled || !outer.current || !inner.current) return;
             gsap.registerPlugin(ScrollTrigger);
             const ctx = gsap.context(() => {
+              const mobile = window.matchMedia("(max-width: 767px)").matches;
+              const tilt = depth ? (mobile ? 4 : 8) : 0;
               gsap.fromTo(
                 inner.current,
-                { yPercent: -4 },
                 {
-                  yPercent: 4,
+                  yPercent: depth ? -7 : -4,
+                  rotationX: tilt * 0.7,
+                  rotationY: -tilt,
+                  transformPerspective: depth ? 950 : 0,
+                },
+                {
+                  yPercent: depth ? 7 : 4,
+                  rotationX: -tilt * 0.7,
+                  rotationY: tilt,
+                  force3D: true,
                   ease: "none",
                   scrollTrigger: {
                     trigger: outer.current,
@@ -113,12 +151,16 @@ export function ParallaxVisual({
       observer.disconnect();
       dispose?.();
     };
-  }, [reduced]);
+  }, [reduced, depth]);
   return (
-    <div ref={outer} className={`relative overflow-hidden ${className}`}>
+    <div
+      ref={outer}
+      className={`relative overflow-hidden ${className}`}
+      data-depth-image={depth || undefined}
+    >
       <div
         ref={inner}
-        className={`h-full w-full ${reduced ? "" : "scale-[1.10]"}`}
+        className={`h-full w-full ${reduced ? "" : depth ? "scale-[1.22]" : "scale-[1.10]"}`}
       >
         {children}
       </div>

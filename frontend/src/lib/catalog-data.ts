@@ -21,6 +21,7 @@ export interface DivisionInfo {
   summary: string;
   heroImage: string;
   fallbackImage: string;
+  illustrative?: boolean;
   keyMaterials: string[];
   keyCapabilities: string[];
   technicalHighlights: {
@@ -39,8 +40,9 @@ export const DIVISIONS: Record<DivisionSlug, DivisionInfo> = {
       "Custom-engineered molded rubber parts, seals, gaskets, diaphragms, and rubber-to-metal bonded components.",
     summary:
       "With over 20 years of expertise in designing and manufacturing custom rubber components, S Square Engineering Services produces molded seals, gaskets, O-rings, diaphragms, cords, sheets, and metal-bonded parts tailored to your operating environment.",
-    heroImage: "https://ssquareengg.com/storage/2025/12/rubber-26.jpg",
+    heroImage: "/images/division-rubber.jpg",
     fallbackImage: "/images/division-rubber.jpg",
+    illustrative: true,
     keyMaterials: [
       "Viton (FKM)",
       "Silicone",
