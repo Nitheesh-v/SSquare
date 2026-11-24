@@ -1,50 +1,33 @@
-"use client";
-
-import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { ENGINEERING_FAQS } from "@/lib/company-data";
 
 export function FaqAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   return (
-    <div className="divide-y divide-slate-200 rounded-sm border border-slate-200 bg-white shadow-2xs">
-      {ENGINEERING_FAQS.map((faq, idx) => {
-        const isOpen = openIndex === idx;
-        return (
-          <div key={faq.question} className="p-5 sm:p-6">
-            <button
-              type="button"
-              onClick={() => setOpenIndex(isOpen ? null : idx)}
-              className="flex w-full items-start justify-between gap-4 text-left cursor-pointer"
-            >
-              <div>
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-forge-600 block mb-1">
-                  {faq.category}
-                </span>
-                <h3 className="font-display text-base sm:text-lg font-bold text-carbon-900">
-                  {faq.question}
-                </h3>
-              </div>
-              <span
-                className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-xs border transition ${
-                  isOpen
-                    ? "border-forge-600 bg-forge-600 text-white rotate-180"
-                    : "border-slate-200 bg-slate-50 text-slate-600"
-                }`}
-              >
-                <ChevronDown className="h-4 w-4" />
+    <div className="divide-y divide-slate-200 border border-slate-200 bg-white">
+      {ENGINEERING_FAQS.map((faq, index) => (
+        <details
+          key={faq.question}
+          open={index === 0}
+          className="group p-5 sm:p-7"
+        >
+          <summary className="flex cursor-pointer list-none items-start justify-between gap-5 [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="eyebrow mb-2 block text-forge-700">
+                {faq.category}
               </span>
-            </button>
-
-            {isOpen && (
-              <p className="mt-3 text-sm text-slate-600 leading-relaxed pr-8">
-                {faq.answer}
-              </p>
-            )}
-          </div>
-        );
-      })}
+              <span className="block font-display text-2xl font-semibold leading-tight text-carbon-900">
+                {faq.question}
+              </span>
+            </span>
+            <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center border border-slate-300 text-slate-600 transition-transform group-open:rotate-180 group-open:border-forge-600 group-open:bg-forge-600 group-open:text-white">
+              <ChevronDown size={17} />
+            </span>
+          </summary>
+          <p className="mt-5 max-w-2xl text-sm leading-[1.9] text-slate-600 sm:pr-9">
+            {faq.answer}
+          </p>
+        </details>
+      ))}
     </div>
   );
 }

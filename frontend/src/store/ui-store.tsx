@@ -20,7 +20,7 @@ export const UiStoreContext = createContext<UiStoreValue>({
 export function UiStoreProvider({ children }: { children: React.ReactNode }) {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [quotePrefill, setQuotePrefill] = useState<QuotePrefill | undefined>(
-    undefined
+    undefined,
   );
 
   const openQuoteModal = useCallback((prefill?: QuotePrefill) => {

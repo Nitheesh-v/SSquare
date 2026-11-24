@@ -1,86 +1,47 @@
 import {
   Body,
   Controller,
-  Get,
-  Param,
-  Patch,
+  Headers,
   Post,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { OrdersService } from './orders.service';
-import { CreateOrderDto, CreateRfqOrderDto } from './dto/create-order.dto';
-import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Public } from '../../common/decorators/public.decorator';
-import {
-  AuthenticatedUser,
-  CurrentUser,
-} from '../../common/decorators/current-user.decorator';
-import { ParseObjectIdPipe } from '../../common/pipes/parse-object-id.pipe';
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { timingSafeEqual } from "node:crypto";
+import { OrdersService } from "./orders.service";
+import { CreateRfqOrderDto } from "./dto/create-order.dto";
 
-@ApiTags('Orders')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('orders')
+@ApiTags("Manufacturing enquiries")
+@Controller("orders")
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @Public()
-  @Post('rfq')
+  @Post("rfq")
   @ApiOperation({
-    summary: 'Submit a public custom manufacturing RFQ / quote order',
+    summary: "Record a custom-manufacturing enquiry (not a purchase order)",
   })
-  createRfq(@Body() createRfqDto: CreateRfqOrderDto) {
-    return this.ordersService.createCustomRfq(createRfqDto);
-  }
-
-  @ApiBearerAuth()
-  @Post()
-  @ApiOperation({
-    summary: 'Create a new order from cart or explicit items (Authenticated)',
+  @ApiHeader({
+    name: "x-rfq-api-key",
+    required: false,
+    description:
+      "Server-to-server key. Required when RFQ_API_KEY is configured; mandatory in production.",
   })
-  create(
-    @CurrentUser() user: AuthenticatedUser,
-    @Body() createOrderDto: CreateOrderDto,
+  createRfq(
+    @Body() dto: CreateRfqOrderDto,
+    @Headers("x-rfq-api-key") key?: string,
   ) {
-    return this.ordersService.createFromUserCheckout(
-      user.userId,
-      createOrderDto,
-    );
-  }
-
-  @ApiBearerAuth()
-  @Get()
-  @ApiOperation({
-    summary:
-      'List orders (Customers see own orders; Admins see all orders & RFQs)',
-  })
-  findAll(@CurrentUser() user: AuthenticatedUser) {
-    return this.ordersService.findAllForUser(user);
-  }
-
-  @ApiBearerAuth()
-  @Get(':id')
-  @ApiOperation({ summary: 'Get order details by ID' })
-  findOne(
-    @Param('id', ParseObjectIdPipe) id: string,
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
-    return this.ordersService.findOneForUser(id, user);
-  }
-
-  @ApiBearerAuth()
-  @Roles('admin')
-  @Patch(':id/status')
-  @ApiOperation({
-    summary: 'Update order status & DHL/FedEx tracking number (Admin only)',
-  })
-  updateStatus(
-    @Param('id', ParseObjectIdPipe) id: string,
-    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
-  ) {
-    return this.ordersService.updateStatus(id, updateOrderStatusDto);
+    const expected = process.env.RFQ_API_KEY;
+    if (!expected && process.env.NODE_ENV === "production")
+      throw new ServiceUnavailableException("RFQ storage is not configured.");
+    if (expected) {
+      const actualBuffer = Buffer.from(key || ""),
+        expectedBuffer = Buffer.from(expected);
+      if (
+        actualBuffer.length !== expectedBuffer.length ||
+        !timingSafeEqual(actualBuffer, expectedBuffer)
+      )
+        throw new UnauthorizedException("Invalid RFQ storage key.");
+    }
+    return this.ordersService.createCustomRfq(dto);
   }
 }

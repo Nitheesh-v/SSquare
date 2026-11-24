@@ -1,19 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Phone,
-  Mail,
-  Truck,
+  ArrowUpRight,
   ChevronDown,
   Menu,
+  MessageSquare,
+  Phone,
   X,
-  ArrowUpRight,
-  Layers,
-  Shield,
-  Cpu,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { COMPANY_INFO } from "@/lib/company-data";
@@ -23,338 +19,300 @@ const PRODUCT_LINKS = [
   {
     href: "/products/rubber",
     code: "01",
-    title: "Rubber Products",
-    subtitle: "Viton, Silicone, NBR, HNBR, Bonded Seals & Gaskets",
-    icon: Layers,
+    title: "Rubber",
+    subtitle: "Molded parts, gaskets & bonded seals",
   },
   {
     href: "/products/steel",
     code: "02",
-    title: "Steel Products",
-    subtitle: "SS 304/316 CNC Shafts, Flanges & TIG Fabrications",
-    icon: Shield,
+    title: "Steel",
+    subtitle: "Custom steel & stainless components",
   },
   {
     href: "/products/aluminium",
     code: "03",
-    title: "Aluminium Products",
-    subtitle: "Aluminium Die Molds, 6061-T6 CNC & Extruded Profiles",
-    icon: Cpu,
+    title: "Aluminium",
+    subtitle: "6061 parts, profiles & die molds",
   },
+];
+const LINKS = [
+  { href: "/about", label: "Company" },
+  { href: "/infrastructure", label: "Infrastructure" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const { openQuoteModal } = useQuoteModal();
-
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
+  const productMenu = useRef<HTMLDivElement>(null);
+  const productToggle = useRef<HTMLButtonElement>(null);
+  const mobileToggle = useRef<HTMLButtonElement>(null);
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname?.startsWith(href);
+  useEffect(() => {
+    setMobileOpen(false);
+    setProductsOpen(false);
+  }, [pathname]);
+  useEffect(() => {
+    const onPointer = (event: PointerEvent) => {
+      if (!productMenu.current?.contains(event.target as Node))
+        setProductsOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (productsOpen) {
+        setProductsOpen(false);
+        productToggle.current?.focus();
+      }
+      if (mobileOpen) {
+        setMobileOpen(false);
+        mobileToggle.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [productsOpen, mobileOpen]);
+
+  const active = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const navClass = (href: string) =>
+    `nav-link ${active(href) ? "nav-link-active" : ""}`;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b border-slate-200 shadow-2xs">
-      {/* Top Industrial Utility Strip */}
-      <div className="bg-carbon-950 text-slate-300 border-b border-carbon-800">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-2 text-xs">
-          <div className="flex items-center gap-2 font-medium">
-            <Truck className="h-3.5 w-3.5 text-forge-500 shrink-0" />
-            <span className="truncate">
-              <strong className="text-white">Free Global Door Delivery:</strong>{" "}
-              3–4 Days Worldwide via DHL &amp; FedEx
+    <header className="site-header sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
+      <div className="bg-carbon-950 text-slate-300">
+        <div className="shell flex min-h-9 items-center justify-between gap-4 py-2 text-[10px] sm:text-[11px]">
+          <span className="font-mono tracking-wide">
+            <span className="hidden sm:inline">
+              CUSTOM MANUFACTURING{" "}
+              <span className="mx-2 text-slate-600">/</span>{" "}
             </span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-5 text-xs">
+            COIMBATORE, INDIA
+          </span>
+          <div className="flex items-center gap-4 sm:gap-6">
             <a
-              href={`mailto:${COMPANY_INFO.emails.sales}`}
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
-            >
-              <Mail className="h-3.5 w-3.5 text-forge-500" />
-              {COMPANY_INFO.emails.sales}
-            </a>
-            <span className="text-carbon-700">|</span>
-            <a
+              className="hidden items-center gap-1.5 hover:text-white sm:inline-flex"
               href={`tel:${COMPANY_INFO.phoneRaw}`}
-              className="inline-flex items-center gap-1.5 font-semibold text-white hover:text-forge-400 transition-colors"
             >
-              <Phone className="h-3.5 w-3.5 text-forge-500" />
+              <Phone size={12} className="text-forge-400" />
               {COMPANY_INFO.phone}
+            </a>
+            <a
+              className="inline-flex items-center gap-1.5 text-white hover:text-forge-300"
+              href={COMPANY_INFO.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageSquare size={12} className="text-forge-400" />
+              WhatsApp
+              <ArrowUpRight size={11} />
             </a>
           </div>
         </div>
       </div>
-
-      {/* Main Navigation Row */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-20">
-        <Link href="/" className="focus:outline-none shrink-0">
-          <Logo theme="light" />
+      <div className="shell flex h-[76px] items-center justify-between gap-4">
+        <Link
+          href="/"
+          aria-label="S Square Engineering Services — Home"
+          className="shrink-0"
+        >
+          <Logo />
         </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav
+          className="hidden items-center gap-1 lg:flex"
+          aria-label="Primary navigation"
+        >
           <Link
             href="/"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
+            className={navClass("/")}
+            aria-current={active("/") ? "page" : undefined}
           >
             Home
           </Link>
-
-          <Link
-            href="/categories"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/categories")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
-          >
-            Categories
-          </Link>
-
-          {/* Products Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setProductsMenuOpen(true)}
-            onMouseLeave={() => setProductsMenuOpen(false)}
+            ref={productMenu}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node))
+                setProductsOpen(false);
+            }}
           >
-            <Link
-              href="/products"
-              className={`inline-flex items-center gap-1 px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-                isActive("/products")
-                  ? "text-forge-600 font-semibold bg-forge-50/60"
-                  : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-              }`}
+            <button
+              ref={productToggle}
+              className={navClass("/products")}
+              type="button"
+              aria-expanded={productsOpen}
+              aria-controls="products-disclosure"
+              onClick={() => setProductsOpen(!productsOpen)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowDown") {
+                  event.preventDefault();
+                  setProductsOpen(true);
+                  requestAnimationFrame(() =>
+                    productMenu.current
+                      ?.querySelector<HTMLAnchorElement>("a")
+                      ?.focus(),
+                  );
+                }
+              }}
             >
               Products
               <ChevronDown
-                className={`h-4 w-4 transition-transform duration-150 ${
-                  productsMenuOpen ? "rotate-180 text-forge-600" : ""
-                }`}
+                size={14}
+                className={`transition-transform ${productsOpen ? "rotate-180" : ""}`}
               />
-            </Link>
-
-            {productsMenuOpen && (
-              <div className="absolute left-0 top-full pt-2 w-96">
-                <div className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-xl">
-                  <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                      Manufacturing Divisions
+            </button>
+            {productsOpen && (
+              <div
+                id="products-disclosure"
+                className="absolute left-0 top-full w-[340px] border border-slate-200 bg-white p-3 shadow-xl"
+              >
+                <Link
+                  href="/products"
+                  onClick={() => setProductsOpen(false)}
+                  className="flex items-center justify-between border-b border-slate-200 px-3 py-3 text-xs font-semibold"
+                >
+                  All components
+                  <ArrowUpRight size={15} />
+                </Link>
+                {PRODUCT_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setProductsOpen(false)}
+                    className="group flex items-start gap-4 p-3 hover:bg-slate-50"
+                  >
+                    <span className="pt-0.5 font-mono text-xs text-forge-700">
+                      {link.code}
                     </span>
-                    <Link
-                      href="/products"
-                      onClick={() => setProductsMenuOpen(false)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-forge-600 hover:text-forge-700"
-                    >
-                      All Products
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  <div className="mt-1.5 space-y-1">
-                    {PRODUCT_LINKS.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setProductsMenuOpen(false)}
-                          className="group flex items-start gap-3 rounded-md p-3 hover:bg-slate-50 transition-colors"
-                        >
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-carbon-800 group-hover:border-forge-500 group-hover:bg-forge-50 group-hover:text-forge-600 transition-colors">
-                            <Icon className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-carbon-900 group-hover:text-forge-600 transition-colors">
-                                {item.title}
-                              </span>
-                            </div>
-                            <p className="mt-0.5 text-xs text-slate-500 leading-snug">
-                              {item.subtitle}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
+                    <span>
+                      <span className="block text-sm font-semibold text-carbon-900 group-hover:text-forge-700">
+                        {link.title}
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-600">
+                        {link.subtitle}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
               </div>
             )}
           </div>
-
-          <Link
-            href="/about"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/about")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
-          >
-            About
-          </Link>
-
-          <Link
-            href="/infrastructure"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/infrastructure")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
-          >
-            Infrastructure
-          </Link>
-
-          <Link
-            href="/faq"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/faq")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
-          >
-            FAQ
-          </Link>
-
-          <Link
-            href="/contact"
-            className={`px-3.5 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/contact")
-                ? "text-forge-600 font-semibold bg-forge-50/60"
-                : "text-slate-700 hover:text-carbon-900 hover:bg-slate-100/80"
-            }`}
-          >
-            Contact
-          </Link>
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={navClass(link.href)}
+              aria-current={active(link.href) ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
-
-        {/* Right Action: Clean Direct Request Quote CTA */}
-        <div className="hidden lg:flex items-center gap-3">
-          <a
-            href={`tel:${COMPANY_INFO.phoneRaw}`}
-            className="hidden xl:inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold text-carbon-900 hover:border-forge-500 transition-colors"
-          >
-            <Phone className="h-3.5 w-3.5 text-forge-600" />
-            {COMPANY_INFO.phone}
-          </a>
-
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:block">
+            <button
+              className="button-primary"
+              type="button"
+              onClick={() => openQuoteModal()}
+            >
+              Request a Quote
+              <ArrowUpRight size={16} />
+            </button>
+          </div>
           <button
+            ref={mobileToggle}
             type="button"
-            onClick={() => openQuoteModal()}
-            className="inline-flex items-center gap-1.5 rounded-md bg-forge-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-forge-700 transition-colors cursor-pointer"
-          >
-            Request Quote
-            <ArrowUpRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="flex lg:hidden items-center gap-2">
-          <button
-            type="button"
+            className="flex h-11 w-11 items-center justify-center border border-slate-300 text-carbon-900 lg:hidden"
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle Menu"
-            className="rounded-md border border-slate-200 p-2 text-carbon-900 hover:bg-slate-100"
           >
-            {mobileOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {mobileOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
-          <div className="flex flex-col space-y-1">
-            <Link
-              href="/"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              Home
-            </Link>
-            <Link
-              href="/categories"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              Manufacturing Categories
-            </Link>
-            <Link
-              href="/products"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              All Products Catalog
-            </Link>
-            <div className="pl-4 border-l-2 border-forge-500/40 ml-3 space-y-1">
-              {PRODUCT_LINKS.map((p) => (
-                <Link
-                  key={p.href}
-                  href={p.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-forge-600"
-                >
-                  {p.title}
-                </Link>
-              ))}
-            </div>
-            <Link
-              href="/about"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              About Us
-            </Link>
-            <Link
-              href="/infrastructure"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              Infrastructure
-            </Link>
-            <Link
-              href="/faq"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              FAQ
-            </Link>
-            <Link
-              href="/contact"
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 text-sm font-semibold text-carbon-900 rounded-md hover:bg-slate-50"
-            >
-              Contact
-            </Link>
+        <nav
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className="absolute left-0 right-0 max-h-[calc(100dvh-112px)] overflow-y-auto border-t border-slate-200 bg-white px-5 py-4 shadow-xl lg:hidden"
+        >
+          <Link
+            href="/"
+            className="block border-b border-slate-100 py-3 text-sm font-semibold"
+            onClick={() => setMobileOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href="/products"
+            className="block py-3 text-sm font-semibold"
+            onClick={() => setMobileOpen(false)}
+          >
+            All products
+          </Link>
+          <div className="mb-2 border-l border-forge-600 pl-4">
+            {PRODUCT_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="block py-3 text-sm text-slate-600"
+              >
+                {link.title}
+                <span className="ml-3 font-mono text-[10px] text-slate-500">
+                  DIV. {link.code}
+                </span>
+              </Link>
+            ))}
           </div>
-
-          <div className="pt-2 border-t border-slate-100 flex flex-col gap-2.5">
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="block border-t border-slate-100 py-3 text-sm font-semibold"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <a
+              className="button-secondary justify-center"
               href={`tel:${COMPANY_INFO.phoneRaw}`}
-              className="w-full rounded-md border border-slate-200 py-2.5 text-center text-sm font-semibold text-carbon-900"
             >
-              Call {COMPANY_INFO.phone}
+              <Phone size={15} />
+              Call us
             </a>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                openQuoteModal();
-              }}
-              className="w-full rounded-md bg-forge-600 py-2.5 text-center text-sm font-semibold text-white hover:bg-forge-700"
+            <a
+              className="button-secondary justify-center"
+              href={COMPANY_INFO.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Request Custom Quote
-            </button>
+              <MessageSquare size={15} />
+              WhatsApp
+            </a>
           </div>
-        </div>
+          <button
+            className="button-primary mt-3 w-full justify-center"
+            onClick={() => {
+              setMobileOpen(false);
+              openQuoteModal();
+            }}
+          >
+            Request a Quote
+            <ArrowUpRight size={16} />
+          </button>
+        </nav>
       )}
     </header>
   );

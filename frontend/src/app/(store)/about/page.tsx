@@ -1,216 +1,152 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  CheckCircle2,
-  ShieldCheck,
-  Award,
-  Globe2,
-  ArrowRight,
-  Users,
-} from "lucide-react";
-import { COMPANY_INFO, INDUSTRIES_SERVED } from "@/lib/company-data";
+import { ArrowUpRight, Check } from "lucide-react";
+import { COMPANY_INFO, INFRASTRUCTURE_PILLARS } from "@/lib/company-data";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
+import { SmartProductImage } from "@/components/shared/SmartProductImage";
+import { ParallaxVisual, Reveal } from "@/components/shared/MotionPrimitives";
 
 export const metadata: Metadata = {
-  title: "About Us – 20+ Years of Custom Manufacturing Excellence",
+  title: "About S Square — Custom Manufacturing in Coimbatore",
   description:
-    "Learn about S Square Engineering Services in Peelamedu, Coimbatore—your trusted custom manufacturer for Rubber, Steel, and Aluminium industrial solutions.",
+    "S Square Engineering Services manufactures custom rubber, steel and aluminium components to customer drawings or samples in Peelamedu, Coimbatore, India.",
 };
-
-const CORE_STRENGTHS = [
+const STRENGTHS = [
   {
-    title: "Custom Manufacturing Expertise",
+    title: "Made to your requirement",
     description:
-      "Over 20 years converting complex OEM 2D/3D CAD prints and physical samples into repeatable, tight-tolerance components.",
+      "Custom components begin with your drawing or sample, with material and geometry selected for the application.",
   },
   {
-    title: "Certified Raw Materials",
+    title: "Three material disciplines",
     description:
-      "Virgin industrial elastomers (Viton, Silicone, HNBR, EPDM), high-chromium SS 304/316 steels, and certified 6061/7075 aluminium billets.",
+      "Rubber molding and bonded seals, custom steel and stainless parts, and aluminium components and die molds.",
   },
   {
-    title: "Integrated Production Under One Roof",
+    title: "Specification-led quality",
     description:
-      "In-house mold/die tooling, rubber vulcanization, CNC machining, and sheet fabrication eliminate multi-vendor handoffs.",
+      "Approved technical requirements provide the basis for material selection, production and pre-dispatch checks.",
   },
   {
-    title: "Skilled Engineering & Tooling Team",
+    title: "Direct project communication",
     description:
-      "Hands-on metallurgists, polymer technologists, and CNC programmers supporting DFM, material selection, and rapid prototyping.",
-  },
-  {
-    title: "Global 3–4 Day Doorstep Delivery",
-    description:
-      "Streamlined export logistics from Coimbatore via DHL and FedEx with complimentary global door delivery in 3–4 business days.",
-  },
-  {
-    title: "100% Specification Conformity",
-    description:
-      "Rigorous first-article and batch metrology checks ensuring every shipment matches approved tolerances and durometer specs.",
+      "Discuss drawings, quantities and delivery requirements directly with the S Square team in Coimbatore.",
   },
 ];
-
 export default function AboutPage() {
+  const facility = INFRASTRUCTURE_PILLARS[0];
   return (
-    <div>
-      <section className="bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800 py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl space-y-4">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-400">
-              ABOUT S SQUARE ENGINEERING SERVICES
-            </span>
-            <h1 className="font-display text-3xl sm:text-5xl font-bold text-white leading-tight">
-              Complete Custom Solutions for Rubber, Steel &amp; Aluminium Needs
-            </h1>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-              Based in Peelamedu, Coimbatore, we are a custom manufacturer and global supplier serving industrial, commercial, and OEM clients with precision-built components engineered for reliability and long-term performance.
-            </p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <>
+      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
+        <div className="shell">
+          <p className="eyebrow text-forge-300">
+            THE COMPANY / S SQUARE ENGINEERING SERVICES
+          </p>
+          <h1 className="mt-5 max-w-4xl font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+            Different materials.
+            <br />
+            One manufacturing mindset.
+          </h1>
+          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
+            Based in Peelamedu, Coimbatore, we manufacture custom rubber, steel
+            and aluminium components for industrial requirements. Bring us a
+            drawing or a physical sample—and let’s define the component you
+            need.
+          </p>
+          <div className="mt-10 grid max-w-3xl grid-cols-3 border-t border-white/15 pt-6">
             {[
-              { icon: Award, value: "20+ Years", label: "Industry Heritage" },
-              { icon: ShieldCheck, value: "100%", label: "Spec Conformity" },
-              { icon: Globe2, value: "3–4 Days", label: "Global DHL / FedEx" },
-              { icon: Users, value: "3 Divisions", label: "Rubber · Steel · Aluminium" },
-            ].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={stat.label}
-                  className="rounded-xs border border-carbon-800 bg-carbon-900/90 p-5"
-                >
-                  <Icon className="h-5 w-5 text-forge-500 mb-2.5" />
-                  <div className="font-display text-2xl font-bold text-white">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-slate-400 mt-0.5">
-                    {stat.label}
-                  </div>
-                </div>
-              );
-            })}
+              { value: "20+", label: "Years of experience" },
+              { value: "03", label: "Material divisions" },
+              { value: "Custom", label: "Drawing or sample based" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p className="font-display text-4xl font-semibold text-white">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-[10px] text-slate-400">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-
-      <section className="py-18 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6 space-y-5">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-                OUR COMMITMENT
-              </span>
-              <h2 className="font-display text-3xl font-bold text-carbon-900">
-                A Full Line of Custom Manufacturing Services Under One Roof
-              </h2>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Quality is at the core of everything we do at{" "}
-                <strong className="text-carbon-900">{COMPANY_INFO.name}</strong>.
-                From raw polymer and alloy selection to precision tooling and final pre-dispatch inspection, we ensure every component delivers maximum reliability, operational safety, and lifecycle value.
-              </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Our goal is to become your{" "}
-                <strong className="text-carbon-900">
-                  long-term manufacturing partner, not just a component vendor
-                </strong>
-                . By uniting custom elastomer molding, stainless &amp; alloy steel CNC fabrication, and aluminium die-mold machining in Coimbatore, we help procurement and engineering teams consolidate suppliers while improving lead-time predictability.
-              </p>
-
-              <div className="pt-2 flex flex-wrap gap-3">
-                <OpenQuoteButton label="Discuss Your Project With Us" />
-                <Link
-                  href="/infrastructure"
-                  className="inline-flex items-center gap-2 rounded-xs border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-carbon-900 hover:border-forge-600 transition"
-                >
-                  Explore Infrastructure
-                  <ArrowRight className="h-4 w-4 text-forge-600" />
-                </Link>
-              </div>
+      <section className="border-b border-slate-200 bg-white py-16 lg:py-24">
+        <div className="shell grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal>
+            <p className="eyebrow text-forge-700">
+              A PRACTICAL APPROACH TO CUSTOM ENGINEERING
+            </p>
+            <h2 className="section-heading mt-4">
+              Your application.
+              <br />
+              The starting point.
+            </h2>
+            <p className="mt-6 text-sm leading-[1.9] text-slate-600">
+              At {COMPANY_INFO.name}, custom manufacturing means understanding
+              the requirement before making the part. Geometry, material, finish
+              and quantity each have a role in the final specification.
+            </p>
+            <p className="mt-4 text-sm leading-[1.9] text-slate-600">
+              From molded elastomers and rubber-to-metal seals to stainless
+              components and Grade 6061 aluminium tooling, our focus is on a
+              component that fits the agreed requirement.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <OpenQuoteButton label="Request a Quote" />
+              <Link href="/infrastructure" className="button-secondary">
+                Our infrastructure
+                <ArrowUpRight size={16} />
+              </Link>
             </div>
-
-            <div className="lg:col-span-6">
-              <div className="rounded-sm border border-slate-200 bg-slate-50 p-2 shadow-sm">
-                <div className="aspect-[16/10] overflow-hidden bg-carbon-900">
-                  <img
-                    src="/images/infrastructure-facility.jpg"
-                    alt="S Square Engineering Services production facility"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex items-center justify-between px-2 pt-2 pb-1 font-mono text-[11px] text-slate-500">
-                  <span>PEELAMEDU, COIMBATORE – 641004</span>
-                  <span className="text-forge-600 font-semibold">
-                    MULTI-PROCESS PLANT
+          </Reveal>
+          <Reveal>
+            <ParallaxVisual className="aspect-[5/4] border border-slate-200">
+              <SmartProductImage
+                src={facility.remoteImage}
+                fallbackSrc={facility.fallbackImage}
+                alt="S Square Engineering Services manufacturing"
+                className="h-full w-full object-cover"
+              />
+            </ParallaxVisual>
+            <p className="mt-4 font-mono text-[9px] leading-relaxed text-slate-500">
+              PEELAMEDU / COIMBATORE / TAMIL NADU / INDIA
+            </p>
+          </Reveal>
+        </div>
+      </section>
+      <section className="bg-[#f7f8fa] py-16 lg:py-24">
+        <div className="shell">
+          <Reveal>
+            <p className="eyebrow text-forge-700">WHAT GUIDES THE WORK</p>
+            <h2 className="section-heading mt-4">
+              Clear requirements.
+              <br />
+              Considered execution.
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2">
+            {STRENGTHS.map((item, index) => (
+              <Reveal
+                key={item.title}
+                className="bg-white p-7 sm:p-9"
+                delay={index * 40}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-forge-700">
+                    0{index + 1}
                   </span>
+                  <Check size={19} className="text-forge-700" />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-18 bg-[#f8f9fb] border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-              WHY OEM BUYERS CHOOSE US
-            </span>
-            <h2 className="mt-2 font-display text-3xl font-bold text-carbon-900">
-              Our Core Engineering Strengths
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {CORE_STRENGTHS.map((s) => (
-              <div
-                key={s.title}
-                className="rounded-sm border border-slate-200 bg-white p-6 shadow-2xs"
-              >
-                <CheckCircle2 className="h-5 w-5 text-forge-600 mb-3" />
-                <h3 className="font-display text-lg font-bold text-carbon-900">
-                  {s.title}
+                <h3 className="mt-5 font-display text-3xl font-semibold">
+                  {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                  {s.description}
+                <p className="mt-3 max-w-md text-xs leading-[1.85] text-slate-600">
+                  {item.description}
                 </p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
-
-      <section className="py-18 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-10">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-              INDUSTRIAL FOOTPRINT
-            </span>
-            <h2 className="mt-2 font-display text-3xl font-bold text-carbon-900">
-              Industries We Serve Worldwide
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {INDUSTRIES_SERVED.map((ind) => (
-              <div
-                key={ind.code}
-                className="rounded-sm border border-slate-200 bg-slate-50/70 p-6"
-              >
-                <span className="font-mono text-[11px] font-semibold text-forge-600">
-                  {ind.code}
-                </span>
-                <h3 className="mt-1 font-display text-lg font-bold text-carbon-900">
-                  {ind.name}
-                </h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                  {ind.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </div>
+    </>
   );
 }

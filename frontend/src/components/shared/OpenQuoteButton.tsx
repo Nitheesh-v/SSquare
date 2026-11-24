@@ -14,7 +14,7 @@ interface OpenQuoteButtonProps {
 }
 
 export function OpenQuoteButton({
-  label = "Request Custom Quote",
+  label = "Request a Quote",
   prefill,
   variant = "primary",
   className = "",

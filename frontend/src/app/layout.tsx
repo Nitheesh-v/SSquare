@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: `%s | ${COMPANY_INFO.name}`,
   },
   description:
-    "Custom manufacturer and global supplier specializing in precision Rubber, Stainless Steel, and Aluminium components in Coimbatore, India. 100% spec conformity and free 3–4 day global door delivery via DHL & FedEx.",
+    "Custom rubber, steel and aluminium components manufactured to your drawing or sample in Coimbatore, India. Explore S Square’s capabilities and request a project-specific quotation.",
 };
 
 export default function RootLayout({

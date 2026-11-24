@@ -1,491 +1,360 @@
-import React from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  CheckCircle2,
-  FileSpreadsheet,
-  Wrench,
-  Microscope,
-  Plane,
+  Check,
+  Mail,
+  MessageSquare,
   Phone,
-  ShieldCheck,
 } from "lucide-react";
 import { HeroShowcase } from "@/features/products/HeroShowcase";
+import { AluminiumScrollStory } from "@/features/products/AluminiumScrollStory";
 import { FeaturedProductsCarousel } from "@/features/products/FeaturedProductsCarousel";
 import { MaterialSelector } from "@/features/products/MaterialSelector";
-import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
+import { SmartProductImage } from "@/components/shared/SmartProductImage";
+import { Reveal, ParallaxVisual } from "@/components/shared/MotionPrimitives";
 import { QuoteForm } from "@/features/checkout/QuoteForm";
-import {
-  COMPANY_INFO,
-  CORE_SERVICES,
-  INDUSTRIES_SERVED,
-} from "@/lib/company-data";
+import { COMPANY_INFO, INFRASTRUCTURE_PILLARS } from "@/lib/company-data";
 import { DIVISIONS } from "@/lib/catalog-data";
 
-const WORKFLOW_STEPS = [
+const WORKFLOW = [
   {
-    step: "01",
-    title: "Share Drawing or Sample",
+    title: "Bring the requirement",
     description:
-      "Send 2D/3D CAD files (STEP, IGES, DWG, PDF) or ship a physical reference sample for precision reverse engineering.",
-    icon: FileSpreadsheet,
+      "A drawing, a physical sample or an application challenge. Share material preferences and estimated quantity.",
   },
   {
-    step: "02",
-    title: "Tooling & Compounding",
+    title: "Define the details",
     description:
-      "In-house mold/die cavity machining and certified polymer or metal grade selection tailored to your environment.",
-    icon: Wrench,
+      "Review geometry, material, finish and the scope of supply before confirming your custom quotation.",
   },
   {
-    step: "03",
-    title: "Precision Production & QC",
+    title: "Manufacture & inspect",
     description:
-      "Compression/injection molding, multi-axis CNC machining, and 100% dimensional & Shore A durometer verification.",
-    icon: Microscope,
+      "Custom production and checks against the agreed technical specification, with direct project communication.",
   },
   {
-    step: "04",
-    title: "3–4 Day Global Delivery",
+    title: "Pack & dispatch",
     description:
-      "Export-grade protective packaging with complimentary door-to-door air shipping via DHL & FedEx worldwide.",
-    icon: Plane,
+      "Protective packing and coordinated delivery from Coimbatore. DHL and FedEx options for international requirements.",
+  },
+];
+const DIVISION_COPY = [
+  {
+    title: "Flexible by nature.\nPrecise by design.",
+    summary:
+      "Custom molded rubber, gaskets, diaphragms and rubber-to-metal bonded seals.",
+    tags: ["Viton / FKM", "Silicone", "NBR / HNBR", "EPDM"],
+  },
+  {
+    title: "Strength where\nit matters.",
+    summary:
+      "Custom steel and stainless components, manufactured for your industrial application.",
+    tags: ["Stainless steel", "Machined parts", "Custom geometry"],
+  },
+  {
+    title: "Lightweight thinking.\nSolid engineering.",
+    summary:
+      "Grade 6061 components, aluminium profiles, sheets and precision die molds.",
+    tags: ["Grade 6061", "Die molds", "Anodized finishes"],
   },
 ];
 
-export default function StoreHomePage() {
-  const divisionList = [DIVISIONS.rubber, DIVISIONS.steel, DIVISIONS.aluminium];
-
+export default function HomePage() {
+  const divisions = [DIVISIONS.rubber, DIVISIONS.steel, DIVISIONS.aluminium];
+  const facility = INFRASTRUCTURE_PILLARS[0];
   return (
     <>
       <HeroShowcase />
-
-      {/* Featured Custom Components Carousel */}
-      <section className="py-16 lg:py-20 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <FeaturedProductsCarousel />
-        </div>
-      </section>
-
-      {/* Manufacturing Divisions Showcase */}
-      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div className="max-w-2xl">
-              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-                Manufacturing Categories · Under One Roof
-              </span>
-              <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
-                Custom Rubber, Steel &amp; Aluminium Engineered to Specification
+      <section
+        className="border-b border-slate-200 bg-[#f7f8fa] py-16 lg:py-24"
+        aria-labelledby="divisions-heading"
+      >
+        <div className="shell">
+          <Reveal className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="eyebrow text-forge-700">
+                01 / THREE MATERIAL DISCIPLINES. ONE PARTNER.
+              </p>
+              <h2 id="divisions-heading" className="section-heading mt-4">
+                The material changes.
+                <br />
+                The commitment stays.
               </h2>
             </div>
-            <div className="flex items-center gap-4 shrink-0">
-              <Link
-                href="/categories"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-carbon-900"
-              >
-                All Categories
-              </Link>
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-2 font-display text-sm font-bold text-carbon-900 hover:text-forge-600 transition-colors"
-              >
-                Browse Full Catalog
-                <ArrowRight className="h-4 w-4 text-forge-600" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
-            {divisionList.map((div) => (
-              <div
-                key={div.slug}
-                className="group flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs hover:border-slate-300 hover:shadow-lg transition-shadow"
+            <p className="max-w-sm text-sm leading-relaxed text-slate-600">
+              For engineering and procurement teams who need components made to
+              fit—not compromises made to work.
+            </p>
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {divisions.map((division, index) => (
+              <Reveal
+                key={division.slug}
+                delay={index * 65}
+                className="group flex h-full flex-col border border-slate-200 bg-white"
               >
                 <Link
-                  href={`/products/${div.slug}`}
-                  className="relative aspect-[16/10] w-full overflow-hidden bg-carbon-950 block"
+                  href={`/products/${division.slug}`}
+                  className="relative block aspect-[5/4] overflow-hidden border-b border-slate-200"
+                  aria-label={`Explore ${division.name}`}
                 >
-                  <img
-                    src={div.heroImage}
-                    alt={div.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
+                  <SmartProductImage
+                    src={division.heroImage}
+                    fallbackSrc={division.fallbackImage}
+                    alt={division.name}
+                    className="product-card-image h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-carbon-950/75 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-forge-400">
-                      {div.code}
-                    </span>
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-carbon-900/80 text-white group-hover:bg-forge-600 transition-colors">
-                      <ArrowUpRight className="h-4 w-4" />
-                    </span>
-                  </div>
+                  <span className="absolute bottom-3 left-3 bg-carbon-950 px-3 py-1.5 font-mono text-[10px] text-white">
+                    DIVISION 0{index + 1} / {division.slug.toUpperCase()}
+                  </span>
                 </Link>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <Link href={`/products/${div.slug}`}>
-                    <h3 className="font-display text-2xl font-bold text-carbon-900 group-hover:text-forge-600 transition-colors">
-                      {div.name}
-                    </h3>
-                  </Link>
-                  <p className="mt-1 text-xs font-semibold text-slate-500">
-                    {div.shortTitle}
+                <div className="flex flex-1 flex-col p-6 lg:p-7">
+                  <h3 className="whitespace-pre-line font-display text-3xl font-semibold leading-[1.05]">
+                    {DIVISION_COPY[index].title}
+                  </h3>
+                  <p className="mt-4 flex-1 text-xs leading-[1.85] text-slate-600">
+                    {DIVISION_COPY[index].summary}
                   </p>
-                  <p className="mt-3 text-sm text-slate-600 leading-relaxed flex-1">
-                    {div.summary}
-                  </p>
-
                   <div className="mt-5 flex flex-wrap gap-1.5">
-                    {div.keyMaterials.slice(0, 5).map((mat) => (
+                    {DIVISION_COPY[index].tags.map((tag) => (
                       <span
-                        key={mat}
-                        className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
+                        key={tag}
+                        className="border border-slate-200 px-2 py-1 font-mono text-[9px] text-slate-600"
                       >
-                        {mat}
+                        {tag}
                       </span>
                     ))}
                   </div>
-
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                    <Link
-                      href={`/products/${div.slug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-carbon-900 hover:text-forge-600 transition-colors"
-                    >
-                      Explore {div.name}
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-
-                    <OpenQuoteButton
-                      label="Quote"
-                      variant="outline"
-                      prefill={{ division: div.name }}
-                      className="!px-3.5 !py-1.5 !text-xs !rounded-md"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Who We Are + Quality Metrology */}
-      <section className="py-18 lg:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-                About S Square Engineering Services
-              </span>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-carbon-900 leading-tight">
-                Your Long-Term Custom Manufacturing Partner—Not Just a Supplier.
-              </h2>
-              <p className="text-base text-slate-600 leading-relaxed">
-                Headquartered in{" "}
-                <strong className="text-carbon-900">
-                  Coimbatore, India’s precision engineering hub
-                </strong>
-                , S Square Engineering Services is a custom manufacturer and global exporter specializing in{" "}
-                <strong className="text-carbon-900">
-                  Rubber, Steel, and Aluminium products
-                </strong>{" "}
-                for industrial, commercial, and OEM clients.
-              </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Because we machine metal inserts, mill aluminium die molds, and compound/mold industrial elastomers under one coordinated roof, we eliminate multi-vendor delays—especially on complex{" "}
-                <strong className="text-carbon-900">
-                  Rubber-to-Metal Bonded Seals
-                </strong>{" "}
-                and turnkey mechanical assemblies.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                {[
-                  "Custom Rubber Components & Bonded Seals",
-                  "Stainless & Alloy Steel CNC & Fabricated Parts",
-                  "Aluminium Die Molds, Profiles & 6061 Parts",
-                  "Industrial Assemblies & Special-Purpose Parts",
-                ].map((point) => (
-                  <div
-                    key={point}
-                    className="flex items-start gap-2.5 rounded-lg border border-slate-200 bg-slate-50/70 p-3 text-xs font-semibold text-carbon-900"
+                  <Link
+                    href={`/products/${division.slug}`}
+                    className="mt-6 flex min-h-11 items-center justify-between border-t border-slate-200 pt-4 text-xs font-semibold text-carbon-900 transition-colors hover:text-forge-700"
                   >
-                    <CheckCircle2 className="h-4 w-4 text-forge-600 shrink-0 mt-0.5" />
-                    <span>{point}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-md bg-carbon-900 px-5 py-3 text-sm font-semibold text-white hover:bg-carbon-800 transition-colors"
-                >
-                  More About Our Capabilities
-                  <ArrowRight className="h-4 w-4 text-forge-500" />
-                </Link>
-                <Link
-                  href="/infrastructure"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-forge-600 transition-colors"
-                >
-                  Tour Our Infrastructure
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 shadow-xs sm:col-span-2">
-                  <div className="aspect-[16/9] overflow-hidden rounded-lg bg-carbon-900">
-                    <img
-                      src="/images/quality-metrology.jpg"
-                      alt="Precision metrology inspection at S Square Engineering"
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between px-2 pt-2 pb-1 text-[11px] font-medium text-slate-500">
-                    <span>QUALITY ASSURANCE · 100% DIMENSIONAL VERIFICATION</span>
-                    <span className="font-semibold text-carbon-900">
-                      COIMBATORE HQ
-                    </span>
-                  </div>
+                    Explore {division.slug}
+                    <ArrowUpRight size={17} className="text-forge-700" />
+                  </Link>
                 </div>
-
-                <div className="rounded-xl border border-slate-200 bg-carbon-900 p-5 text-white">
-                  <div className="text-xs font-semibold text-forge-400">
-                    EXPERIENCE
-                  </div>
-                  <div className="mt-1 font-display text-3xl font-bold">
-                    20+ Years
-                  </div>
-                  <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
-                    Proven track record crafting bespoke molded elastomers, precision steel, and aluminium tooling for global industries.
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                  <div className="text-xs font-semibold text-forge-600">
-                    EXPRESS EXPORT
-                  </div>
-                  <div className="mt-1 font-display text-3xl font-bold text-carbon-900">
-                    3–4 Days
-                  </div>
-                  <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">
-                    Complimentary door-to-door international shipping via DHL &amp; FedEx to North America, Europe, Middle East &amp; Asia.
-                  </p>
-                </div>
-              </div>
-            </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Core Services + 4-Step Custom Workflow */}
-      <section className="py-18 lg:py-24 bg-carbon-950 text-white border-b border-carbon-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-500">
-              Service Commitments · OEM Execution
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-white">
-              Built for Zero-Defect Reliability &amp; Global Speed
-            </h2>
-          </div>
+      <AluminiumScrollStory
+        cadModelUrl={process.env.S_SQUARE_CAD_MODEL_URL || undefined}
+      />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
-            {CORE_SERVICES.map((srv) => (
-              <div
-                key={srv.number}
-                className="rounded-xl border border-carbon-800 bg-carbon-900 p-7 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between border-b border-carbon-800 pb-4 mb-5">
-                    <span className="text-2xl font-bold text-forge-500">
-                      {srv.number}.
-                    </span>
-                    <ShieldCheck className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-white">
-                    {srv.title}
-                  </h3>
-                  <p className="mt-1 text-xs font-medium text-forge-400">
-                    {srv.subtitle}
-                  </p>
-                  <p className="mt-3.5 text-sm text-slate-300 leading-relaxed">
-                    {srv.description}
-                  </p>
-                </div>
-
-                <ul className="mt-6 pt-4 border-t border-carbon-800 space-y-2 text-xs text-slate-300">
-                  {srv.highlights.map((h) => (
-                    <li key={h} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-forge-500 shrink-0" />
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-xl border border-carbon-800 bg-carbon-900 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-              <h3 className="font-display text-lg font-bold text-white">
-                How Custom Orders Move From Drawing to Your Doorstep
-              </h3>
-              <span className="text-xs font-medium text-slate-400">
-                TYPICAL RFQ RESPONSE: &lt; 24 HOURS
-              </span>
+      <section
+        id="after-story"
+        tabIndex={-1}
+        className="border-b border-slate-200 bg-white py-16 lg:py-24"
+        aria-labelledby="featured-heading"
+      >
+        <div className="shell">
+          <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow text-forge-700">02 / COMPONENT SPOTLIGHT</p>
+              <h2 id="featured-heading" className="section-heading mt-4">
+                Small details.
+                <br />
+                Essential components.
+              </h2>
             </div>
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-5 border-b border-slate-300 py-3 text-xs font-semibold hover:text-forge-700"
+            >
+              Explore the full catalog
+              <ArrowUpRight size={17} />
+            </Link>
+          </Reveal>
+          <FeaturedProductsCarousel />
+          <p className="mt-5 font-mono text-[10px] leading-relaxed text-slate-500">
+            Custom manufacture, not online stock. Geometry, material and supply
+            terms are confirmed for your project.
+          </p>
+        </div>
+      </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {WORKFLOW_STEPS.map((w) => {
-                const Icon = w.icon;
-                return (
-                  <div key={w.step} className="relative space-y-2.5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-forge-600/15 border border-forge-500/40 text-forge-400">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <span className="text-xs font-bold text-slate-400">
-                        STEP {w.step}
-                      </span>
-                    </div>
-                    <h4 className="font-display text-base font-bold text-white">
-                      {w.title}
-                    </h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      {w.description}
+      <section
+        className="border-b border-slate-200 bg-[#f0f2f4] py-16 lg:py-24"
+        aria-labelledby="process-heading"
+      >
+        <div className="shell grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
+          <Reveal>
+            <p className="eyebrow text-forge-700">
+              03 / ENGINEERED IN COIMBATORE
+            </p>
+            <h2 id="process-heading" className="section-heading mb-7 mt-4">
+              From the first drawing
+              <br />
+              to the final component.
+            </h2>
+            <ParallaxVisual className="aspect-[5/4] border border-slate-300">
+              <SmartProductImage
+                src={facility.remoteImage}
+                fallbackSrc={facility.fallbackImage}
+                alt="Manufacturing at S Square Engineering Services, Coimbatore"
+                className="h-full w-full object-cover"
+              />
+            </ParallaxVisual>
+            <div className="mt-4 flex items-center justify-between gap-3 font-mono text-[9px] text-slate-600">
+              <span>PEELAMEDU / COIMBATORE / INDIA</span>
+              <Link
+                href="/infrastructure"
+                className="inline-flex items-center gap-2 py-2 text-forge-700 hover:underline"
+              >
+                OUR INFRASTRUCTURE
+                <ArrowUpRight size={12} />
+              </Link>
+            </div>
+          </Reveal>
+          <div className="lg:pt-2">
+            <p className="mb-8 max-w-lg text-sm leading-[1.9] text-slate-600">
+              A practical, collaborative approach to custom manufacturing. Clear
+              requirements, agreed specifications and direct communication at
+              every step.
+            </p>
+            <div className="border-t border-slate-300">
+              {WORKFLOW.map((step, index) => (
+                <Reveal
+                  key={step.title}
+                  className="grid grid-cols-[40px_1fr] gap-4 border-b border-slate-300 py-6"
+                  delay={index * 30}
+                >
+                  <span className="pt-1.5 font-mono text-xs text-forge-700">
+                    0{index + 1}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-2xl font-semibold">
+                      {step.title}
+                    </h3>
+                    <p className="mt-2 max-w-sm text-xs leading-[1.8] text-slate-600">
+                      {step.description}
                     </p>
                   </div>
-                );
-              })}
+                </Reveal>
+              ))}
             </div>
+            <div className="mt-7 flex flex-wrap gap-5 text-[11px] text-slate-700">
+              <span className="inline-flex items-center gap-2">
+                <Check size={14} className="text-forge-700" />
+                Drawing or sample based
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Check size={14} className="text-forge-700" />
+                Custom material selection
+              </span>
+            </div>
+            <Link
+              href="/about"
+              className="mt-6 inline-flex items-center gap-3 py-3 text-xs font-semibold hover:text-forge-700"
+            >
+              Meet your manufacturing partner
+              <ArrowRight size={15} />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Material Matrix */}
-      <section className="py-18 lg:py-24 bg-[#f8fafc] border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="max-w-2xl">
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Technical Reference · Material Selection
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
-              Select the Right Elastomer, Steel, or Aluminium Alloy
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Filter across our core production grades below or send us your operating temperature and chemical environment for an engineering recommendation.
+      <section
+        className="bg-white py-16 lg:py-24"
+        aria-labelledby="materials-heading"
+      >
+        <div className="shell">
+          <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <p className="eyebrow text-forge-700">
+                04 / A MATERIAL STARTING POINT
+              </p>
+              <h2 id="materials-heading" className="section-heading mt-4">
+                Match the material
+                <br />
+                to the challenge.
+              </h2>
+            </div>
+            <p className="max-w-sm text-xs leading-relaxed text-slate-600">
+              A general selection guide, not a product datasheet. Final material
+              compatibility and specifications require application review.
             </p>
-          </div>
-
+          </Reveal>
           <MaterialSelector />
         </div>
       </section>
 
-      {/* Industries */}
-      <section className="py-18 lg:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Sectors · Applications
-            </span>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-carbon-900">
-              Trusted Across Heavy-Duty Industrial Sectors
+      <section
+        id="rfq"
+        className="relative border-t border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24"
+        aria-labelledby="rfq-heading"
+      >
+        <div className="shell grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:sticky lg:top-36 lg:col-span-5">
+            <p className="eyebrow text-forge-300">
+              05 / LET’S MAKE IT SPECIFIC
+            </p>
+            <h2
+              id="rfq-heading"
+              className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl"
+            >
+              The next component
+              <br />
+              starts with{" "}
+              <span className="text-forge-400">a conversation.</span>
             </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {INDUSTRIES_SERVED.map((ind) => (
-              <div
-                key={ind.code}
-                className="rounded-xl border border-slate-200 bg-slate-50/60 p-6 hover:border-slate-300 hover:bg-white transition-colors"
+            <p className="mt-6 max-w-md text-sm leading-[1.85] text-slate-300">
+              Tell us what you need to make. Share a material, a quantity and
+              the details that matter. Drawings and samples can be coordinated
+              directly by email or WhatsApp.
+            </p>
+            <div className="mt-9 space-y-4 border-t border-white/15 pt-7">
+              <a
+                href={`tel:${COMPANY_INFO.phoneRaw}`}
+                className="flex items-center gap-3 py-1 font-display text-3xl font-semibold hover:text-forge-300"
               >
-                <span className="text-[11px] font-semibold text-forge-600">
-                  {ind.code}
-                </span>
-                <h3 className="mt-1.5 font-display text-lg font-bold text-carbon-900">
-                  {ind.name}
-                </h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                  {ind.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Direct RFQ */}
-      <section id="rfq" className="py-18 lg:py-24 bg-[#f8fafc]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            <div className="lg:col-span-5 space-y-6">
-              <span className="text-xs font-semibold uppercase tracking-widest text-forge-600">
-                Quick Service On Your Needs
+                <Phone size={19} className="text-forge-400" />
+                {COMPANY_INFO.phone}
+              </a>
+              <a
+                href={COMPANY_INFO.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 py-1 text-xs text-slate-200 hover:text-forge-300"
+              >
+                <MessageSquare size={17} className="text-forge-400" />
+                Discuss your component on WhatsApp
+                <ArrowUpRight size={13} />
+              </a>
+              <a
+                href={`mailto:${COMPANY_INFO.emails.sales}`}
+                className="flex items-center gap-3 py-1 text-xs text-slate-200 hover:text-forge-300"
+              >
+                <Mail size={17} className="text-forge-400" />
+                {COMPANY_INFO.emails.sales}
+              </a>
+            </div>
+            <p className="mt-8 max-w-sm font-mono text-[10px] leading-[1.9] text-slate-400">
+              {COMPANY_INFO.address.full}
+              <br />
+              <span className="mt-3 block">
+                Material, production lead time and delivery terms are confirmed
+                during quotation.
               </span>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-carbon-900">
-                Get a Factory-Direct Quote Within 24 Hours
-              </h2>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Reach out to our engineering team Monday through Saturday for custom tooling estimates, compound recommendations, and rapid export scheduling.
+            </p>
+          </Reveal>
+          <div className="min-w-0 border border-slate-200 bg-white p-6 text-carbon-900 sm:p-8 lg:col-span-7">
+            <div className="mb-6 border-b border-slate-200 pb-5">
+              <p className="eyebrow text-forge-700">
+                YOUR PROJECT / OUR STARTING POINT
               </p>
-
-              <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4 shadow-2xs">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Direct Engineering Desk (Mon – Sat)
-                  </div>
-                  <a
-                    href={`tel:${COMPANY_INFO.phoneRaw}`}
-                    className="mt-1 inline-flex items-center gap-2 font-display text-2xl font-bold text-carbon-900 hover:text-forge-600 transition-colors"
-                  >
-                    <Phone className="h-5 w-5 text-forge-600" />
-                    {COMPANY_INFO.phone}
-                  </a>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Sales &amp; CAD Drawing Submissions
-                  </div>
-                  <a
-                    href={`mailto:${COMPANY_INFO.emails.sales}`}
-                    className="mt-1 block text-sm font-semibold text-forge-600 hover:underline"
-                  >
-                    {COMPANY_INFO.emails.sales}
-                  </a>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Manufacturing Facility
-                  </div>
-                  <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                    {COMPANY_INFO.address.full}
-                  </p>
-                </div>
-              </div>
+              <h3 className="mt-2 font-display text-3xl font-semibold">
+                Request a Quote
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                No account, cart or online payment. Just the details we need to
+                start a technical discussion.
+              </p>
             </div>
-
-            <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-              <div className="mb-5 pb-4 border-b border-slate-100">
-                <h3 className="font-display text-xl font-bold text-carbon-900">
-                  Submit Custom Part Specifications
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  All custom drawings and proprietary OEM specifications are handled under strict confidentiality.
-                </p>
-              </div>
-              <QuoteForm />
-            </div>
+            <QuoteForm />
           </div>
         </div>
       </section>

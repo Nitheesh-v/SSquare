@@ -1,13 +1,13 @@
-import { DynamicModule, Logger, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DynamicModule, Logger, Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import {
   getModelToken,
   ModelDefinition,
   MongooseModule,
-} from '@nestjs/mongoose';
-import { createInMemoryMongooseModel } from './in-memory-model.factory';
+} from "@nestjs/mongoose";
+import { createInMemoryMongooseModel } from "./in-memory-model.factory";
 
-const logger = new Logger('DatabaseModule');
+const logger = new Logger("DatabaseModule");
 
 function hasMongoUri(): boolean {
   return Boolean(process.env.MONGODB_URI && process.env.MONGODB_URI.trim());
@@ -17,7 +17,7 @@ function hasMongoUri(): boolean {
 export class DatabaseModule {
   static forRoot(): DynamicModule {
     if (hasMongoUri()) {
-      logger.log('Connecting to MongoDB via MONGODB_URI...');
+      logger.log("Connecting to MongoDB via MONGODB_URI...");
       return {
         module: DatabaseModule,
         imports: [
@@ -25,7 +25,7 @@ export class DatabaseModule {
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-              uri: configService.get<string>('database.uri'),
+              uri: configService.get<string>("database.uri"),
             }),
           }),
         ],
@@ -34,7 +34,7 @@ export class DatabaseModule {
     }
 
     logger.log(
-      'MONGODB_URI not set — running with pre-seeded S Square persistent store (.data/store.json). Set MONGODB_URI to connect to MongoDB.',
+      "MONGODB_URI not set — using the local development RFQ store (.data/store.json). Configure MongoDB for production.",
     );
     return {
       module: DatabaseModule,

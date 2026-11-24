@@ -23,17 +23,17 @@ export function Button({
 
   const sizeClasses = {
     sm: "px-3 py-1.5 text-xs",
-    md: "px-5 py-2.5 text-sm",
+    md: "px-5 py-3 text-xs",
     lg: "px-6 py-3.5 text-sm",
   }[size];
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-xs font-semibold transition disabled:opacity-60 cursor-pointer",
+        "inline-flex min-h-11 items-center justify-center gap-3 rounded-none text-xs font-semibold transition-colors disabled:opacity-60 cursor-pointer",
         variantClasses,
         sizeClasses,
-        className
+        className,
       )}
       {...props}
     >

@@ -7,69 +7,77 @@ import { MaterialSelector } from "@/features/products/MaterialSelector";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 
 export const metadata: Metadata = {
-  title: "Products Catalog – Rubber, Steel & Aluminium Components",
+  title: "Component Catalog — Rubber, Steel & Aluminium",
   description:
-    "Explore S Square Engineering Services' full custom manufacturing catalog: Viton & Silicone rubber seals, metal-to-rubber bonded parts, stainless steel CNC components, and 6061 aluminium die molds.",
+    "Explore custom rubber seals, bonded parts, steel components and aluminium die molds. Share drawings, materials and quantities to request a project-specific quotation.",
 };
-
-export default function ProductsOverviewPage() {
-  const divisions = [DIVISIONS.rubber, DIVISIONS.steel, DIVISIONS.aluminium];
-
+export default function ProductsPage() {
   return (
-    <div>
-      <section className="bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800 py-14 lg:py-18">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="max-w-3xl space-y-3">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-400">
-                COMPLETE MANUFACTURING CATALOG
-              </span>
-              <h1 className="font-display text-3xl sm:text-5xl font-bold text-white">
-                Custom Rubber, Steel &amp; Aluminium Products
+    <>
+      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
+        <div className="shell">
+          <div className="flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+            <div className="max-w-3xl">
+              <p className="eyebrow text-forge-300">
+                THE CUSTOM COMPONENT CATALOG
+              </p>
+              <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+                A starting point.
+                <br />
+                Not a standard limitation.
               </h1>
-              <p className="text-base text-slate-300 leading-relaxed">
-                Add standard/customizable OEM components directly to your order cart or request a custom drawing quote—with 100% dimensional conformity and 3–4 day global DHL/FedEx delivery.
+              <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
+                Rubber, steel and aluminium component types for your next
+                project. No stock pricing or online checkout—every requirement
+                is reviewed and quoted to your drawing or sample.
               </p>
             </div>
-            <OpenQuoteButton label="Submit Drawing for Quote" />
+            <OpenQuoteButton label="Request a Quote" />
           </div>
-
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {divisions.map((d) => (
-              <Link
-                key={d.slug}
-                href={`/products/${d.slug}`}
-                className="group flex items-center justify-between rounded-xs border border-carbon-800 bg-carbon-900/90 p-5 hover:border-forge-500 transition"
-              >
-                <div>
-                  <span className="font-mono text-[10px] text-forge-400 block">
-                    {d.code}
-                  </span>
-                  <span className="font-display text-lg font-bold text-white group-hover:text-forge-400 transition">
-                    {d.name}
-                  </span>
-                  <span className="block text-xs text-slate-400 mt-0.5">
-                    {d.shortTitle}
-                  </span>
-                </div>
-                <ArrowUpRight className="h-5 w-5 text-slate-400 group-hover:text-forge-400 shrink-0" />
-              </Link>
-            ))}
+          <div className="mt-10 grid gap-3 md:grid-cols-3">
+            {[DIVISIONS.rubber, DIVISIONS.steel, DIVISIONS.aluminium].map(
+              (division, index) => (
+                <Link
+                  key={division.slug}
+                  href={`/products/${division.slug}`}
+                  className="group flex items-center justify-between gap-5 border border-white/15 bg-white/[.03] p-5 transition-colors hover:border-forge-400"
+                >
+                  <div>
+                    <p className="font-mono text-[9px] text-forge-300">
+                      DIVISION 0{index + 1}
+                    </p>
+                    <h2 className="mt-1 font-display text-3xl font-semibold">
+                      {division.name}
+                    </h2>
+                    <p className="mt-2 text-[10px] text-slate-400">
+                      {division.shortTitle}
+                    </p>
+                  </div>
+                  <ArrowUpRight size={21} className="shrink-0 text-forge-300" />
+                </Link>
+              ),
+            )}
           </div>
         </div>
       </section>
-
-      <section className="py-16 bg-[#f8f9fb] border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="border-b border-slate-200 bg-[#f7f8fa] py-12 lg:py-20">
+        <div className="shell">
           <ProductCatalogView items={ALL_PRODUCTS} showDivisionFilter />
         </div>
       </section>
-
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="bg-white py-16">
+        <div className="shell">
+          <p className="eyebrow text-forge-700">GENERAL SELECTION GUIDE</p>
+          <h2 className="mt-3 font-display text-4xl font-semibold">
+            Match the material to your application.
+          </h2>
+          <p className="mb-7 mt-3 text-xs leading-relaxed text-slate-600">
+            A general material comparison, not a technical datasheet. Final
+            specifications are confirmed during project review.
+          </p>
           <MaterialSelector />
         </div>
       </section>
-    </div>
+    </>
   );
 }

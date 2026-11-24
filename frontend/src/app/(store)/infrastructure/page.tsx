@@ -1,98 +1,102 @@
 import type { Metadata } from "next";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { INFRASTRUCTURE_PILLARS } from "@/lib/company-data";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
+import { SmartProductImage } from "@/components/shared/SmartProductImage";
+import { ParallaxVisual, Reveal } from "@/components/shared/MotionPrimitives";
 
 export const metadata: Metadata = {
-  title: "Infrastructure, Sustainability & Safety",
+  title: "Manufacturing Infrastructure, Quality & Responsibility",
   description:
-    "Explore S Square Engineering Services' manufacturing infrastructure, sustainable zero-contamination operations, workforce health & safety, and metrology quality standards.",
+    "Explore S Square Engineering Services’ approach to manufacturing, resource responsibility, workplace safety and specification-led quality in Coimbatore, India.",
 };
-
 export default function InfrastructurePage() {
   return (
-    <div>
-      <section className="bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800 py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="max-w-3xl space-y-4">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-400">
-                FACILITIES · SUSTAINABILITY · EHS · METROLOGY
-              </span>
-              <h1 className="font-display text-3xl sm:text-5xl font-bold text-white">
-                State-of-the-Art Manufacturing Infrastructure
-              </h1>
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                With over 20 years of engineering excellence, our Coimbatore production facilities combine precision machinery, sustainable resource stewardship, strict workplace safety, and transparent commercial integrity.
-              </p>
-            </div>
-            <OpenQuoteButton label="Schedule Project Consultation" />
+    <>
+      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
+        <div className="shell flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+          <div className="max-w-3xl">
+            <p className="eyebrow text-forge-300">
+              INFRASTRUCTURE / COIMBATORE, INDIA
+            </p>
+            <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+              A considered environment
+              <br />
+              for custom manufacturing.
+            </h1>
+            <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
+              Manufacturing capability, responsible resource use and
+              people-focused operations. The foundations behind our rubber,
+              steel and aluminium components.
+            </p>
           </div>
+          <OpenQuoteButton label="Discuss your project" />
         </div>
       </section>
-
-      <section className="py-16 lg:py-22 bg-[#f8f9fb]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
-          {INFRASTRUCTURE_PILLARS.map((pillar, idx) => {
-            const reversed = idx % 2 === 1;
-            return (
-              <div
-                key={pillar.number}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center rounded-sm border border-slate-200 bg-white p-6 sm:p-10 shadow-2xs"
-              >
-                <div
-                  className={`lg:col-span-6 space-y-4 ${
-                    reversed ? "lg:order-2" : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-2xl font-bold text-forge-600">
-                      {pillar.number}.
-                    </span>
-                    <span className="rounded-xs bg-slate-100 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-700">
-                      {pillar.code}
-                    </span>
-                  </div>
-
-                  <h2 className="font-display text-2xl sm:text-3xl font-bold text-carbon-900">
-                    {pillar.title}
-                  </h2>
-
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                    {pillar.summary}
-                  </p>
-
-                  <ul className="space-y-2.5 pt-2">
-                    {pillar.details.map((detail) => (
-                      <li
-                        key={detail}
-                        className="flex items-start gap-2.5 text-sm text-slate-700"
-                      >
-                        <CheckCircle2 className="h-4 w-4 text-forge-600 shrink-0 mt-1" />
-                        <span>{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div
-                  className={`lg:col-span-6 ${reversed ? "lg:order-1" : ""}`}
-                >
-                  <div className="rounded-sm border border-slate-200 bg-slate-50 p-2">
-                    <div className="aspect-[16/10] overflow-hidden bg-carbon-900">
-                      <img
-                        src={pillar.image}
-                        alt={pillar.title}
-                        className="h-full w-full object-cover"
+      <section className="bg-[#f7f8fa] py-16 lg:py-24">
+        <div className="shell space-y-14 lg:space-y-20">
+          {INFRASTRUCTURE_PILLARS.map((pillar, index) => (
+            <Reveal
+              key={pillar.number}
+              className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16"
+            >
+              <div className={index % 2 ? "lg:order-2" : ""}>
+                <p className="eyebrow text-forge-700">
+                  {pillar.number} / {pillar.code}
+                </p>
+                <h2 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+                  {pillar.title}
+                </h2>
+                <p className="mt-5 text-sm leading-[1.85] text-slate-600">
+                  {pillar.summary}
+                </p>
+                <ul className="mt-6 space-y-3 border-t border-slate-300 pt-5">
+                  {pillar.details.map((detail) => (
+                    <li
+                      key={detail}
+                      className="flex items-start gap-3 text-xs leading-[1.8] text-slate-600"
+                    >
+                      <Check
+                        size={15}
+                        className="mt-1 shrink-0 text-forge-700"
                       />
-                    </div>
-                  </div>
-                </div>
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            );
-          })}
+              <ParallaxVisual
+                className={`aspect-[5/4] border border-slate-300 bg-white ${index % 2 ? "lg:order-1" : ""}`}
+              >
+                <SmartProductImage
+                  src={pillar.remoteImage}
+                  fallbackSrc={pillar.fallbackImage}
+                  alt={pillar.title}
+                  className="h-full w-full object-cover"
+                />
+              </ParallaxVisual>
+            </Reveal>
+          ))}
         </div>
       </section>
-    </div>
+      <section className="border-t border-slate-200 bg-white py-12">
+        <div className="shell flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <p className="eyebrow text-forge-700">
+              PROJECT-SPECIFIC REQUIREMENTS
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-semibold">
+              Need to discuss an inspection or material requirement?
+            </h2>
+            <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-600">
+              Please include any certification, testing or documentation needs
+              in your enquiry. Availability is confirmed per project; no
+              certification is implied by this website.
+            </p>
+          </div>
+          <OpenQuoteButton label="Request a Quote" />
+        </div>
+      </section>
+    </>
   );
 }

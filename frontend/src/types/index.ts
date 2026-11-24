@@ -1,2 +1,1 @@
-export * from "./auth.types";
-export * from "./store.types";
+export type { QuotePrefill } from "./store.types";

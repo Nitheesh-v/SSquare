@@ -3,72 +3,377 @@
 @import "@fontsource/poppins/500.css";
 @import "@fontsource/poppins/600.css";
 @import "@fontsource/poppins/700.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @theme {
   --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
-
+  --font-display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
   --color-forge-50: #fff7ed;
   --color-forge-100: #ffedd5;
   --color-forge-200: #fed7aa;
   --color-forge-300: #fdba74;
   --color-forge-400: #fb923c;
   --color-forge-500: #f97316;
-  --color-forge-600: #ea580c;
-  --color-forge-700: #c2410c;
+  --color-forge-600: #c44808;
+  --color-forge-700: #a93d06;
   --color-forge-800: #9a3412;
   --color-forge-900: #7c2d12;
-
-  --color-carbon-950: #0b0f17;
-  --color-carbon-900: #111827;
-  --color-carbon-800: #1e293b;
-  --color-carbon-700: #334155;
+  --color-carbon-950: #0b1019;
+  --color-carbon-900: #141e2d;
+  --color-carbon-800: #263244;
+  --color-carbon-700: #3c4b60;
   --color-carbon-600: #475569;
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
-    color: #111827;
-    background-color: #f8fafc;
+    color: #141e2d;
+    background-color: #f7f8fa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: 8rem;
   }
-
-  body {
-    overflow-x: hidden;
-  }
-
   h1,
   h2,
   h3,
   h4,
   .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 3px solid #2563eb !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 0 6px #fff !important;
+  }
+  ::selection {
+    background: #fed7aa;
+    color: #0b1019;
+  }
+  :target {
+    scroll-margin-top: 8rem;
   }
 }
 
-/* Lightweight GPU-friendly section surfaces (no multi-layer repeating grid repaints) */
+.shell {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  line-height: 1.03;
+  letter-spacing: -0.01em;
+}
+.nav-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.nav-link:hover,
+.nav-link-active {
+  color: #a93d06;
+  background: #fff7ed;
+}
+.button-primary,
+.button-secondary,
+.button-dark-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 13px 21px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.button-primary {
+  color: #fff;
+  background: #c44808;
+  border: 1px solid #c44808;
+}
+.button-primary:hover {
+  background: #a93d06;
+  border-color: #a93d06;
+}
+.button-secondary {
+  border: 1px solid #cbd5e1;
+  color: #141e2d;
+  background: #fff;
+}
+.button-secondary:hover {
+  border-color: #c44808;
+  background: #fff7ed;
+}
+.button-dark-outline {
+  border: 1px solid #536074;
+  color: #fff;
+}
+.button-dark-outline:hover {
+  border-color: #fdba74;
+  background: #ffffff08;
+}
 .bg-blueprint-light {
-  background-color: #f8fafc;
+  background-color: #f7f8fa;
 }
-
 .bg-blueprint-dark {
-  background-color: #0b0f17;
+  background-color: #0b1019;
 }
-
-@keyframes carouselProgress {
+.hero-grid {
+  background-image:
+    linear-gradient(#ffffff03 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff03 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: linear-gradient(to right, transparent 15%, #000);
+}
+.hero-visual {
+  animation: visual-enter 0.55s ease-out both;
+}
+@keyframes visual-enter {
   from {
-    transform: scaleX(0);
+    opacity: 0.45;
+    transform: scale(1.025);
   }
   to {
-    transform: scaleX(1);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.product-card-image {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .product-card-image {
+  transform: scale(1.045);
+}
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 12px;
+  z-index: 100;
+  transform: translateY(-180%);
+  background: white;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Browser-managed dialogs: native focus trap and an inert page underneath. */
+.ssq-dialog {
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  color: #141e2d;
+  background: white;
+  width: min(760px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ssq-dialog::backdrop {
+  background: #0b1019c9;
+}
+.ssq-dialog[open] {
+  animation: dialog-enter 0.22s ease-out;
+}
+.ssq-drawer {
+  margin: 0 0 0 auto;
+  width: min(600px, 100%);
+  height: 100dvh;
+  max-height: 100dvh;
+  border-width: 0 0 0 1px;
+}
+@keyframes dialog-enter {
+  from {
+    opacity: 0.5;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-carousel-progress {
-  transform-origin: left center;
-  animation: carouselProgress 5.5s linear forwards;
+/* A single sticky canvas follows the four real document sections; no pinned scroll hijack. */
+.engineering-story {
+  --story-top: 112px;
+  background: #101925;
+  color: white;
+  position: relative;
+}
+.story-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  column-gap: 64px;
+  align-items: start;
+}
+.story-visual {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: calc(var(--story-top) + 20px);
+  height: min(640px, calc(100svh - var(--story-top) - 40px));
+  min-height: 380px;
+  overflow: clip;
+}
+.story-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+.story-step {
+  min-height: 75svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 70px;
+}
+.story-step:last-child {
+  min-height: 68svh;
+}
+.story-scene {
+  position: absolute;
+  inset: 44px 0 28px;
+}
+.story-scene canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.story-ambient {
+  position: absolute;
+  inset: 12% -15%;
+  background: radial-gradient(ellipse, #abcbe01c, #10192500 64%);
+  pointer-events: none;
+}
+.story-grid {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #ffffff12;
+  background-image:
+    linear-gradient(#ffffff04 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff04 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+}
+.story-stage-label {
+  opacity: 0.5;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
+}
+.story-stage-label[data-active="true"] {
+  opacity: 1;
+  color: #fdba74;
+}
+.story-spec-line {
+  height: 1px;
+  background: linear-gradient(90deg, #fb923c, #fb923c00);
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    padding-inline: 32px;
+  }
+}
+@media (max-width: 767px) {
+  .shell {
+    padding-inline: 20px;
+  }
+  .story-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .story-visual {
+    order: 0;
+    width: 100%;
+    height: 38svh;
+    min-height: 230px;
+    max-height: 340px;
+    top: var(--story-top);
+    z-index: 1;
+    background: #101925;
+    box-shadow: 0 16px 24px #101925;
+  }
+  .story-copy {
+    order: 1;
+    width: 100%;
+  }
+  .story-scene {
+    inset: 20px 0 18px;
+  }
+  .story-step {
+    min-height: 63svh;
+    padding-block: 60px;
+    scroll-margin-top: calc(var(--story-top) + 40svh);
+  }
+  .story-step:last-child {
+    min-height: 65svh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .engineering-story .story-visual {
+    position: relative;
+    top: auto;
+  }
+  .story-step,
+  .story-step:last-child {
+    min-height: auto;
+    padding-block: 36px;
+  }
+  .hero-visual,
+  .product-card-image {
+    transform: none !important;
+  }
 }

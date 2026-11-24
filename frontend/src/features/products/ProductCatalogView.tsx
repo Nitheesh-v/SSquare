@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { Search, ArrowUpRight, SlidersHorizontal, X, Eye } from "lucide-react";
-import { ProductItem, DivisionSlug } from "@/lib/catalog-data";
+import { type ProductItem, type DivisionSlug } from "@/lib/catalog-data";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
+import { Dialog } from "@/components/shared/Dialog";
 import { useDebounce, useQuoteModal } from "@/hooks";
 
 const DIVISION_NAMES: Record<DivisionSlug, string> = {
@@ -12,229 +13,234 @@ const DIVISION_NAMES: Record<DivisionSlug, string> = {
   aluminium: "Aluminium Products",
 };
 
-interface ProductCatalogViewProps {
-  items: ProductItem[];
-  showDivisionFilter?: boolean;
-}
-
 export function ProductCatalogView({
   items,
   showDivisionFilter = false,
-}: ProductCatalogViewProps) {
+}: {
+  items: ProductItem[];
+  showDivisionFilter?: boolean;
+}) {
   const { openQuoteModal } = useQuoteModal();
-
+  const id = useId();
   const [divisionFilter, setDivisionFilter] = useState<"all" | DivisionSlug>(
-    "all"
+    "all",
   );
-  const [categoryFilter, setCategoryFilter] = useState<string>("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 150);
   const [selectedItem, setSelectedItem] = useState<ProductItem | null>(null);
-
-  const divisionFiltered = useMemo(() => {
-    if (!showDivisionFilter || divisionFilter === "all") return items;
-    return items.filter((item) => item.division === divisionFilter);
-  }, [items, showDivisionFilter, divisionFilter]);
-
-  const categories = useMemo(() => {
-    const unique = Array.from(new Set(divisionFiltered.map((i) => i.category)));
-    return ["All", ...unique];
-  }, [divisionFiltered]);
-
+  const divisionFiltered = useMemo(
+    () =>
+      !showDivisionFilter || divisionFilter === "all"
+        ? items
+        : items.filter((item) => item.division === divisionFilter),
+    [items, showDivisionFilter, divisionFilter],
+  );
+  const categories = useMemo(
+    () => [
+      "All",
+      ...Array.from(new Set(divisionFiltered.map((item) => item.category))),
+    ],
+    [divisionFiltered],
+  );
   const filteredItems = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
-    return divisionFiltered.filter((item) => {
-      const matchesCategory =
-        categoryFilter === "All" || item.category === categoryFilter;
-      const matchesQuery =
-        !q ||
-        item.name.toLowerCase().includes(q) ||
-        item.materialBadge.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.specs.toLowerCase().includes(q);
-      return matchesCategory && matchesQuery;
-    });
+    return divisionFiltered.filter(
+      (item) =>
+        (categoryFilter === "All" || item.category === categoryFilter) &&
+        (!q ||
+          [item.name, item.materialBadge, item.description, item.specs].some(
+            (text) => text.toLowerCase().includes(q),
+          )),
+    );
   }, [divisionFiltered, categoryFilter, debouncedQuery]);
+  const requestQuote = (item: ProductItem) => {
+    setSelectedItem(null);
+    openQuoteModal({
+      division: DIVISION_NAMES[item.division],
+      partName: `${item.name} (${item.materialBadge})`,
+    });
+  };
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="space-y-4 border border-slate-200 bg-white p-4 sm:p-5">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           {showDivisionFilter ? (
-            <div className="flex flex-wrap gap-1.5">
+            <div
+              className="flex flex-wrap gap-1.5"
+              role="group"
+              aria-label="Filter by manufacturing division"
+            >
               {(
                 [
-                  { id: "all", label: `All Divisions (${items.length})` },
-                  { id: "rubber", label: "Rubber Products" },
-                  { id: "steel", label: "Steel Products" },
-                  { id: "aluminium", label: "Aluminium Products" },
+                  { id: "all", label: `All divisions (${items.length})` },
+                  { id: "rubber", label: "Rubber" },
+                  { id: "steel", label: "Steel" },
+                  { id: "aluminium", label: "Aluminium" },
                 ] as const
               ).map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
+                  aria-pressed={divisionFilter === tab.id}
                   onClick={() => {
                     setDivisionFilter(tab.id);
                     setCategoryFilter("All");
                   }}
-                  className={`rounded-md px-3.5 py-2 text-xs font-semibold transition-colors cursor-pointer ${
-                    divisionFilter === tab.id
-                      ? "bg-carbon-900 text-white"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
+                  className={`min-h-11 border px-3.5 py-2 text-xs font-semibold transition-colors ${divisionFilter === tab.id ? "border-carbon-900 bg-carbon-900 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100"}`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-forge-600" />
-              <span>Filter by Compound / Process Category</span>
-            </div>
+            <p className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-slate-600">
+              <SlidersHorizontal size={14} className="text-forge-700" />
+              Filter by material or component type
+            </p>
           )}
-
-          <div className="relative w-full md:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <div className="relative w-full md:w-72 md:shrink-0">
+            <label htmlFor={`${id}-search`} className="sr-only">
+              Search components by name, material or application
+            </label>
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+              size={16}
+            />
             <input
-              type="text"
+              id={`${id}-search`}
+              type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search Viton, 6061, flange, seal..."
-              className="w-full rounded-md border border-slate-300 bg-slate-50 pl-9 pr-8 py-2 text-xs text-carbon-900 placeholder:text-slate-400 focus:border-forge-600 focus:bg-white focus:outline-none"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search Viton, 6061, seal…"
+              className="min-h-11 w-full border border-slate-300 bg-slate-50 py-2 pl-9 pr-10 text-xs text-carbon-900 placeholder:text-slate-500"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-carbon-900"
+                aria-label="Clear component search"
+                className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center bg-slate-50 text-slate-600 hover:text-carbon-900"
               >
-                <X className="h-3.5 w-3.5" />
+                <X size={15} />
               </button>
             )}
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
-          {categories.map((cat) => (
+        <div
+          className="flex flex-wrap gap-1.5 border-t border-slate-200 pt-4"
+          role="group"
+          aria-label="Filter by component category"
+        >
+          {categories.map((category) => (
             <button
-              key={cat}
+              key={category}
               type="button"
-              onClick={() => setCategoryFilter(cat)}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
-                categoryFilter === cat
-                  ? "bg-forge-600 text-white font-semibold"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-carbon-900"
-              }`}
+              aria-pressed={categoryFilter === category}
+              onClick={() => setCategoryFilter(category)}
+              className={`min-h-10 border px-3 py-2 text-[11px] font-medium transition-colors ${categoryFilter === category ? "border-forge-600 bg-forge-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-400"}`}
             >
-              {cat}
+              {category === "All" ? "All categories" : category}
             </button>
           ))}
         </div>
       </div>
-
-      <div className="flex items-center justify-between text-xs text-slate-500">
-        <span>
-          Showing{" "}
+      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-[10px] text-slate-600">
+        <p aria-live="polite" aria-atomic="true">
           <strong className="text-carbon-900">{filteredItems.length}</strong>{" "}
-          custom-manufactured component configurations
-        </span>
-        <span className="hidden sm:inline text-[11px] font-medium">
-          CUSTOM CAD / SAMPLE TOOLING AVAILABLE FOR ALL ITEMS
-        </span>
+          component {filteredItems.length === 1 ? "type" : "types"} shown
+        </p>
+        <span>MADE TO DRAWING OR SAMPLE · QUOTED PER PROJECT</span>
       </div>
-
-      {filteredItems.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-          <p className="font-display text-lg font-bold text-carbon-900">
-            No catalog items matched &ldquo;{query}&rdquo;
+      {!filteredItems.length ? (
+        <div className="border border-slate-200 bg-white p-8 text-center sm:p-12">
+          <h3 className="font-display text-2xl font-semibold">
+            No components matched your filters.
+          </h3>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600">
+            Can’t see your component? Share your drawing or sample requirements
+            for a feasibility review.
           </p>
-          <p className="mt-1 text-sm text-slate-500 max-w-md mx-auto">
-            We manufacture bespoke parts to any drawing or sample. Request a custom quote directly from our engineering team.
-          </p>
-          <div className="mt-5 flex justify-center gap-3">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <button
               type="button"
+              className="button-secondary"
               onClick={() => {
                 setQuery("");
                 setCategoryFilter("All");
+                setDivisionFilter("all");
               }}
-              className="rounded-md border border-slate-300 px-4 py-2 text-xs font-semibold text-carbon-900 hover:bg-slate-50"
             >
-              Reset Filters
+              Reset all filters
             </button>
             <button
               type="button"
+              className="button-primary"
               onClick={() => openQuoteModal({ partName: query })}
-              className="rounded-md bg-forge-600 px-4 py-2 text-xs font-semibold text-white hover:bg-forge-700"
             >
-              Request Custom Quote for &ldquo;{query}&rdquo;
+              Request a Quote
+              <ArrowUpRight size={15} />
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => (
             <article
               key={item.id}
-              className="group flex flex-col rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs hover:border-slate-300 hover:shadow-md transition-shadow"
+              className="group flex flex-col overflow-hidden border border-slate-200 bg-white transition-shadow hover:shadow-md"
             >
-              <div
+              <button
+                type="button"
                 onClick={() => setSelectedItem(item)}
-                className="relative aspect-[16/11] w-full overflow-hidden bg-slate-100 cursor-pointer border-b border-slate-100"
+                aria-label={`View details: ${item.name}`}
+                className="relative block aspect-[5/4] w-full overflow-hidden border-b border-slate-200 bg-slate-100 text-left"
               >
                 <SmartProductImage
                   src={item.remoteImage}
                   fallbackSrc={item.fallbackImage}
                   alt={item.name}
-                  className="h-full w-full object-cover"
+                  className="product-card-image h-full w-full object-cover"
                 />
-                <div className="absolute top-2.5 left-2.5">
-                  <span className="inline-block rounded-md bg-carbon-900 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-                    {item.materialBadge}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col p-5">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-forge-600">
-                  {item.category}
-                </div>
-                <h3
-                  onClick={() => setSelectedItem(item)}
-                  className="mt-1 font-display text-base font-bold text-carbon-900 group-hover:text-forge-600 transition-colors cursor-pointer"
-                >
-                  {item.name}
-                </h3>
-                <p className="mt-1 text-xs font-medium text-slate-500">
-                  {item.specs}
-                </p>
-                <p className="mt-2.5 text-xs text-slate-600 leading-relaxed flex-1">
-                  {item.description}
-                </p>
-
-                <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                <span className="absolute bottom-3 left-3 max-w-[90%] bg-carbon-950 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-wider text-white">
+                  {item.materialBadge}
+                </span>
+              </button>
+              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                <p className="eyebrow text-forge-700">{item.category}</p>
+                <h3 className="mt-2 font-display text-2xl font-semibold leading-tight">
                   <button
                     type="button"
+                    className="text-left transition-colors hover:text-forge-700"
                     onClick={() => setSelectedItem(item)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:text-carbon-900 transition-colors cursor-pointer"
                   >
-                    <Eye className="h-3.5 w-3.5" />
+                    {item.name}
+                  </button>
+                </h3>
+                <p className="mt-2 text-[11px] font-medium leading-relaxed text-slate-500">
+                  {item.specs}
+                </p>
+                <p className="mt-3 flex-1 text-xs leading-[1.8] text-slate-600">
+                  {item.description}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-4">
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center gap-1.5 px-1 text-[11px] font-semibold text-slate-700 hover:text-forge-700"
+                    onClick={() => setSelectedItem(item)}
+                    aria-label={`Quick specs for ${item.name}`}
+                  >
+                    <Eye size={15} />
                     Quick Specs
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      openQuoteModal({
-                        division: DIVISION_NAMES[item.division],
-                        partName: `${item.name} (${item.materialBadge})`,
-                      })
-                    }
-                    className="inline-flex items-center gap-1 rounded-md bg-forge-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-forge-700 transition-colors cursor-pointer"
+                    onClick={() => requestQuote(item)}
+                    className="inline-flex min-h-11 items-center gap-2 border border-slate-300 px-3 py-2 text-[11px] font-semibold hover:border-forge-600 hover:text-forge-700"
                   >
-                    Request Quote
-                    <ArrowUpRight className="h-3.5 w-3.5" />
+                    Request a Quote
+                    <ArrowUpRight size={14} />
                   </button>
                 </div>
               </div>
@@ -242,32 +248,28 @@ export function ProductCatalogView({
           ))}
         </div>
       )}
-
-      {selectedItem && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-carbon-950/75 p-4"
-          onClick={() => setSelectedItem(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-slate-200 bg-carbon-900 px-5 py-3.5 text-white">
-              <span className="text-xs font-semibold uppercase tracking-widest text-forge-400">
-                {DIVISION_NAMES[selectedItem.division]} ·{" "}
-                {selectedItem.category}
+      <Dialog
+        open={Boolean(selectedItem)}
+        onClose={() => setSelectedItem(null)}
+        labelledBy={`${id}-detail-title`}
+      >
+        {selectedItem && (
+          <>
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-white/15 bg-carbon-900 px-5 py-3 text-white">
+              <span className="eyebrow text-forge-300">
+                {DIVISION_NAMES[selectedItem.division]} / COMPONENT DETAILS
               </span>
               <button
                 type="button"
                 onClick={() => setSelectedItem(null)}
-                className="rounded-md p-1 text-slate-300 hover:bg-carbon-800 hover:text-white cursor-pointer"
+                aria-label="Close component details"
+                className="flex h-10 w-10 shrink-0 items-center justify-center hover:bg-carbon-800"
               >
-                <X className="h-4 w-4" />
+                <X size={19} />
               </button>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="aspect-square bg-slate-100">
+            <div className="grid md:grid-cols-2">
+              <div className="aspect-[5/4] self-start bg-slate-100 md:aspect-square">
                 <SmartProductImage
                   src={selectedItem.remoteImage}
                   fallbackSrc={selectedItem.fallbackImage}
@@ -275,48 +277,40 @@ export function ProductCatalogView({
                   className="h-full w-full object-cover"
                 />
               </div>
-
-              <div className="p-6 flex flex-col justify-between space-y-4">
-                <div>
-                  <span className="inline-block rounded-md bg-forge-50 border border-forge-200 px-2.5 py-0.5 text-[11px] font-semibold text-forge-700">
-                    {selectedItem.materialBadge}
-                  </span>
-                  <h3 className="mt-2 font-display text-xl font-bold text-carbon-900">
-                    {selectedItem.name}
-                  </h3>
-                  <p className="mt-1 text-xs font-medium text-slate-500">
-                    {selectedItem.specs}
-                  </p>
-                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-                    {selectedItem.description}
-                  </p>
-                  <ul className="mt-4 space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                    <li>• Manufactured per your 2D/3D CAD or physical sample</li>
-                    <li>• 100% dimensional &amp; compound conformity check</li>
-                    <li>• Free 3–4 day global door delivery via DHL / FedEx</li>
-                  </ul>
-                </div>
-
+              <div className="p-6">
+                <p className="eyebrow text-forge-700">
+                  {selectedItem.materialBadge}
+                </p>
+                <h3
+                  id={`${id}-detail-title`}
+                  className="mt-3 font-display text-3xl font-semibold leading-tight"
+                >
+                  {selectedItem.name}
+                </h3>
+                <p className="mt-3 text-xs font-medium leading-relaxed text-slate-500">
+                  {selectedItem.specs}
+                </p>
+                <p className="mt-4 text-xs leading-[1.85] text-slate-600">
+                  {selectedItem.description}
+                </p>
+                <p className="mt-5 border-t border-slate-200 pt-4 text-[11px] leading-relaxed text-slate-600">
+                  Material, geometry, quantity and inspection requirements are
+                  agreed against your drawing or sample. This is a component
+                  overview, not an in-stock item or a technical datasheet.
+                </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    const item = selectedItem;
-                    setSelectedItem(null);
-                    openQuoteModal({
-                      division: DIVISION_NAMES[item.division],
-                      partName: `${item.name} (${item.materialBadge})`,
-                    });
-                  }}
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-forge-600 px-4 py-3 text-sm font-semibold text-white hover:bg-forge-700 cursor-pointer"
+                  onClick={() => requestQuote(selectedItem)}
+                  className="button-primary mt-6 w-full justify-center"
                 >
-                  Request Custom Quote
-                  <ArrowUpRight className="h-4 w-4" />
+                  Request a Quote
+                  <ArrowUpRight size={16} />
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Dialog>
     </div>
   );
 }

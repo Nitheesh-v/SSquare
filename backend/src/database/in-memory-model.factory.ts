@@ -1,14 +1,13 @@
-import { randomBytes } from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
-import { createInitialSeedStore } from './seed.data';
+import { randomBytes } from "crypto";
+import * as fs from "fs";
+import * as path from "path";
 
 function generateObjectId(): string {
-  return randomBytes(12).toString('hex');
+  return randomBytes(12).toString("hex");
 }
 
-const STORE_DIR = path.join(process.cwd(), '.data');
-const STORE_PATH = path.join(STORE_DIR, 'store.json');
+const STORE_DIR = path.join(process.cwd(), ".data");
+const STORE_PATH = path.join(STORE_DIR, "store.json");
 
 let memoryStore: Record<string, any[]> | null = null;
 
@@ -16,29 +15,35 @@ function getStore(): Record<string, any[]> {
   if (memoryStore) return memoryStore;
   try {
     if (fs.existsSync(STORE_PATH)) {
-      const raw = fs.readFileSync(STORE_PATH, 'utf-8');
+      const raw = fs.readFileSync(STORE_PATH, "utf-8");
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') {
+      if (parsed && typeof parsed === "object") {
         memoryStore = parsed;
         return memoryStore!;
       }
     }
-  } catch {
-    // Fallback to initial seed store
+  } catch (error) {
+    // Never replace a corrupted existing RFQ log with a fresh empty store.
+    throw new Error(
+      "Unable to read the local RFQ store. Restore it or configure MongoDB.",
+    );
   }
-  memoryStore = createInitialSeedStore();
+  // New installations have no fake accounts, prices, products or orders.
+  memoryStore = { Order: [] };
   persistStore();
   return memoryStore;
 }
 
 function persistStore(): void {
   if (!memoryStore) return;
-  try {
-    fs.mkdirSync(STORE_DIR, { recursive: true });
-    fs.writeFileSync(STORE_PATH, JSON.stringify(memoryStore, null, 2), 'utf-8');
-  } catch {
-    // Ignore filesystem errors in read-only environments
-  }
+  fs.mkdirSync(STORE_DIR, { recursive: true });
+  const temporary = `${STORE_PATH}.${process.pid}.tmp`;
+  fs.writeFileSync(temporary, JSON.stringify(memoryStore, null, 2), {
+    encoding: "utf-8",
+    mode: 0o600,
+  });
+  fs.renameSync(temporary, STORE_PATH);
+  // Deliberately propagate write failures: the caller must not report saved data.
 }
 
 function clone<T>(val: T): T {
@@ -48,21 +53,21 @@ function clone<T>(val: T): T {
 }
 
 function matchesCondition(docValue: any, cond: any): boolean {
-  if (cond && typeof cond === 'object' && !Array.isArray(cond)) {
-    if ('$regex' in cond) {
-      const flags = cond.$options || '';
+  if (cond && typeof cond === "object" && !Array.isArray(cond)) {
+    if ("$regex" in cond) {
+      const flags = cond.$options || "";
       const regex =
         cond.$regex instanceof RegExp
           ? cond.$regex
           : new RegExp(String(cond.$regex), flags);
-      return regex.test(String(docValue ?? ''));
+      return regex.test(String(docValue ?? ""));
     }
-    if ('$in' in cond && Array.isArray(cond.$in)) {
+    if ("$in" in cond && Array.isArray(cond.$in)) {
       return cond.$in.map(String).includes(String(docValue));
     }
-    if ('$gte' in cond && Number(docValue) < Number(cond.$gte)) return false;
-    if ('$lte' in cond && Number(docValue) > Number(cond.$lte)) return false;
-    if ('$ne' in cond) return String(docValue) !== String(cond.$ne);
+    if ("$gte" in cond && Number(docValue) < Number(cond.$gte)) return false;
+    if ("$lte" in cond && Number(docValue) > Number(cond.$lte)) return false;
+    if ("$ne" in cond) return String(docValue) !== String(cond.$ne);
   }
   return String(docValue) === String(cond);
 }
@@ -72,7 +77,7 @@ function matchesFilter(doc: any, filter: Record<string, any> = {}): boolean {
 
   for (const [key, cond] of Object.entries(filter)) {
     if (cond === undefined) continue;
-    if (key === '$or' && Array.isArray(cond)) {
+    if (key === "$or" && Array.isArray(cond)) {
       const anyMatch = cond.some((subFilter) => matchesFilter(doc, subFilter));
       if (!anyMatch) return false;
       continue;
@@ -85,9 +90,9 @@ function matchesFilter(doc: any, filter: Record<string, any> = {}): boolean {
 }
 
 const POPULATE_MAP: Record<string, string> = {
-  category: 'Category',
-  user: 'User',
-  product: 'Product',
+  category: "Category",
+  user: "User",
+  product: "Product",
 };
 
 function applyProjection(
@@ -97,16 +102,16 @@ function applyProjection(
 ): any {
   if (!doc) return doc;
   const copy = clone(doc);
-  if (modelName === 'User') {
+  if (modelName === "User") {
     const includePassword =
-      selectFields && selectFields.split(/\s+/).includes('+password');
+      selectFields && selectFields.split(/\s+/).includes("+password");
     if (!includePassword) {
       delete copy.password;
     }
   }
-  if (selectFields && !selectFields.includes('+')) {
+  if (selectFields && !selectFields.includes("+")) {
     const tokens = selectFields.trim().split(/\s+/);
-    const exclusions = tokens.filter((t) => t.startsWith('-'));
+    const exclusions = tokens.filter((t) => t.startsWith("-"));
     for (const ex of exclusions) {
       delete copy[ex.slice(1)];
     }
@@ -120,11 +125,11 @@ function applyPopulate(doc: any, populatePaths: string[]): any {
   const copy = clone(doc);
 
   for (const rawPath of populatePaths) {
-    const parts = rawPath.split('.');
+    const parts = rawPath.split(".");
     if (parts.length === 1) {
       const field = parts[0];
       const targetModel = POPULATE_MAP[field];
-      if (targetModel && copy[field] && typeof copy[field] === 'string') {
+      if (targetModel && copy[field] && typeof copy[field] === "string") {
         const found = (store[targetModel] || []).find(
           (item) => String(item._id) === String(copy[field]),
         );
@@ -137,7 +142,7 @@ function applyPopulate(doc: any, populatePaths: string[]): any {
       const targetModel = POPULATE_MAP[subField];
       if (Array.isArray(copy[arrField]) && targetModel) {
         copy[arrField] = copy[arrField].map((entry: any) => {
-          if (entry && typeof entry[subField] === 'string') {
+          if (entry && typeof entry[subField] === "string") {
             const found = (store[targetModel] || []).find(
               (item) => String(item._id) === String(entry[subField]),
             );
@@ -176,8 +181,8 @@ class InMemoryQuery<T = any> {
   }
 
   sort(spec: Record<string, 1 | -1> | string) {
-    if (typeof spec === 'string') {
-      const desc = spec.startsWith('-');
+    if (typeof spec === "string") {
+      const desc = spec.startsWith("-");
       const key = desc ? spec.slice(1) : spec;
       this.sortSpec = { [key]: desc ? -1 : 1 };
     } else {
@@ -197,7 +202,7 @@ class InMemoryQuery<T = any> {
   }
 
   populate(pathSpec: string | { path: string }) {
-    const p = typeof pathSpec === 'string' ? pathSpec : pathSpec.path;
+    const p = typeof pathSpec === "string" ? pathSpec : pathSpec.path;
     if (p) this.populatePaths.push(p);
     return this;
   }

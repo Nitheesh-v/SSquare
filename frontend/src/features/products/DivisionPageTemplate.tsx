@@ -1,157 +1,179 @@
-import React from "react";
 import Link from "next/link";
-import { CheckCircle2, ArrowLeft } from "lucide-react";
-import { DivisionInfo, ProductItem } from "@/lib/catalog-data";
+import {
+  ArrowDown,
+  ArrowLeft,
+  Check,
+  MessageSquare,
+  Phone,
+} from "lucide-react";
+import { type DivisionInfo, type ProductItem } from "@/lib/catalog-data";
+import { COMPANY_INFO } from "@/lib/company-data";
 import { ProductCatalogView } from "./ProductCatalogView";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
-
-interface DivisionPageTemplateProps {
-  division: DivisionInfo;
-  products: ProductItem[];
-  technicalNoteTitle: string;
-  technicalNoteParagraphs: string[];
-}
+import { SmartProductImage } from "@/components/shared/SmartProductImage";
+import { Reveal } from "@/components/shared/MotionPrimitives";
 
 export function DivisionPageTemplate({
   division,
   products,
   technicalNoteTitle,
   technicalNoteParagraphs,
-}: DivisionPageTemplateProps) {
+}: {
+  division: DivisionInfo;
+  products: ProductItem[];
+  technicalNoteTitle: string;
+  technicalNoteParagraphs: string[];
+}) {
   return (
-    <div>
-      <section className="bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800 py-14 lg:py-18">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <>
+      <section className="border-b border-carbon-800 bg-carbon-950 py-12 text-white lg:py-20">
+        <div className="shell">
           <Link
             href="/categories"
-            className="inline-flex items-center gap-1.5 font-mono text-xs text-slate-400 hover:text-forge-400 transition mb-6"
+            className="inline-flex min-h-11 items-center gap-2 font-mono text-[10px] tracking-wide text-slate-300 hover:text-forge-300"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            ALL MANUFACTURING CATEGORIES
+            <ArrowLeft size={13} />
+            ALL MANUFACTURING DIVISIONS
           </Link>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 space-y-5">
-              <span className="inline-block rounded-xs border border-forge-500/40 bg-forge-600/15 px-3 py-1 font-mono text-xs font-semibold text-forge-400">
-                {division.code}
-              </span>
-              <h1 className="font-display text-3xl sm:text-5xl font-bold text-white">
-                {division.name}
+          <div className="mt-6 grid items-center gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <p className="eyebrow text-forge-300">{division.code}</p>
+              <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+                {division.shortTitle}
               </h1>
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
+              <p className="mt-6 max-w-2xl text-sm leading-[1.9] text-slate-300">
                 {division.heroTagline}
               </p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {division.technicalHighlights.map((th) => (
-                  <div
-                    key={th.label}
-                    className="rounded-xs border border-carbon-800 bg-carbon-900/80 p-3"
-                  >
-                    <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
-                      {th.label}
-                    </div>
-                    <div className="mt-1 font-display text-xs sm:text-sm font-bold text-white">
-                      {th.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-2 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <OpenQuoteButton
-                  label={`Request ${division.name} Quote`}
+                  label="Request a Quote"
                   prefill={{ division: division.name }}
                 />
+                <a href="#division-components" className="button-dark-outline">
+                  Explore components
+                  <ArrowDown size={15} />
+                </a>
               </div>
+              <p className="mt-7 font-mono text-[10px] tracking-wide text-slate-400">
+                CUSTOM MANUFACTURE / DRAWING OR SAMPLE BASED
+              </p>
             </div>
-
             <div className="lg:col-span-5">
-              <div className="rounded-sm border border-carbon-700 bg-carbon-900 p-2 shadow-xl">
-                <div className="aspect-[16/11] overflow-hidden bg-carbon-950">
-                  <img
-                    src={division.heroImage}
-                    alt={division.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="px-2 pt-2 pb-1 flex items-center justify-between font-mono text-[10px] text-slate-400">
-                  <span>CUSTOM CAD &amp; SAMPLE READY</span>
-                  <span className="text-forge-400">100% CONFORMITY</span>
-                </div>
+              <div className="aspect-square border border-white/20 bg-slate-100">
+                <SmartProductImage
+                  src={division.heroImage}
+                  fallbackSrc={division.fallbackImage}
+                  alt={`${division.name} — S Square Engineering Services`}
+                  priority
+                  className="h-full w-full object-cover"
+                />
               </div>
+              <p className="mt-3 font-mono text-[9px] text-slate-400">
+                MATERIAL & GEOMETRY CONFIRMED AGAINST YOUR REQUIREMENT
+              </p>
             </div>
           </div>
         </div>
       </section>
-
-      <section className="py-14 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div className="lg:col-span-7 space-y-4">
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-                Engineering Overview
-              </span>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-carbon-900">
-                {technicalNoteTitle}
-              </h2>
-              {technicalNoteParagraphs.map((p, idx) => (
-                <p key={idx} className="text-sm text-slate-600 leading-relaxed">
-                  {p}
-                </p>
+      <section className="border-b border-slate-200 bg-white py-16 lg:py-20">
+        <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-7">
+            <p className="eyebrow text-forge-700">ENGINEERING OVERVIEW</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              {technicalNoteTitle}
+            </h2>
+            {technicalNoteParagraphs.map((paragraph) => (
+              <p
+                key={paragraph}
+                className="mt-5 text-sm leading-[1.9] text-slate-600"
+              >
+                {paragraph}
+              </p>
+            ))}
+            <p className="mt-6 border-t border-slate-200 pt-4 font-mono text-[10px] leading-relaxed text-slate-500">
+              General material guidance only. Final grade, operating limits,
+              finish and inspection requirements must be agreed for your
+              application.
+            </p>
+          </Reveal>
+          <Reveal className="border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:col-span-5">
+            <p className="eyebrow text-forge-700">
+              CAPABILITIES / {division.slug.toUpperCase()}
+            </p>
+            <ul className="mt-5 space-y-3.5">
+              {division.keyCapabilities.map((capability) => (
+                <li
+                  key={capability}
+                  className="flex items-start gap-3 text-xs leading-relaxed text-slate-600"
+                >
+                  <Check size={15} className="mt-0.5 shrink-0 text-forge-700" />
+                  {capability}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-200 pt-5">
+              {division.keyMaterials.map((material) => (
+                <span
+                  className="border border-slate-300 bg-white px-2.5 py-1.5 font-mono text-[9px] text-slate-600"
+                  key={material}
+                >
+                  {material}
+                </span>
               ))}
             </div>
-
-            <div className="lg:col-span-5 rounded-sm border border-slate-200 bg-slate-50 p-6">
-              <h3 className="font-mono text-xs font-semibold uppercase tracking-widest text-carbon-900 mb-4">
-                Core Division Capabilities
-              </h3>
-              <ul className="space-y-2.5">
-                {division.keyCapabilities.map((cap) => (
-                  <li
-                    key={cap}
-                    className="flex items-start gap-2.5 text-xs font-medium text-slate-700"
-                  >
-                    <CheckCircle2 className="h-4 w-4 text-forge-600 shrink-0 mt-0.5" />
-                    <span>{cap}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-5 pt-4 border-t border-slate-200">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-slate-500 mb-2">
-                  Supported Compounds / Grades
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {division.keyMaterials.map((m) => (
-                    <span
-                      key={m}
-                      className="rounded-xs border border-slate-200 bg-white px-2.5 py-1 font-mono text-[11px] font-semibold text-carbon-800"
-                    >
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          </Reveal>
         </div>
       </section>
-
-      <section className="py-16 bg-[#f8f9fb]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
-          <div>
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-600">
-              Component Catalog // {division.name}
-            </span>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-carbon-900">
-              Manufactured Configurations &amp; Custom Profiles
+      <section
+        id="division-components"
+        className="border-b border-slate-200 bg-[#f7f8fa] py-16 lg:py-20"
+      >
+        <div className="shell">
+          <div className="mb-8">
+            <p className="eyebrow text-forge-700">CUSTOM COMPONENT RANGE</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold">
+              Explore {division.name.toLowerCase()}
             </h2>
+            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-slate-600">
+              Component types and material options for your next enquiry. These
+              are custom-manufacturing examples, not priced or in-stock
+              products.
+            </p>
           </div>
-
           <ProductCatalogView items={products} />
         </div>
       </section>
-    </div>
+      <section className="bg-white py-12">
+        <div className="shell flex flex-wrap items-center justify-between gap-7">
+          <div>
+            <h2 className="font-display text-3xl font-semibold">
+              Have a drawing, sample or specific application?
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-5 text-xs text-slate-600">
+              <a
+                href={`tel:${COMPANY_INFO.phoneRaw}`}
+                className="inline-flex items-center gap-2 py-2 hover:text-forge-700"
+              >
+                <Phone size={15} />
+                {COMPANY_INFO.phone}
+              </a>
+              <a
+                href={COMPANY_INFO.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 py-2 hover:text-forge-700"
+              >
+                <MessageSquare size={15} />
+                WhatsApp S Square
+              </a>
+            </div>
+          </div>
+          <OpenQuoteButton
+            label="Request a Quote"
+            prefill={{ division: division.name }}
+          />
+        </div>
+      </section>
+    </>
   );
 }

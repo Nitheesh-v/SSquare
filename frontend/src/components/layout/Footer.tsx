@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { COMPANY_INFO } from "@/lib/company-data";
 
@@ -21,57 +22,30 @@ export function Footer() {
               with a commitment to precision, durability, and timely delivery.
             </p>
 
-            {/* Social Links (Facebook, Twitter, YouTube) */}
+            {/* Verified contact actions; no invented social profiles. */}
             <div className="flex items-center gap-3 pt-1">
               <a
-                href="https://ssquareengg.com/"
+                href={COMPANY_INFO.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+                aria-label="WhatsApp S Square"
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.24-1.46 1.49-1.46H16.5V4.46c-.27-.04-1.2-.11-2.28-.11-2.26 0-3.81 1.38-3.81 3.91v2.24H8v3h2.41V21h3.09Z" />
-                </svg>
+                <MessageSquare size={17} />
               </a>
-
               <a
-                href="https://ssquareengg.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+                href={`mailto:${COMPANY_INFO.emails.sales}`}
+                aria-label="Email S Square sales"
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M21.54 7.11c.01.18.01.36.01.54 0 5.49-4.18 11.82-11.82 11.82-2.35 0-4.53-.69-6.37-1.87.33.04.65.05.99.05 1.95 0 3.74-.66 5.16-1.78a4.16 4.16 0 0 1-3.88-2.88c.26.04.51.07.78.07.37 0 .74-.05 1.09-.14A4.15 4.15 0 0 1 4.17 8.85v-.05c.55.31 1.19.5 1.87.52a4.15 4.15 0 0 1-1.85-3.46c0-.77.21-1.48.57-2.09a11.8 11.8 0 0 0 8.56 4.34 4.68 4.68 0 0 1-.1-.95 4.15 4.15 0 0 1 7.18-2.84 8.2 8.2 0 0 0 2.64-1.01 4.14 4.14 0 0 1-1.82 2.29 8.32 8.32 0 0 0 2.39-.65 8.93 8.93 0 0 1-2.07 2.16Z" />
-                </svg>
+                <Mail size={17} />
               </a>
-
               <a
-                href="https://ssquareengg.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube"
-                className="flex h-9 w-9 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
+                href={`tel:${COMPANY_INFO.phoneRaw}`}
+                aria-label="Call S Square"
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-[#e11d48] text-white hover:bg-[#be123c] transition-colors"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M21.58 7.19a2.51 2.51 0 0 0-1.77-1.78C18.25 5 12 5 12 5s-6.25 0-7.81.41a2.51 2.51 0 0 0-1.77 1.78C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.9 1.54 1.77 1.78C5.75 19 12 19 12 19s6.25 0 7.81-.41a2.51 2.51 0 0 0 1.77-1.78C22 15.25 22 12 22 12s0-3.25-.42-4.81ZM10 15V9l5.2 3L10 15Z" />
-                </svg>
+                <Phone size={17} />
               </a>
             </div>
           </div>

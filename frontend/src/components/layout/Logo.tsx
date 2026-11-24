@@ -11,7 +11,9 @@ export function Logo({ theme = "light", className = "" }: LogoProps) {
   return (
     <div className={`inline-flex items-center select-none ${className}`}>
       <img
-        src={isDark ? "/images/ssquare-logo-dark.png" : "/images/ssquare-logo.png"}
+        src={
+          isDark ? "/images/ssquare-logo-dark.png" : "/images/ssquare-logo.png"
+        }
         alt="S Square Engineering Services"
         width={215}
         height={75}

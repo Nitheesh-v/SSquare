@@ -12,7 +12,7 @@ export const COMPANY_INFO = {
     sales: "sales@ssquareengg.com",
     info: "info@ssquareengg.com",
   },
-  hours: "Monday – Saturday · 9:00 AM – 7:00 PM IST",
+  hours: "Monday – Saturday",
   address: {
     line1: "58, Jeganathapuram, Avarampalayam Road",
     locality: "Peelamedu",
@@ -24,126 +24,42 @@ export const COMPANY_INFO = {
     mapsUrl:
       "https://www.google.com/maps/search/?api=1&query=S+Square+Engineering+Services+58+Jeganathapuram+Avarampalayam+Road+Peelamedu+Coimbatore+641004",
   },
-  shippingHighlight: "Free Global Door Delivery via DHL / FedEx in 3–4 Days",
 };
 
+// Only displayed, source-backed fields are retained. Do not restore legacy
+// blanket QC percentages or free/global delivery guarantees without sign-off.
 export const HERO_SLIDES = [
   {
     id: "overview",
-    code: "SPEC // MULTI-MATERIAL OEM",
-    badge: "Custom Metal & Rubber Solutions",
-    headline: "Precision Custom Components Built to Your Exact Drawing.",
     description:
-      "From bespoke molded elastomers to CNC-machined stainless steel and 6061 aluminium die molds—engineered with 100% dimensional conformity and shipped free worldwide in 3–4 days via DHL & FedEx.",
-    metrics: [
-      { value: "20+", label: "Years Manufacturing Expertise" },
-      { value: "100%", label: "Technical Spec Conformity" },
-      { value: "3–4 Days", label: "Free Global DHL / FedEx Delivery" },
-    ],
+      "Custom rubber, steel and aluminium components, manufactured to your drawing or sample. Delivery is coordinated for your project and destination.",
+    remoteImage: "https://ssquareengg.com/storage/2026/02/s1-5-1024x936.jpeg",
+    fallbackImage: "/images/hero-manufacturing.jpg",
+    imageCaption: "Machined component range · S Square Engineering Services",
   },
   {
     id: "rubber",
-    code: "DIV-01 // ELASTOMER ENGINEERING",
-    badge: "Viton · Silicone · NBR · HNBR · EPDM · Neoprene",
-    headline: "Custom Molded Seals, Gaskets & Rubber-to-Metal Bonded Parts.",
     description:
-      "Over two decades formulating bespoke rubber compounds for extreme sealing, cushioning, chemical resistance, and high-pressure industrial assemblies.",
-    metrics: [
-      { value: "-60°C to +250°C", label: "Compound Temp Envelope" },
-      { value: "20–90 Shore A", label: "Custom Durometer Range" },
-      { value: "30+ Types", label: "Seals, Bonded Rings & Diaphragms" },
-    ],
+      "Over 20 years of expertise producing bespoke rubber seals, gaskets, washers, O-rings, cords, sheets, and rubber-to-metal bonded components tailored to your sealing and vibration requirements.",
+    remoteImage: "https://ssquareengg.com/storage/2025/12/rubber-26.jpg",
+    fallbackImage: "/images/division-rubber.jpg",
+    imageCaption: "Metal-to-elastomer bonded seals & molded rubber parts",
   },
   {
-    id: "metals",
-    code: "DIV-02 & 03 // STEEL & ALUMINIUM",
-    badge: "Stainless Steel · Alloy Steel · 6061 Aluminium · Die Molds",
-    headline: "From Raw Billet & Sheet to High-Strength Machined Performance.",
+    id: "steel",
     description:
-      "Corrosion-resistant stainless steel fabrications, precision CNC shafts, heavy-duty flanges, and intricate aluminium die molds manufactured under one roof in Coimbatore.",
-    metrics: [
-      { value: "±0.01 mm", label: "Precision Machining Tolerance" },
-      { value: "SS 304 / 316 / 6061", label: "Certified Raw Alloys" },
-      { value: "CAD / Sample", label: "Reverse Engineering Ready" },
-    ],
-  },
-];
-
-export const CORE_SERVICES = [
-  {
-    number: "01",
-    title: "Bespoke Customization",
-    subtitle: "Per Your CAD Drawings or Physical Samples",
-    description:
-      "Send us 2D/3D engineering drawings (STEP, IGES, DWG, PDF) or physical reference samples. We tool, compound, machine, and mold high-precision rubber, steel, and aluminium parts tailored to your exact operational application.",
-    highlights: [
-      "Custom mold & die design in-house",
-      "Sample reverse-engineering & DFM support",
-      "Prototype runs to high-volume OEM batches",
-    ],
+      "Custom-engineered stainless and steel parts for industrial and OEM assemblies. Grade selection, finish and inspection requirements are reviewed against your application.",
+    remoteImage: "https://ssquareengg.com/storage/2026/02/s1-5-1024x936.jpeg",
+    fallbackImage: "/images/division-steel.jpg",
+    imageCaption: "Custom-machined steel & stainless industrial components",
   },
   {
-    number: "02",
-    title: "100% Quality Assurance",
-    subtitle: "Strict Conformity to Technical Specifications",
+    id: "aluminium",
     description:
-      "Every production batch undergoes multi-stage inspection—from certified raw material verification and hardness/alloy testing to final dimensional metrology—guaranteeing strength, accuracy, and long-term durability.",
-    highlights: [
-      "100% dimensional & visual conformity check",
-      "Material & Shore A durometer verification",
-      "Traceable batch inspection documentation",
-    ],
-  },
-  {
-    number: "03",
-    title: "Free Global Door Delivery",
-    subtitle: "3–4 Days Worldwide via DHL & FedEx",
-    description:
-      "Keep your assembly lines moving without freight friction. We provide complimentary express door-to-door air courier shipping via DHL and FedEx within 3–4 business days to any industrial hub worldwide.",
-    highlights: [
-      "Express 3–4 day international transit",
-      "Export-grade protective industrial packaging",
-      "Zero hidden freight surcharges to your door",
-    ],
-  },
-];
-
-export const INDUSTRIES_SERVED = [
-  {
-    code: "IND-01",
-    name: "OEM & Industrial Equipment",
-    description:
-      "Bespoke hydraulic seals, custom shafts, bearing housings, and special-purpose sub-assemblies built for continuous-duty machinery.",
-  },
-  {
-    code: "IND-02",
-    name: "Automotive & Transport",
-    description:
-      "Vibration-damping rubber-to-metal mounts, fuel/oil-resistant Viton & HNBR seals, precision steel brackets, and lightweight aluminium parts.",
-  },
-  {
-    code: "IND-03",
-    name: "Manufacturing & Heavy Engineering",
-    description:
-      "High-load structural steel fabrications, flanged couplings, wear-resistant elastomers, and precision die-mold tooling.",
-  },
-  {
-    code: "IND-04",
-    name: "Electrical & Electronics",
-    description:
-      "Conductive & anodised 6061 aluminium enclosures, heatsinks, silicone weatherproof gaskets, and cable grommets.",
-  },
-  {
-    code: "IND-05",
-    name: "Construction & Infrastructure",
-    description:
-      "Corrosion-resistant stainless steel hardware, EPDM expansion/weather seals, aluminium profiles, and heavy structural fittings.",
-  },
-  {
-    code: "IND-06",
-    name: "Fluid Power, Valves & Process Plants",
-    description:
-      "Chemical-grade PTFE/Viton diaphragms, bonded Dowty-style washers, stainless valve flanges, and high-pressure O-rings.",
+      "High strength-to-weight aluminium components, custom profiles, sheets, and precision aluminium die molds with anodizing or painted finishes to match application needs.",
+    remoteImage: "https://ssquareengg.com/storage/2026/01/al6.jpg",
+    fallbackImage: "/images/division-aluminium.jpg",
+    imageCaption: "Precision aluminium die mold & custom machined billet work",
   },
 ];
 
@@ -153,100 +69,100 @@ export const INFRASTRUCTURE_PILLARS = [
     code: "FACILITY // PRODUCTION",
     title: "Leading Manufacturing Solutions",
     summary:
-      "State-of-the-art manufacturing infrastructure delivering customized rubber, steel, and aluminium components under one roof.",
+      "Modern manufacturing infrastructure in Coimbatore delivering customized rubber, steel, and aluminium products with high-quality raw materials and streamlined production.",
     details: [
-      "Dedicated hydraulic compression, transfer, and injection rubber molding lines alongside custom compound mixing.",
-      "Multi-axis CNC turning & milling centers, precision surface grinding, die-mold cavities, and sheet/structural fabrication.",
-      "High-grade certified raw polymers, stainless steels, and 6061/7075 aluminium billets for uncompromising consistency.",
-      "Streamlined production scheduling ensuring rapid turnaround from tooling approval to global dispatch.",
+      "Dedicated rubber molding and metal-to-rubber bonding capability across industrial elastomer families.",
+      "Precision steel and 6061 aluminium machining, die-mold fabrication, and custom profile processing.",
+      "High-quality raw materials selected to ensure strength, durability, and consistent batch performance.",
+      "Coordinated scheduling from drawing/sample review through inspection and global dispatch.",
     ],
-    image: "/images/infrastructure-facility.jpg",
+    remoteImage: "https://ssquareengg.com/storage/2026/01/abt2.jpg",
+    fallbackImage: "/images/infrastructure-facility.jpg",
   },
   {
     number: "02",
-    code: "ESG // ENVIRONMENT",
+    code: "SUSTAINABILITY // ENVIRONMENT",
     title: "Committed to a Sustainable Future",
     summary:
-      "Over 20 years of global manufacturing guided by energy conservation, clean emissions, and responsible waste stewardship.",
+      "Over 20 years of manufacturing guided by energy conservation, emission awareness, recyclable metals, and responsible waste management.",
     details: [
-      "Eco-conscious manufacturing workflows engineered to minimize scrap, conserve electrical energy, and preserve natural resources.",
-      "100% recycling loop for aluminium & stainless steel machining swarf and off-cuts.",
-      "International-standard industrial waste segregation, treatment, and zero-contamination protocols.",
-      "Continuous emission monitoring and strict compliance with regulated environmental benchmarks.",
+      "Eco-conscious workflows focused on conserving energy and preserving natural resources.",
+      "Full recyclability of aluminium and steel off-cuts without loss of base material properties.",
+      "Structured industrial waste segregation and clean shop-floor stewardship.",
+      "Ongoing commitment to responsible environmental compliance.",
     ],
-    image: "/images/division-aluminium.jpg",
+    remoteImage: "https://ssquareengg.com/storage/2026/01/abt1.jpg",
+    fallbackImage: "/images/division-aluminium.jpg",
   },
   {
     number: "03",
-    code: "WORKFORCE // EHS",
+    code: "WORKFORCE // SAFETY",
     title: "Health & Safety First",
     summary:
-      "A zero-hazard shop floor culture prioritizing the physical well-being, security, and nutrition of every technician and engineer.",
+      "A secure, organized shop-floor culture prioritizing employee safety, preventive health checkups, insurance coverage, and daily workplace nutrition.",
     details: [
-      "Completely secure, ergonomically organized, and hazard-controlled machine shop and molding bays.",
-      "Scheduled preventive health checkups and comprehensive labor insurance coverage for our entire workforce.",
-      "Hygienic, nutritious workplace meals supporting daily team health, focus, and operational safety.",
-      "Mandatory PPE, machine guarding, and safety SOPs embedded into every production stage.",
+      "Safe, hazard-aware machine and molding shop environment.",
+      "Regular preventive health checkups and labor insurance coverage for team members.",
+      "Nutritious workplace meals supporting daily well-being and operational focus.",
+      "Clear operational safety procedures across every production stage.",
     ],
-    image: "/images/hero-manufacturing.jpg",
+    remoteImage: "https://ssquareengg.com/storage/2026/01/al6.jpg",
+    fallbackImage: "/images/hero-manufacturing.jpg",
   },
   {
     number: "04",
-    code: "METROLOGY // ETHICS",
+    code: "QUALITY // INTEGRITY",
     title: "Integrity in Every Product",
     summary:
-      "International quality benchmarks paired with complete commercial transparency and direct engineering support.",
+      "Strict conformity to technical specifications paired with fair, transparent factory communication and dependable delivery.",
     details: [
-      "100% specification conformity verified with calibrated digital micrometers, Vernier calipers, and hardness testers.",
-      "Fair, transparent factory-direct pricing with zero hidden tooling markups or inflated surcharges.",
-      "Direct access to experienced manufacturing engineers from initial RFQ through post-delivery support.",
-      "Long-term OEM partnership mindset focused on reliability, repeatability, and total cost value.",
+      "Drawing, material and inspection requirements reviewed for each project.",
+      "Fair, transparent quotation process tailored to customer drawings and batch quantities.",
+      "Direct communication with our engineering and sales team in Peelamedu, Coimbatore.",
+      "Long-term OEM supply mindset built on consistency and trust.",
     ],
-    image: "/images/quality-metrology.jpg",
+    remoteImage: "https://ssquareengg.com/storage/2025/12/rubber-41.jpg",
+    fallbackImage: "/images/quality-metrology.jpg",
   },
 ];
 
 export const ENGINEERING_FAQS = [
   {
     category: "Custom Manufacturing & RFQs",
-    question: "Can you manufacture custom parts from our CAD drawings or physical samples?",
+    question:
+      "Can you manufacture custom parts from our engineering drawings or physical samples?",
     answer:
-      "Yes. Custom manufacturing is our core specialization. You can submit 2D/3D engineering files (STEP, IGES, DWG, DXF, or dimensioned PDFs) or courier a physical sample to our Peelamedu, Coimbatore facility. Our engineering team can reverse-engineer samples, recommend optimal rubber compounds or metal grades, and build custom tooling in-house.",
+      "Yes. Custom manufacturing is our core focus. You can share 2D/3D engineering drawings or send a physical reference sample to our Peelamedu, Coimbatore facility. We review geometry, material, and operating conditions to tool and manufacture parts to your specification.",
   },
   {
     category: "Custom Manufacturing & RFQs",
-    question: "What file formats and specifications should I include when requesting a quote?",
+    question: "What details should I include when requesting a quote?",
     answer:
-      "For the fastest quote turnaround (typically within 24 hours), share your part drawing or dimensions, material preference (e.g., Viton 75 Shore A, Silicone, SS 316, or Aluminium 6061-T6), estimated order/annual quantity, operating environment (temperature, media/chemicals, pressure), and destination country.",
+      "Include your name, company, contact details (email or phone/WhatsApp), material or product interest (Rubber, Steel, or Aluminium), estimated quantity, and key dimensions, compound/grade requirements, or drawing notes.",
   },
   {
-    category: "Materials & Quality",
-    question: "Which rubber compounds and rubber-to-metal bonding combinations do you produce?",
+    category: "Materials & Capabilities",
+    question:
+      "Which rubber compounds and bonded seal types do you manufacture?",
     answer:
-      "We formulate and mold all major industrial elastomers including Viton (FKM), Silicone (VMQ), Nitrile (NBR), Hydrogenated Nitrile (HNBR), Neoprene (CR), EPDM, and Natural Rubber (NR), including custom color-matched grades such as Bahama Blue and Blue Pearl. We also specialize in high-integrity Rubber-to-Metal Bonded Seals (Metal-to-Viton, Metal-to-HNBR, Metal-to-EPDM, and Neoprene Bonded Dowty-style seals).",
+      "We manufacture custom molded parts, gaskets, washers, O-rings, diaphragms, grommets, wads, sheets, and cords in Viton (FKM), Silicone, NBR (Nitrile), HNBR, Neoprene, EPDM, and Natural Rubber—including custom colors such as Bahama Blue and Blue Pearl—as well as Metal-to-Viton, Metal-to-HNBR, Metal-to-EPDM, and Neoprene bonded seals.",
   },
   {
-    category: "Materials & Quality",
-    question: "What grades of Steel and Aluminium do you machine and fabricate?",
+    category: "Materials & Capabilities",
+    question: "What Steel and Aluminium components do you supply?",
     answer:
-      "In our Steel division, we work extensively with Stainless Steel (SS 304, SS 316, SS 316L, SS 410), mild steel, and alloy steels for CNC-turned shafts, flanges, brackets, fasteners, and welded structural assemblies. In our Aluminium division, we specialize in 6061-T6, 6082, 5052, and tool-grade billets for precision CNC parts, Aluminium Die Molds, extruded profiles, and anodized or powder-coated housings.",
+      "We supply custom-engineered stainless and steel components designed for strength, oxidation resistance, and corrosion protection, alongside lightweight Aluminium (including Grade 6061) machined components, custom profiles, sheets, and precision Aluminium Die Molds with anodizing or painted finishes.",
   },
   {
-    category: "Materials & Quality",
-    question: "How do you ensure 100% conformity to our technical specifications?",
+    category: "Quality & Delivery",
+    question: "How do you verify conformity to our technical specifications?",
     answer:
-      "Every order goes through raw-material verification, first-article sample inspection (FAI) for new tooling, in-process dimensional checks, durometer hardness testing (for elastomers), surface finish inspection, and pre-dispatch quality auditing against your approved drawing tolerances.",
+      "Share your material, dimensional, finish and documentation requirements with the enquiry. The available inspection scope and acceptance criteria are confirmed against your approved drawing or sample during quotation.",
   },
   {
-    category: "Global Shipping & Lead Times",
-    question: "How does your Free Door Delivery via DHL / FedEx work for international orders?",
+    category: "Quality & Delivery",
+    question: "How does international shipping and delivery coordination work?",
     answer:
-      "We ship globally from Coimbatore, India using express air courier partners DHL and FedEx. Once manufacturing and final QC are completed, shipments are delivered directly to your facility door anywhere in the world within 3–4 business days—with free door delivery included on qualifying custom production orders.",
-  },
-  {
-    category: "Global Shipping & Lead Times",
-    question: "Do you support both prototype quantities and recurring OEM production batches?",
-    answer:
-      "Yes. Whether you need initial prototype/pilot samples to validate fit and sealing performance or scheduled monthly OEM production runs in the thousands, our tooling and production cells scale seamlessly with your demand.",
+      "We coordinate delivery from Coimbatore through DHL and FedEx. The published 3–4 day courier estimate relates to transit after dispatch, not manufacturing lead time. Confirm destination coverage, cost and the project schedule with your quotation.",
   },
 ];

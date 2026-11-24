@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Phone, Mail } from "lucide-react";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 import { FaqAccordion } from "@/components/shared/FaqAccordion";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { COMPANY_INFO } from "@/lib/company-data";
@@ -7,70 +7,71 @@ import { COMPANY_INFO } from "@/lib/company-data";
 export const metadata: Metadata = {
   title: "Engineering & Procurement FAQ",
   description:
-    "Frequently asked questions about custom CAD/sample manufacturing, rubber compounds, stainless steel & 6061 aluminium grades, quality inspection, and free 3–4 day global DHL/FedEx shipping.",
+    "Questions about custom manufacturing from drawings or samples, material options, quality requirements and delivery with S Square Engineering Services.",
 };
-
 export default function FaqPage() {
   return (
-    <div>
-      <section className="bg-carbon-950 text-white bg-blueprint-dark border-b border-carbon-800 py-14 lg:py-18">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl space-y-3">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-forge-400">
-              TECHNICAL &amp; PROCUREMENT SUPPORT
-            </span>
-            <h1 className="font-display text-3xl sm:text-5xl font-bold text-white">
-              Frequently Asked Engineering Questions
-            </h1>
-            <p className="text-base text-slate-300 leading-relaxed">
-              Answers to common questions from OEM buyers, mechanical engineers, and international procurement teams regarding custom tooling, material selection, tolerances, and global express delivery.
+    <>
+      <section className="border-b border-carbon-800 bg-carbon-950 py-16 text-white lg:py-24">
+        <div className="shell">
+          <p className="eyebrow text-forge-300">
+            ENGINEERING / PROCUREMENT / PRACTICAL ANSWERS
+          </p>
+          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+            Before we
+            <br />
+            make your component.
+          </h1>
+          <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-slate-300">
+            A few useful answers about drawings, material options, inspection
+            and delivery. For a specific application, speak directly with the S
+            Square team.
+          </p>
+        </div>
+      </section>
+      <section className="bg-[#f7f8fa] py-16 lg:py-20">
+        <div className="shell grid items-start gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <FaqAccordion />
+          </div>
+          <aside className="border border-slate-200 bg-white p-6 lg:sticky lg:top-36 lg:col-span-4">
+            <p className="eyebrow text-forge-700">LET’S DISCUSS THE DETAILS</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold">
+              Your requirement may be specific. So is our approach.
+            </h2>
+            <p className="mt-4 text-xs leading-[1.8] text-slate-600">
+              Include a drawing or sample description, estimated quantity and
+              your operating environment.
             </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-20 bg-[#f8f9fb]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            <div className="lg:col-span-8">
-              <FaqAccordion />
+            <div className="my-6 space-y-3 border-t border-slate-200 pt-5">
+              <a
+                className="flex min-h-10 items-center gap-3 text-sm font-semibold hover:text-forge-700"
+                href={`tel:${COMPANY_INFO.phoneRaw}`}
+              >
+                <Phone size={16} className="text-forge-700" />
+                {COMPANY_INFO.phone}
+              </a>
+              <a
+                className="flex min-h-10 items-center gap-3 text-xs hover:text-forge-700"
+                href={COMPANY_INFO.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageSquare size={16} className="text-forge-700" />
+                WhatsApp S Square
+              </a>
+              <a
+                className="flex min-h-10 items-center gap-3 text-xs hover:text-forge-700"
+                href={`mailto:${COMPANY_INFO.emails.sales}`}
+              >
+                <Mail size={16} className="text-forge-700" />
+                {COMPANY_INFO.emails.sales}
+              </a>
             </div>
-
-            <aside className="lg:col-span-4 rounded-sm border border-slate-200 bg-white p-6 shadow-2xs space-y-5">
-              <div>
-                <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-forge-600">
-                  DIRECT ENGINEERING DESK
-                </span>
-                <h2 className="mt-1 font-display text-xl font-bold text-carbon-900">
-                  Have a Custom Application Question?
-                </h2>
-                <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-                  Speak directly with our manufacturing engineers Monday through Saturday for elastomer chemical compatibility or alloy machinability advice.
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-2 border-t border-slate-100 text-sm">
-                <a
-                  href={`tel:${COMPANY_INFO.phoneRaw}`}
-                  className="flex items-center gap-2.5 font-mono font-semibold text-carbon-900 hover:text-forge-600 transition"
-                >
-                  <Phone className="h-4 w-4 text-forge-600" />
-                  {COMPANY_INFO.phone}
-                </a>
-                <a
-                  href={`mailto:${COMPANY_INFO.emails.sales}`}
-                  className="flex items-center gap-2.5 font-mono text-xs text-slate-700 hover:text-forge-600 transition"
-                >
-                  <Mail className="h-4 w-4 text-forge-600" />
-                  {COMPANY_INFO.emails.sales}
-                </a>
-              </div>
-
-              <OpenQuoteButton label="Submit Custom RFQ" className="w-full" />
-            </aside>
-          </div>
+            <OpenQuoteButton label="Request a Quote" className="w-full" />
+          </aside>
         </div>
       </section>
-    </div>
+    </>
   );
 }
