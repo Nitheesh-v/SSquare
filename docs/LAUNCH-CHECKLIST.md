@@ -6,7 +6,7 @@
 - Original rubber, steel and aluminium component photos, identified by material/product type. Where a pictured part is customer-owned, confirm permission and remove identifying marks if necessary.
 - Approved hero imagery/crops for desktop and mobile. Two lead photos are currently cached from the official website; other catalog images use original-site URLs and explicitly labelled illustrative fallbacks.
 - Replace the six illustrative JPEGs in `frontend/public/images/` or update the dataset paths. The updated rubber assortment (`division-rubber.jpg`) is AI-generated, not an official product photo. **Do not remove placeholder labelling before replacements are approved.**
-- Photo provenance: `frontend/public/images/ssquare/README.md`; mappings: `src/lib/photo-sources.ts`, `src/lib/company-data.ts`, `src/lib/catalog-data.ts`, `src/features/journey/journey-data.ts`, `src/features/reference/ReferenceSections.tsx`. The reference-led main hero is a procedural material study, not a factory photograph. Its intro/spotlight/workshop imagery is illustrative; steel/aluminium cards and product spotlights also use the two cached official-site references where identified. Catalog material previews remain labelled illustrative scenes.
+- Photo provenance: `frontend/public/images/ssquare/README.md`; mappings: `src/lib/photo-sources.ts`, `src/lib/company-data.ts`, `src/lib/catalog-data.ts`, `src/features/studio/materials.ts`. The new home hero/cards and catalog material previews use explicitly labelled local illustrative scenes, not the cached official-site photographs.
 
 ## 2. Approved CAD / 3D asset
 
@@ -14,8 +14,8 @@
 - Source STEP/IGES/CAD supplied through the company’s approved secure channel, not committed to the repository.
 - A mobile-ready GLB with clear part names, sensible topology, surface normals and materials. Provide the real assembly/explosion relationships, desired finish and any annotations that may be published.
 - Hook: server `S_SQUARE_CAD_MODEL_URL` or `src/lib/visual-config.ts`. Current profile/collar assembly is explicitly **Illustrative Concept Model · Replaceable with S Square CAD**. It is not a real component specification and has no tolerances or dimensions.
-- The reference homepage uses illustrative bonded-seal, hex-nut and machined-housing concepts; the original `/material-experience` keeps the gasket, flange and profile concepts. Both appearances share `src/features/journey/journey-scene.ts`, with matching SVG still views in `ReferenceIllustration.tsx` / `ComponentIllustration.tsx`. The spotlight gears are decorative SVGs, not a claim of a specified meshing assembly. Supply and approve representative CAD for **all three material disciplines** before removing illustrative labels. The `S_SQUARE_CAD_MODEL_URL` hook applies only to the detailed story on `/products/aluminium`, not these shared material models.
-- Approve the homepage's four-step manufacturing language, general seven-family material guide and up-to-three-item inline enquiry pack, as well as the preserved `/material-experience` brief. These are selection/enquiry tools, not a cart, confirmed quotation, order acknowledgement or dispatch confirmation. Material compatibility and supply terms require application review. The reference's unsupported company-history date, guaranteed response time and conflicting street number were not adopted.
+- The homepage study and the full `/material-experience` route share three separate illustrative procedural parts (rubber gasket, steel flange, aluminium profile) in `src/features/journey/journey-scene.ts`, with matching inline SVG fallbacks. Supply and approve representative CAD for **all three** before removing their illustrative labels. The `S_SQUARE_CAD_MODEL_URL` hook applies only to the detailed story on `/products/aluminium`, not those shared material models.
+- Approve the four-step manufacturing language and the three-component brief workflow on `/material-experience`. The builder is a selection/prefill tool, not a cart, quotation, order acknowledgement or dispatch confirmation. No food/health claims, protein-bar artwork, discount pricing or fictional nutrition data are included.
 
 ## 3. Company and commercial sign-off
 
@@ -45,4 +45,4 @@ The frontend may instead use a correctly configured email service or authenticat
 
 ## 6. Final human review
 
-Approve the reference-led homepage visually, then check current Safari/iOS, Firefox, Chrome/Android and a real lower-powered mobile device. Confirm official remote-photo availability from the deployment region, 3D frame rate, touch/keyboard navigation, visible focus, reduced-motion behavior, contrast, form privacy wording and actual notification delivery. Automated Chromium/axe checks supplement but do not replace this review.
+Check current Safari/iOS, Firefox, Chrome/Android and a real lower-powered mobile device. Confirm official remote-photo availability from the deployment region, 3D frame rate, touch/keyboard navigation, visible focus, reduced-motion behavior, contrast, form privacy wording and actual notification delivery. Automated Chromium/axe checks supplement but do not replace this review.

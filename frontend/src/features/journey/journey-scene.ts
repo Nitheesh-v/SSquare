@@ -10,7 +10,6 @@ export function createJourneyScene(
   canvas: HTMLCanvasElement,
   lost: () => void,
   poolSize = 11,
-  appearance: "original" | "reference" = "original",
 ) {
   const context = canvas.getContext("webgl2", {
     alpha: true,
@@ -61,23 +60,11 @@ export function createJourneyScene(
     materials.add(m);
     return m;
   };
-  const rubber = material(
-    appearance === "reference" ? 0x11161f : 0x242e28,
-    0,
-    0.62,
-  );
-  const rubberEdge = material(
-    appearance === "reference" ? 0x3b4551 : 0x435047,
-    0,
-    0.6,
-  );
+  const rubber = material(0x242e28, 0, 0.69);
+  const rubberEdge = material(0x435047, 0, 0.6);
   const steel = material(0xb9c7d3, 0.85, 0.3);
   const polished = material(0xe2e9ee, 0.92, 0.24);
-  const aluminium = material(
-    appearance === "reference" ? 0xc2cad3 : 0xb6cdcf,
-    0.82,
-    0.32,
-  );
+  const aluminium = material(0xb6cdcf, 0.82, 0.32);
   const groove = material(0x4b626d, 0.7, 0.4);
   const mesh = (g: THREE.BufferGeometry, m: THREE.Material) =>
     new THREE.Mesh(geometry(g), m);
@@ -122,10 +109,10 @@ export function createJourneyScene(
     group.add(
       mesh(
         extrusion(
-          circle(0.475, type === 0 ? 0.235 : 0.2, appearance !== "reference"),
+          circle(0.475, type === 0 ? 0.235 : 0.2, true),
           type === 0 ? 0.075 : 0.12,
         ),
-        type === 0 && appearance !== "reference" ? rubber : steel,
+        type === 0 ? rubber : steel,
       ),
     );
     for (const z of [-1, 1]) {
@@ -146,34 +133,6 @@ export function createJourneyScene(
         );
         ring.position.z = z * (type === 0 ? 0.045 : 0.073);
         group.add(ring);
-      }
-    }
-    if (appearance === "reference" && type === 0) {
-      for (const z of [-1, 1]) {
-        const seal = mesh(extrusion(circle(0.39, 0.235), 0.026, 0.006), rubber);
-        seal.position.z = z * 0.045;
-        group.add(seal);
-      }
-    }
-    if (appearance === "reference" && type === 1) {
-      group.clear();
-      const hex = new THREE.Shape();
-      for (let i = 0; i < 6; i++) {
-        const a = (i * Math.PI) / 3 + Math.PI / 6;
-        const x = Math.cos(a) * 0.48,
-          y = Math.sin(a) * 0.48;
-        if (i === 0) hex.moveTo(x, y);
-        else hex.lineTo(x, y);
-      }
-      hex.closePath();
-      const hole = new THREE.Path();
-      hole.absarc(0, 0, 0.205, 0, Math.PI * 2, true);
-      hex.holes.push(hole);
-      group.add(mesh(extrusion(hex, 0.24, 0.018), steel));
-      for (const z of [-1, 1]) {
-        const lip = mesh(new THREE.TorusGeometry(0.21, 0.008, 5, 56), polished);
-        lip.position.z = z * 0.126;
-        group.add(lip);
       }
     }
     group.rotation.x = 0.16;
@@ -221,27 +180,7 @@ export function createJourneyScene(
   );
   rail.add(hole);
   rail.rotation.set(0.23, -0.35, 0.04);
-  if (appearance === "reference") {
-    const housing = new THREE.Group();
-    const body = mesh(extrusion(circle(0.31, 0.145), 0.72, 0.007), aluminium);
-    body.rotation.x = Math.PI / 2;
-    housing.add(body);
-    for (const y of [-0.25, -0.2, 0.2, 0.25]) {
-      const ring = mesh(new THREE.TorusGeometry(0.314, 0.008, 5, 56), polished);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.y = y;
-      housing.add(ring);
-    }
-    for (let i = 0; i < 16; i++) {
-      const a = (i / 16) * Math.PI * 2;
-      const rib = mesh(new THREE.BoxGeometry(0.009, 0.29, 0.004), polished);
-      rib.position.set(Math.sin(a) * 0.312, 0, Math.cos(a) * 0.312);
-      rib.rotation.y = a;
-      housing.add(rib);
-    }
-    housing.rotation.set(0.33, -0.25, -0.25);
-    templates.push(housing);
-  } else templates.push(rail);
+  templates.push(rail);
 
   const shadowCanvas = document.createElement("canvas");
   shadowCanvas.width = shadowCanvas.height = 128;

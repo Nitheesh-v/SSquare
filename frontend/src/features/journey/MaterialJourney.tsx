@@ -32,42 +32,16 @@ import { SmartProductImage } from "@/components/shared/SmartProductImage";
 import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
 import {
-  ComponentIllustration as OriginalIllustration,
+  ComponentIllustration,
   MaterialFragment,
 } from "./ComponentIllustration";
-import {
-  MATERIALS as ORIGINAL_MATERIALS,
-  STORY_STEPS as ORIGINAL_STEPS,
-} from "./journey-data";
-import {
-  REFERENCE_MATERIALS,
-  REFERENCE_STEPS,
-  REFERENCE_GLOWS,
-} from "@/features/reference/reference-data";
-import { ReferenceIllustration } from "@/features/reference/ReferenceIllustration";
-import { ReferenceQuote } from "@/features/reference/ReferenceQuote";
-import {
-  ReferenceSpotlight,
-  ReferenceProducts,
-  ReferenceProcess,
-  ReferenceComparison,
-} from "@/features/reference/ReferenceSections";
+import { MATERIALS, STORY_STEPS } from "./journey-data";
 import type { JourneyController } from "./journey-engine";
 
 const STEP_ICONS = [PencilRuler, ScanLine, Settings2, Layers3];
 
-/** A single travelling WebGL component, shared by the reference home and the archived journey. */
-export function MaterialJourney({
-  appearance = "original",
-}: {
-  appearance?: "original" | "reference";
-}) {
-  const reference = appearance === "reference";
-  const MATERIALS = reference ? REFERENCE_MATERIALS : ORIGINAL_MATERIALS;
-  const STORY_STEPS = reference ? REFERENCE_STEPS : ORIGINAL_STEPS;
-  const ComponentIllustration = reference
-    ? ReferenceIllustration
-    : OriginalIllustration;
+/** Four sections and a single travelling WebGL component, with complete static fallbacks. */
+export function MaterialJourney() {
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<JourneyController | undefined>(undefined);
@@ -83,11 +57,6 @@ export function MaterialJourney({
   const introRan = useRef(false);
   const [pack, setPack] = useState<(number | null)[]>([null, null, null]);
   const packRef = useRef(pack);
-  const [packLabels, setPackLabels] = useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ]);
   const touched = useRef(false);
   const [status, setStatus] = useState("");
   const [preparing, setPreparing] = useState(false);
@@ -121,14 +90,6 @@ export function MaterialJourney({
           onAuto: setAuto,
           onStep: setStep,
         },
-        reference
-          ? {
-              appearance,
-              materials: REFERENCE_MATERIALS,
-              steps: REFERENCE_STEPS,
-              nativeScroll: true,
-            }
-          : undefined,
       );
       engine.current = controller;
       controller.setAuto(!reduced && !paused);
@@ -142,7 +103,7 @@ export function MaterialJourney({
     };
     // A preference change recreates the renderer safely; active selection is retained.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, reference]);
+  }, [reduced]);
   useEffect(() => {
     if (introRan.current) return;
     // The first client snapshot may still be the static SSR snapshot.
@@ -161,32 +122,12 @@ export function MaterialJourney({
     }
     setIntro(true);
     document.body.classList.add("journey-locked");
-    const timer = setTimeout(finishIntro, reference ? 3400 : 1900);
+    const timer = setTimeout(finishIntro, 1900);
     return () => {
       clearTimeout(timer);
       document.body.classList.remove("journey-locked");
     };
-  }, [finishIntro, reference]);
-  useEffect(() => {
-    if (!intro || !root.current) return;
-    const nodes = [
-      ...Array.from(root.current.children).filter(
-        (node) => !node.classList.contains("journey-intro"),
-      ),
-      ...Array.from(document.querySelectorAll(".site-header,.site-footer")),
-    ].filter((node): node is HTMLElement => node instanceof HTMLElement);
-    const wasInert = nodes.map((node) => node.inert);
-    nodes.forEach((node) => {
-      node.inert = true;
-    });
-    root.current
-      .querySelector<HTMLButtonElement>(".journey-skip")
-      ?.focus({ preventScroll: true });
-    return () =>
-      nodes.forEach((node, i) => {
-        node.inert = wasInert[i];
-      });
-  }, [intro]);
+  }, [finishIntro]);
   useEffect(() => {
     if (entered) engine.current?.setEntered(true);
   }, [entered]);
@@ -216,9 +157,7 @@ export function MaterialJourney({
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    const section = root.current?.querySelector(
-      reference ? ".reference-pack" : "#range",
-    );
+    const section = root.current?.querySelector("#range");
     if (!section) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -245,7 +184,7 @@ export function MaterialJourney({
     );
     observer.observe(section);
     return () => observer.disconnect();
-  }, [reduced, reference]);
+  }, [reduced]);
   useEffect(() => {
     const animations = flights.current,
       pending = timers.current;
@@ -311,10 +250,10 @@ export function MaterialJourney({
       .catch(() => copy.remove());
     root.current?.style.setProperty(
       "--brief-glow",
-      reference ? REFERENCE_GLOWS[index] : `${MATERIALS[index].color}b8`,
+      `${MATERIALS[index].color}b8`,
     );
   }
-  function add(index: number, source?: HTMLElement | null, label?: string) {
+  function add(index: number, source?: HTMLElement | null) {
     if (preparing) return;
     touched.current = true;
     const next = [...packRef.current],
@@ -326,9 +265,6 @@ export function MaterialJourney({
       return;
     }
     next[empty] = index;
-    setPackLabels((current) =>
-      current.map((value, i) => (i === empty ? label || null : value)),
-    );
     packRef.current = next;
     setPack(next);
     setStatus(`${MATERIALS[index].name} added to your project brief.`);
@@ -336,7 +272,7 @@ export function MaterialJourney({
     const glow = root.current?.querySelector<HTMLElement>(".brief-glow");
     root.current?.style.setProperty(
       "--brief-glow",
-      reference ? REFERENCE_GLOWS[index] : `${MATERIALS[index].color}b8`,
+      `${MATERIALS[index].color}b8`,
     );
     if (!reduced && !paused)
       glow?.animate([{ opacity: 0.55 }, { opacity: 1 }], { duration: 600 });
@@ -347,9 +283,6 @@ export function MaterialJourney({
     const next = [...packRef.current];
     const old = next[slot];
     next[slot] = null;
-    setPackLabels((current) =>
-      current.map((value, i) => (i === slot ? null : value)),
-    );
     packRef.current = next;
     setPack(next);
     setStatus(
@@ -379,20 +312,6 @@ export function MaterialJourney({
       if (pendingRequest.current !== open) return;
       pendingRequest.current = null;
       setPreparing(false);
-      if (reference) {
-        const form = root.current?.querySelector<HTMLElement>(
-          ".reference-quote-form",
-        );
-        form?.scrollIntoView({
-          behavior: reduced || paused ? "instant" : "smooth",
-          block: "start",
-        });
-        form?.querySelector<HTMLElement>("h3")?.focus({ preventScroll: true });
-        setStatus(
-          "Your enquiry pack is included in the form. Add your contact details and requirements before submitting.",
-        );
-        return;
-      }
       openQuoteModal({
         division: [...new Set(names)].join(", "),
         message: `I would like to discuss these custom components:\n${names.map((name, i) => `${i + 1}. ${name} — drawing, quantity and application to confirm.`).join("\n")}\n\nPlease review material, geometry, finish and supply requirements with me.`,
@@ -430,12 +349,10 @@ export function MaterialJourney({
   return (
     <div
       ref={root}
-      className={`material-journey ${reference ? "reference-journey" : ""}`}
+      className="material-journey"
       data-testid="material-journey"
       data-webgl="static"
-      data-appearance={appearance}
       data-selected={active}
-      data-material={material.slug}
       data-paused={paused}
       data-reduced={reduced}
       style={{ "--flav": MATERIALS[0].color } as CSSProperties}
@@ -454,26 +371,20 @@ export function MaterialJourney({
           className="journey-intro"
           role="region"
           aria-label="S Square introduction"
-          onKeyDown={(event) => {
-            if (event.key === "Escape") finishIntro();
-          }}
         >
           <button type="button" className="journey-skip" onClick={finishIntro}>
             Skip intro <ArrowUpRight size={14} />
           </button>
-          {reference && (
-            <div className="reference-intro-photo" aria-hidden="true" />
-          )}
           <div className="journey-stamp">
             <div className="stamp-logo">
-              <Logo theme={reference ? "dark" : "light"} />
+              <Logo />
             </div>
             <small>FORM. MATERIAL. MOTION.</small>
           </div>
         </div>
       )}
       <section
-        id={reference ? "home" : "materials"}
+        id="materials"
         className="journey-hero"
         aria-labelledby="material-title"
       >
@@ -488,16 +399,10 @@ export function MaterialJourney({
         </div>
         <div className="journey-topline">
           <p>
-            <span className="journey-dot" />{" "}
-            {reference
-              ? "CUSTOM COMPONENTS / ENGINEERED IN COIMBATORE"
-              : "CUSTOM COMPONENTS. CONSIDERED ENGINEERING."}
+            <span className="journey-dot" /> CUSTOM COMPONENTS. CONSIDERED
+            ENGINEERING.
           </p>
-          <span>
-            {reference
-              ? "RUBBER / STEEL / ALUMINIUM"
-              : "COIMBATORE, INDIA / THREE MATERIAL DISCIPLINES"}
-          </span>
+          <span>COIMBATORE, INDIA / THREE MATERIAL DISCIPLINES</span>
         </div>
         <div className="journey-fallbacks" aria-hidden="true">
           {[-2, -1, 0, 1, 2].map((k) => (
@@ -617,29 +522,11 @@ export function MaterialJourney({
           >
             Request a Quote <ArrowUpRight size={17} />
           </button>
-          <a
-            href={reference ? "#materials" : "#inside"}
-            className="journey-discover"
-          >
-            {reference ? `Explore ${material.slug}` : "Follow the component"}{" "}
-            <ArrowDown size={16} />
+          <a href="#inside" className="journey-discover">
+            Follow the component <ArrowDown size={16} />
           </a>
         </div>
         <p className="journey-model-label">
-          {reference && (
-            <span className="reference-static-label">
-              {reduced
-                ? "STATIC VIEW / REDUCED MOTION"
-                : "CONCEPT COMPONENT STUDY"}
-              <br />
-            </span>
-          )}
-          {reference && (
-            <span className="reference-webgl-label">
-              STATIC VIEW / WEBGL UNAVAILABLE
-              <br />
-            </span>
-          )}
           ILLUSTRATIVE 3D COMPONENTS
           <br />
           REPLACEABLE WITH S SQUARE CAD
@@ -694,22 +581,11 @@ export function MaterialJourney({
       </section>
       <div id="inFront" className="journey-in-front" aria-hidden={reduced}>
         <div className="in-front-frame">
-          <p className="in-eyebrow">
-            {reference
-              ? "THE ANATOMY OF A CUSTOM COMPONENT"
-              : "ONE COMPONENT. FROM IDEA TO APPLICATION."}
-          </p>
-          {reference && (
-            <p className="reference-inside-heading j-display">
-              Precision.
-              <br />
-              <em>From every perspective.</em>
-            </p>
-          )}
+          <p className="in-eyebrow">ONE COMPONENT. FROM IDEA TO APPLICATION.</p>
           <h2 className="in-head j-display">
-            {STORY_STEPS[0].heading[0]}
+            Your idea.
             <br />
-            {STORY_STEPS[0].heading[1]}
+            Our start.
           </h2>
           <div
             className="in-icons"
@@ -728,7 +604,11 @@ export function MaterialJourney({
               </button>
             ))}
           </div>
-          <p className="in-cap">{STORY_STEPS[0].caption}</p>
+          <p className="in-cap">
+            A drawing. A sample. An application.
+            <br />
+            Let’s make it specific.
+          </p>
         </div>
         <div className="journey-storm" aria-hidden="true">
           {Array.from({ length: 20 }, (_, i) => (
@@ -740,46 +620,25 @@ export function MaterialJourney({
       </div>
 
       <section
-        id={reference ? "materials" : "material-divisions"}
+        id="material-divisions"
         className="journey-shop"
         aria-labelledby="journey-divisions-heading"
       >
         <div className="journey-shop-top journey-reveal-content">
-          <div>
-            {reference && (
-              <p className="ref-kicker">
-                <span>01</span> / THREE MATERIALS. ONE PARTNER.
-              </p>
-            )}
-            <h2 id="journey-divisions-heading" className="j-display">
-              <span className="line-mask">
-                <span>{reference ? "The material changes." : "Find your"}</span>
-              </span>
-              <span className="line-mask">
-                <span>
-                  {reference ? (
-                    <>
-                      The commitment <em>stays.</em>
-                    </>
-                  ) : (
-                    "material."
-                  )}
-                </span>
-              </span>
-            </h2>
-          </div>
+          <h2 id="journey-divisions-heading" className="j-display">
+            <span className="line-mask">
+              <span>Find your</span>
+            </span>
+            <span className="line-mask">
+              <span>material.</span>
+            </span>
+          </h2>
           <p>
-            {reference ? (
-              "For engineering and procurement teams who need components made to fit — not compromises made to work."
-            ) : (
-              <>
-                Three material disciplines.
-                <br />
-                One manufacturing partner.
-                <br />
-                Made to your requirement.
-              </>
-            )}
+            Three material disciplines.
+            <br />
+            One manufacturing partner.
+            <br />
+            Made to your requirement.
           </p>
         </div>
         <div className="journey-grid">
@@ -874,177 +733,149 @@ export function MaterialJourney({
         </div>
       </section>
 
-      {reference && (
-        <>
-          <ReferenceSpotlight active={active} />
-          <ReferenceProducts />
-          <ReferenceProcess />
-          <ReferenceComparison onAdd={add} />
-        </>
-      )}
-      {reference ? (
-        <ReferenceQuote
-          pack={pack}
-          labels={packLabels}
-          preparing={preparing}
-          onAdd={add}
-          onRemove={remove}
-          onPrepare={quoteBrief}
-        />
-      ) : (
-        <section
-          id="range"
-          className="journey-builder"
-          aria-labelledby="brief-heading"
-        >
-          <div className="brief-copy journey-reveal-content">
-            <p className="j-eyebrow">YOUR NEXT PROJECT STARTS HERE.</p>
-            <h2 id="brief-heading" className="j-display">
-              <span className="line-mask">
-                <span>Build your</span>
-              </span>
-              <span className="line-mask">
-                <span>
-                  <b>3</b> component
-                </span>
-              </span>
-              <span className="line-mask">
-                <span>brief.</span>
-              </span>
-            </h2>
-            <p className="brief-intro">
-              One project. Any combination.
-              <br />
-              Pick your materials. Let’s work out the details.
-            </p>
-            <div
-              className="brief-thumbnails"
-              role="group"
-              aria-label="Add materials to your brief"
-            >
-              {MATERIALS.map((m, i) => {
-                const n = pack.filter((x) => x === i).length;
-                return (
-                  <button
-                    type="button"
-                    key={m.slug}
-                    aria-label={`Add ${m.name} to brief`}
-                    onClick={(e) =>
-                      add(
-                        i,
-                        e.currentTarget.querySelector<HTMLElement>(
-                          ".brief-thumb-image",
-                        ),
-                      )
-                    }
-                  >
-                    <span
-                      className="brief-thumb-image"
-                      style={{ background: m.color }}
-                    >
-                      <ComponentIllustration type={i} />
-                      <span className="thumb-count">
-                        {n === 1 ? (
-                          <Check size={12} />
-                        ) : n > 1 ? (
-                          n
-                        ) : (
-                          <Plus size={12} />
-                        )}
-                      </span>
-                    </span>
-                    <strong>{m.name}</strong>
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              id="brief-buy"
-              className="brief-buy"
-              disabled={count < 3}
-              aria-busy={preparing}
-              onClick={quoteBrief}
-            >
-              {preparing
-                ? "Preparing your brief…"
-                : count < 3
-                  ? `Pick ${3 - count} more`
-                  : "Request this combination"}
+      <section
+        id="range"
+        className="journey-builder"
+        aria-labelledby="brief-heading"
+      >
+        <div className="brief-copy journey-reveal-content">
+          <p className="j-eyebrow">YOUR NEXT PROJECT STARTS HERE.</p>
+          <h2 id="brief-heading" className="j-display">
+            <span className="line-mask">
+              <span>Build your</span>
+            </span>
+            <span className="line-mask">
               <span>
-                {count === 3 ? <ArrowUpRight size={18} /> : `${count} / 3`}
+                <b>3</b> component
               </span>
-            </button>
-            <p className="brief-disclaimer">
-              A starting point, not an order. No cart. No online payment.
-              <br />
-              Add drawings, quantities and requirements in the quote form.
-            </p>
-          </div>
-          <div className="brief-arrangement">
-            <div className="brief-glow" />
-            <div className="brief-orbit" aria-hidden="true" />
-            {pack.map((index, i) => (
-              <div
-                key={i}
-                className={`brief-slot brief-slot-${i} ${index !== null ? "filled" : ""}`}
-              >
-                <span className="brief-slot-number">0{i + 1}</span>
-                {index !== null && (
-                  <div key={index} className="brief-slot-part">
-                    <ComponentIllustration type={index} />
-                    <span>{MATERIALS[index].name}</span>
-                  </div>
-                )}
+            </span>
+            <span className="line-mask">
+              <span>brief.</span>
+            </span>
+          </h2>
+          <p className="brief-intro">
+            One project. Any combination.
+            <br />
+            Pick your materials. Let’s work out the details.
+          </p>
+          <div
+            className="brief-thumbnails"
+            role="group"
+            aria-label="Add materials to your brief"
+          >
+            {MATERIALS.map((m, i) => {
+              const n = pack.filter((x) => x === i).length;
+              return (
                 <button
                   type="button"
-                  aria-label={
-                    index === null
-                      ? `Empty brief position ${i + 1}`
-                      : `Remove ${MATERIALS[index].name} from position ${i + 1}`
+                  key={m.slug}
+                  aria-label={`Add ${m.name} to brief`}
+                  onClick={(e) =>
+                    add(
+                      i,
+                      e.currentTarget.querySelector<HTMLElement>(
+                        ".brief-thumb-image",
+                      ),
+                    )
                   }
-                  disabled={index === null}
-                  onClick={() => remove(i)}
                 >
-                  <X size={19} />
+                  <span
+                    className="brief-thumb-image"
+                    style={{ background: m.color }}
+                  >
+                    <ComponentIllustration type={i} />
+                    <span className="thumb-count">
+                      {n === 1 ? (
+                        <Check size={12} />
+                      ) : n > 1 ? (
+                        n
+                      ) : (
+                        <Plus size={12} />
+                      )}
+                    </span>
+                  </span>
+                  <strong>{m.name}</strong>
                 </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="brief-contact">
-            <a href={`tel:${COMPANY_INFO.phoneRaw}`}>
-              <Phone size={16} />
-              {COMPANY_INFO.phone}
-            </a>
-            <a
-              href={COMPANY_INFO.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+          <button
+            type="button"
+            id="brief-buy"
+            className="brief-buy"
+            disabled={count < 3}
+            aria-busy={preparing}
+            onClick={quoteBrief}
+          >
+            {preparing
+              ? "Preparing your brief…"
+              : count < 3
+                ? `Pick ${3 - count} more`
+                : "Request this combination"}
+            <span>
+              {count === 3 ? <ArrowUpRight size={18} /> : `${count} / 3`}
+            </span>
+          </button>
+          <p className="brief-disclaimer">
+            A starting point, not an order. No cart. No online payment.
+            <br />
+            Add drawings, quantities and requirements in the quote form.
+          </p>
+        </div>
+        <div className="brief-arrangement">
+          <div className="brief-glow" />
+          <div className="brief-orbit" aria-hidden="true" />
+          {pack.map((index, i) => (
+            <div
+              key={i}
+              className={`brief-slot brief-slot-${i} ${index !== null ? "filled" : ""}`}
             >
-              <MessageSquare size={16} />
-              Talk on WhatsApp <ArrowUpRight size={14} />
-            </a>
-            <span>COIMBATORE, INDIA → YOUR APPLICATION</span>
-          </div>
-        </section>
-      )}
+              <span className="brief-slot-number">0{i + 1}</span>
+              {index !== null && (
+                <div key={index} className="brief-slot-part">
+                  <ComponentIllustration type={index} />
+                  <span>{MATERIALS[index].name}</span>
+                </div>
+              )}
+              <button
+                type="button"
+                aria-label={
+                  index === null
+                    ? `Empty brief position ${i + 1}`
+                    : `Remove ${MATERIALS[index].name} from position ${i + 1}`
+                }
+                disabled={index === null}
+                onClick={() => remove(i)}
+              >
+                <X size={19} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="brief-contact">
+          <a href={`tel:${COMPANY_INFO.phoneRaw}`}>
+            <Phone size={16} />
+            {COMPANY_INFO.phone}
+          </a>
+          <a
+            href={COMPANY_INFO.whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageSquare size={16} />
+            Talk on WhatsApp <ArrowUpRight size={14} />
+          </a>
+          <span>COIMBATORE, INDIA → YOUR APPLICATION</span>
+        </div>
+      </section>
       <nav className="journey-rail" aria-label="Page sections">
         <span className="journey-rail-highlight" aria-hidden="true" />
-        {(reference
-          ? [
-              ["#home", "Home"],
-              ["#materials", "Materials"],
-              ["#components", "Components"],
-              ["#compare", "Compare"],
-              ["#quote", "Enquire"],
-            ]
-          : [
-              ["#materials", "Materials"],
-              ["#inside", "Inside"],
-              ["#material-divisions", "Divisions"],
-              ["#range", "Your brief"],
-            ]
-        ).map(([href, label], i, links) => (
+        {[
+          ["#materials", "Materials"],
+          ["#inside", "Inside"],
+          ["#material-divisions", "Divisions"],
+          ["#range", "Your brief"],
+        ].map(([href, label], i) => (
           <a
             key={href}
             href={href}
@@ -1052,7 +883,7 @@ export function MaterialJourney({
             onClick={() => engine.current?.invalidate()}
           >
             {label}
-            {i === links.length - 1 && (
+            {i === 3 && (
               <span
                 className="brief-badge"
                 aria-label={`${count} selected components`}

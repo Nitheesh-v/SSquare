@@ -31,14 +31,11 @@ const labelClasses = "mb-2 block text-[11px] font-semibold text-slate-700";
 export function QuoteForm({
   prefill,
   compact = false,
-  selectedItems,
 }: {
   prefill?: QuotePrefill;
   compact?: boolean;
-  selectedItems?: readonly string[];
 }) {
   const id = useId();
-  const selection = selectedItems || [];
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
@@ -50,17 +47,7 @@ export function QuoteForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<QuoteResult | null>(null);
-  const [submittedItems, setSubmittedItems] = useState<string[]>([]);
   const feedback = useRef<HTMLDivElement>(null);
-  const withItems = (items: readonly string[]) =>
-    [
-      items.length
-        ? `Items in this enquiry (material / application review, not an order):\n${items.map((item, i) => `${i + 1}. ${item}`).join("\n")}`
-        : "",
-      message,
-    ]
-      .filter(Boolean)
-      .join("\n\n");
 
   useEffect(() => {
     if (prefill?.division || prefill?.partName)
@@ -75,16 +62,6 @@ export function QuoteForm({
     event.preventDefault();
     setError("");
     setSubmitting(true);
-    // Capture the pack with this request. Editing it while the network is pending
-    // must not change the later direct-dispatch links for the saved reference.
-    const items = [...selection];
-    if (withItems(items).length > 6000) {
-      setError(
-        "Your notes and enquiry pack exceed 6,000 characters. Please shorten the notes or send the full specification by email or WhatsApp.",
-      );
-      setSubmitting(false);
-      return;
-    }
     try {
       const response = await fetch("/api/quote", {
         method: "POST",
@@ -94,10 +71,10 @@ export function QuoteForm({
           company,
           email,
           phone,
-          division: interest || [...new Set(items)].join(", "),
+          division: interest,
           partName: prefill?.partName || "",
           quantity,
-          message: withItems(items),
+          message,
           website,
         }),
         signal: AbortSignal.timeout(30000),
@@ -105,10 +82,7 @@ export function QuoteForm({
       const data = await response.json();
       if (!response.ok)
         setError(data.error || "Please check your enquiry and try again.");
-      else {
-        setSubmittedItems(items);
-        setResult(data);
-      }
+      else setResult(data);
     } catch {
       setError(
         "We couldn’t confirm your submission. Your details are still here. Please try again or send the enquiry directly by phone, WhatsApp or email.",
@@ -126,10 +100,10 @@ export function QuoteForm({
     `Company: ${company || "To discuss"}`,
     `Email: ${email || "Not provided"}`,
     `Phone / WhatsApp: ${phone || "Not provided"}`,
-    `Material / product: ${interest || [...new Set(result ? submittedItems : selection)].join(", ") || "To discuss"}`,
+    `Material / product: ${interest || "To discuss"}`,
     `Quantity: ${quantity || "To discuss"}`,
     "",
-    withItems(result ? submittedItems : selection),
+    message,
   ].join("\n");
   const emailLink = `mailto:${COMPANY_INFO.emails.sales}?subject=${encodeURIComponent(`Quote request${result ? ` [${result.referenceId}]` : ""} – ${interest || "Custom components"}`)}&body=${encodeURIComponent(draft)}`;
   const whatsappLink = `https://wa.me/917530080040?text=${encodeURIComponent(`Hello S Square Engineering Services,\n${draft}`)}`;
@@ -369,30 +343,6 @@ export function QuoteForm({
             />
           </div>
         </div>
-        {selectedItems !== undefined && (
-          <div className="quote-selection" data-testid="quote-selection">
-            <p className={labelClasses}>Items in your enquiry</p>
-            {selection.length ? (
-              <ol>
-                {selection.map((item, i) => (
-                  <li key={`${item}-${i}`}>
-                    <span>0{i + 1}</span>
-                    {item}
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p>
-                Nothing added yet — use the + buttons or the pack. You can also
-                describe your requirement below.
-              </p>
-            )}
-            <p>
-              Selections are included with your notes. Changing the pack won’t
-              replace anything you type.
-            </p>
-          </div>
-        )}
         <div>
           <label className={labelClasses} htmlFor={`${id}-message`}>
             Requirements / drawing notes{" "}

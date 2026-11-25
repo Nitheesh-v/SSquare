@@ -87,25 +87,42 @@ test("public pages, legacy redirects and enquiry-only routes", async ({
 
 test("navigation, hero controls, and quote dialog keyboard access", async ({
   page,
-}) => {
+}, info) => {
   await page.goto("/");
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to main content" }),
   ).toBeFocused();
-  const toggle = page.getByRole("button", { name: "Open navigation" });
-  await toggle.click();
-  await expect(
-    page.getByRole("navigation", { name: "Main navigation" }),
-  ).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(toggle).toBeFocused();
+  if (info.project.name === "desktop") {
+    const products = page.getByRole("button", {
+      name: "Products",
+      exact: true,
+    });
+    await products.focus();
+    await page.keyboard.press("Enter");
+    await expect(products).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("link", { name: "All components", exact: true }),
+    ).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(products).toBeFocused();
+    await expect(products).toHaveAttribute("aria-expanded", "false");
+  } else {
+    const toggle = page.getByRole("button", { name: "Open navigation" });
+    await toggle.click();
+    await expect(
+      page.getByRole("navigation", { name: "Mobile navigation" }),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(toggle).toBeFocused();
+  }
   await page.getByRole("button", { name: /03 Aluminium/ }).click();
-  await expect(page.getByTestId("material-journey")).toHaveAttribute(
-    "data-material",
+  await expect(page.locator(".precision-hero")).toHaveAttribute(
+    "data-active-material",
     "aluminium",
   );
-  await expect(page.locator("h1")).toHaveAccessibleName("Aluminium");
+  await expect(page.locator("h1")).toContainText("Big possibilities.");
   await expect(
     page.getByRole("button", { name: /03 Aluminium/ }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -138,21 +155,6 @@ test("catalog filters, quick details and contextual quotation", async ({
   page,
 }) => {
   await page.goto("/products");
-  if (page.viewportSize()!.width >= 1024) {
-    const products = page.getByRole("button", {
-      name: "Products",
-      exact: true,
-    });
-    await products.focus();
-    await page.keyboard.press("Enter");
-    await expect(products).toHaveAttribute("aria-expanded", "true");
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("link", { name: "All components", exact: true }),
-    ).toBeFocused();
-    await page.keyboard.press("Escape");
-    await expect(products).toBeFocused();
-  }
   const total = await page.locator("main article").count();
   expect(total).toBeGreaterThan(25);
   await page
