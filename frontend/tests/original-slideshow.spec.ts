@@ -27,7 +27,7 @@ async function allowAutoplay(page: Page) {
   await page.waitForTimeout(60);
 }
 
-test("the original four-slide hero is first, without restoring any old page sections or 3D hero", async ({
+test("the original four-slide hero stays first above the reference content, without a 3D hero", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -52,8 +52,10 @@ test("the original four-slide hero is first, without restoring any old page sect
     ),
   ).toHaveCount(0);
   await expect(page.locator(".studio-material-card")).toHaveCount(3);
-  await expect(page.locator(".studio-process")).toHaveCount(1);
-  await expect(page.locator(".studio-quote-section")).toHaveCount(1);
+  await expect(page.locator("#who-we-are")).toHaveCount(1);
+  await expect(page.locator("#what-we-do")).toHaveCount(1);
+  await expect(page.locator("#our-services")).toHaveCount(1);
+  await expect(page.locator("#quick-service")).toHaveCount(1);
   await expect(hero).not.toContainText(
     /100%|Free Global|Free Door Delivery|3–4 Day Door/,
   );
@@ -216,19 +218,26 @@ test("reduced motion keeps the original overview still while all four selectors 
   await expect(hero).toHaveAttribute("data-autoplay", "false");
 });
 
-test("the independent lower study keeps its original selection when the hero changes", async ({
+test("hero selection leaves the reference content and company facts independent", async ({
   page,
 }) => {
   const hero = await enter(page);
   await hero
     .getByRole("button", { name: "02 Rubber & Bonded Seals", exact: true })
     .click();
-  await page.getByTestId("component-inspector").scrollIntoViewIfNeeded();
-  const study = page.getByRole("group", { name: "3D material study" });
-  await expect(
-    study.getByRole("button", { name: "Steel", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#material-divisions").scrollIntoViewIfNeeded();
+  await expect(page.locator(".studio-material-card h3")).toHaveText([
+    "Aluminium Products",
+    "Steel Products",
+    "Rubber Products",
+  ]);
+  await expect(page.locator(".home-facts dd")).toHaveText([
+    "20+",
+    "03",
+    "Coimbatore",
+  ]);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(page.getByTestId("component-inspector")).toHaveCount(0);
 });
 
 test("without JavaScript the original hero has usable catalog, quote-page and phone links", async ({

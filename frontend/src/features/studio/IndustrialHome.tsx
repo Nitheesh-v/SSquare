@@ -6,44 +6,83 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
-  CheckCheck,
-  FilePenLine,
   Focus,
   Layers3,
-  MessageSquare,
+  Mail,
+  MapPin,
+  Phone,
   Plus,
-  Rotate3D,
+  ShieldCheck,
+  Truck,
+  Wrench,
 } from "lucide-react";
 import { Reveal, useReducedMotion } from "@/components/shared/MotionPrimitives";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
-import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
+import { HeroShowcase } from "@/features/products/HeroShowcase";
+import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { STUDIO_MATERIALS } from "./materials";
-import { ComponentInspector } from "./ComponentInspector";
-import { HeroShowcase } from "@/features/products/HeroShowcase";
+import "./home-content.css";
 
-const PROCESS = [
+const MACHINED_COMPONENTS = "/images/ssquare/machined-components.jpg";
+const ALUMINIUM_TOOLING = "/images/ssquare/aluminium-tooling.jpg";
+
+// Match the reference's product order without changing the shared division data.
+const HOME_PRODUCTS = [
+  { ...STUDIO_MATERIALS[2], photo: ALUMINIUM_TOOLING, illustrative: false },
+  { ...STUDIO_MATERIALS[1], photo: MACHINED_COMPONENTS, illustrative: false },
   {
-    title: "Start with your requirement.",
-    text: "A drawing, a sample or an application. Share the geometry, material and quantity you have in mind.",
-    icon: FilePenLine,
+    ...STUDIO_MATERIALS[0],
+    photo: STUDIO_MATERIALS[0].image,
+    illustrative: true,
+  },
+];
+
+const CAPABILITIES = [
+  "Custom Rubber Components & Molded Products",
+  "Steel Fabricated Parts & Structures",
+  "Aluminium Profiles, Sheets & Machined Components",
+  "Industrial Assemblies & Special-Purpose Parts",
+];
+
+const SERVICES = [
+  {
+    title: "Customization",
+    description:
+      "Custom rubber, steel and aluminium products made around your drawings or samples, with material, geometry and finish selected for the application.",
+    icon: Wrench,
   },
   {
-    title: "Get the details right.",
-    text: "We review the material, finish and scope of supply, then prepare a quotation around your project.",
-    icon: Focus,
+    title: "Quality Assurance",
+    description:
+      "Technical requirements are reviewed against your approved drawing or sample. Inspection scope and acceptance criteria are agreed during quotation.",
+    icon: ShieldCheck,
   },
   {
-    title: "Make. Inspect. Deliver.",
-    text: "Manufacture against the agreed specification, with inspection and dispatch coordinated for your requirement.",
-    icon: CheckCheck,
+    title: "Door Delivery",
+    description:
+      "Delivery is coordinated through DHL and FedEx. Destination coverage, shipping charges and the project schedule are confirmed in your quotation.",
+    icon: Truck,
+  },
+];
+
+const COMPANY_FACTS = [
+  { value: COMPANY_INFO.experienceYears, label: "Years of experience" },
+  {
+    value: String(STUDIO_MATERIALS.length).padStart(2, "0"),
+    label: "Material disciplines",
+  },
+  {
+    value: COMPANY_INFO.address.city,
+    label: `Manufacturing base · ${COMPANY_INFO.address.country}`,
   },
 ];
 
 export function IndustrialHome() {
-  const [active, setActive] = useState(1),
-    [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
+  const { openQuoteModal } = useQuoteModal();
+
   return (
     <div
       className="studio-home"
@@ -54,42 +93,89 @@ export function IndustrialHome() {
       <div className="studio-trust-strip">
         <div className="studio-shell">
           <span>
-            <Plus size={15} /> CUSTOM BUILT. NEVER OFF THE SHELF.
+            <Plus size={15} aria-hidden="true" /> CUSTOM BUILT. NEVER OFF THE
+            SHELF.
           </span>
           <span>
-            <Check size={14} /> Drawing or sample based
+            <Check size={14} aria-hidden="true" /> Drawing or sample based
           </span>
           <span>
-            <Layers3 size={14} /> Three material disciplines
+            <Layers3 size={14} aria-hidden="true" /> Three material disciplines
           </span>
           <span>
-            <Focus size={14} /> Coimbatore, India
+            <Focus size={14} aria-hidden="true" /> Coimbatore, India
           </span>
         </div>
       </div>
+
+      <section
+        id="who-we-are"
+        className="studio-section home-about"
+        aria-labelledby="about-heading"
+      >
+        <div className="studio-shell home-editorial-grid">
+          <div className="home-editorial-copy">
+            <p className="studio-kicker">About Us</p>
+            <h2 id="about-heading" className="home-section-heading">
+              Who We Are
+            </h2>
+            <p>
+              We are a{" "}
+              <strong>
+                custom manufacturer and supplier specializing in Rubber, Steel,
+                and Aluminium products
+              </strong>
+              , serving industrial, commercial, and OEM clients. Our
+              manufacturing capabilities, combined with technical expertise,
+              enable us to deliver <strong>tailor-made solutions</strong> that
+              meet complex operational requirements.
+            </p>
+            <p>
+              With {COMPANY_INFO.experienceYears} years of engineering
+              experience, our focus is on{" "}
+              <strong>
+                reliability, precision, and long-term partnerships
+              </strong>
+              . Based in Coimbatore, we work with you from the first requirement
+              to the finished component.
+            </p>
+            <Link href="/about" className="studio-text-link home-about-link">
+              More About Us <ArrowUpRight size={17} aria-hidden="true" />
+            </Link>
+          </div>
+          <figure className="home-editorial-figure">
+            <div className="home-editorial-photo">
+              <SmartProductImage
+                src={MACHINED_COMPONENTS}
+                fallbackSrc="/images/division-steel.jpg"
+                alt="Machined steel and stainless components from S Square’s published range"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <figcaption>
+              <span>PRECISION IN EVERY COMPONENT</span>
+              <span>STEEL / STAINLESS</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section
         id="material-divisions"
-        className="studio-section studio-materials"
+        className="studio-section studio-materials home-products"
         aria-labelledby="materials-heading"
       >
         <div className="studio-shell">
-          <Reveal paused={paused} className="studio-section-intro">
-            <div>
-              <p className="studio-kicker">01 / OUR MATERIAL EXPERTISE</p>
-              <h2 id="materials-heading">
-                Different materials.
-                <br />
-                <span>The same commitment.</span>
-              </h2>
-            </div>
+          <div className="home-products-intro">
+            <p className="studio-kicker">Rubber / Steel / Aluminium</p>
+            <h2 id="materials-heading">Explore Our Products</h2>
             <p>
-              From a flexible seal to a precision-machined part.
-              <br className="desktop-break" /> Three disciplines. One partner
-              who sees the whole picture.
+              Three material disciplines. Custom components built around your
+              requirement.
             </p>
-          </Reveal>
+          </div>
           <div className="studio-material-grid">
-            {STUDIO_MATERIALS.map((item, i) => (
+            {HOME_PRODUCTS.map((item, i) => (
               <Reveal
                 paused={paused}
                 key={item.slug}
@@ -99,42 +185,33 @@ export function IndustrialHome() {
                 <Link
                   href={`/products/${item.slug}`}
                   className="studio-material-photo"
-                  aria-label={`Explore ${item.name} Products`}
+                  aria-label={`Explore ${item.division}`}
                 >
                   <SmartProductImage
-                    src={item.image}
+                    src={item.photo}
                     fallbackSrc={item.image}
-                    illustrative
+                    illustrative={item.illustrative}
                     motionPaused={paused}
                     alt={`${item.name} component assortment`}
                     depth
                     className="h-full w-full object-cover"
                   />
-                  <span className="photo-code">
+                  <span className="photo-code" aria-hidden="true">
                     0{i + 1} / {item.slug.toUpperCase()}
                   </span>
-                  <span className="photo-arrow">
+                  <span className="photo-arrow" aria-hidden="true">
                     <ArrowUpRight size={24} />
                   </span>
                 </Link>
                 <div className="studio-material-content">
-                  <h3>
-                    {item.name}
-                    <span>0{i + 1}</span>
-                  </h3>
-                  <p className="material-card-title">{item.title}</p>
+                  <h3>{item.division}</h3>
                   <p>{item.summary}</p>
-                  <div className="studio-material-tags">
-                    {item.tags.slice(0, 3).map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
                   <Link
                     className="studio-card-link"
                     href={`/products/${item.slug}`}
                   >
-                    Discover {item.slug}
-                    <ArrowRight size={17} />
+                    View {item.division}
+                    <ArrowRight size={17} aria-hidden="true" />
                   </Link>
                 </div>
               </Reveal>
@@ -142,160 +219,172 @@ export function IndustrialHome() {
           </div>
         </div>
       </section>
+
       <section
-        id="the-details"
-        className="studio-section studio-details"
-        aria-labelledby="details-heading"
+        id="what-we-do"
+        className="studio-section home-capabilities"
+        aria-labelledby="capabilities-heading"
       >
-        <div className="studio-shell studio-details-grid">
-          <Reveal paused={paused} className="studio-details-copy">
-            <p className="studio-kicker">02 / ENGINEERING, UP CLOSE</p>
-            <h2 id="details-heading">
-              The difference
-              <br />
-              is in <span>the details.</span>
+        <div className="studio-shell home-editorial-grid">
+          <div className="home-editorial-copy">
+            <p className="studio-kicker">From your drawing to your component</p>
+            <h2 id="capabilities-heading" className="home-section-heading">
+              What We Do
             </h2>
             <p>
-              Good manufacturing starts with the right questions. Material,
-              geometry, finish and application—we look at how everything works
-              together.
+              We design, manufacture, and supply{" "}
+              <strong>custom-fabricated components and products</strong>,
+              including:
             </p>
-            <ul>
-              {[
-                ["Your geometry.", "Built around your drawing or sample."],
-                ["Your material.", "Compounds and grades chosen for the job."],
-                [
-                  "Your specification.",
-                  "Requirements agreed before production.",
-                ],
-              ].map(([title, text]) => (
-                <li key={title}>
-                  <span>
-                    <Check size={14} />
-                  </span>
-                  <div>
-                    <strong>{title}</strong>
-                    <p>{text}</p>
-                  </div>
+            <ul className="home-capability-list">
+              {CAPABILITIES.map((capability) => (
+                <li key={capability}>
+                  <Check size={15} aria-hidden="true" />
+                  <span>{capability}</span>
                 </li>
               ))}
             </ul>
-            <Link href="/infrastructure" className="studio-text-link">
-              Explore our infrastructure <ArrowUpRight size={17} />
-            </Link>
-          </Reveal>
-          <div>
-            <ComponentInspector
-              active={active}
-              onSelect={setActive}
-              paused={paused}
-              onPause={() => setPaused((p) => !p)}
-            />
-            <p className="studio-inspector-note">
-              A closer look at form and material. Scroll to rotate, or explore
-              it yourself.
+            <p>
+              Every project starts with your application. Material, dimensional,
+              finish and inspection requirements are confirmed against your
+              drawing or sample, with a focus on{" "}
+              <strong>strength, accuracy, and performance</strong>.
             </p>
-            <Link
-              href="/material-experience"
-              className="studio-experience-link"
-            >
-              <Rotate3D size={15} /> Enter the full 3D material journey{" "}
-              <ArrowUpRight size={14} />
+            <Link href="/about" className="studio-text-link home-about-link">
+              More About Us <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
           </div>
-        </div>
-      </section>
-      <section
-        className="studio-section studio-process"
-        aria-labelledby="process-heading"
-      >
-        <div className="studio-shell studio-process-grid">
-          <Reveal paused={paused} className="studio-process-visual">
-            <div className="studio-process-image">
+          <figure className="home-editorial-figure">
+            <div className="home-editorial-photo">
               <SmartProductImage
-                src="/images/quality-metrology.jpg"
-                fallbackSrc="/images/quality-metrology.jpg"
-                illustrative
-                motionPaused={paused}
-                alt="Illustrative component inspection and metrology"
-                depth
+                src={ALUMINIUM_TOOLING}
+                fallbackSrc="/images/division-aluminium.jpg"
+                alt="Precision aluminium die-mold tooling from S Square’s published range"
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="process-image-caption">
-              <span>EVERY DETAIL HAS A PURPOSE.</span>
-              <Focus size={19} />
-            </div>
-          </Reveal>
-          <Reveal paused={paused} className="studio-process-copy">
-            <p className="studio-kicker">03 / A CLEAR PATH FROM IDEA TO PART</p>
-            <h2 id="process-heading">
-              From your first drawing
-              <br />
-              to <span>the final detail.</span>
-            </h2>
-            <div className="studio-workflow">
-              {PROCESS.map((item, i) => (
-                <div key={item.title}>
-                  <span>0{i + 1}</span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.text}</p>
-                  </div>
-                  <item.icon size={22} />
-                </div>
-              ))}
-            </div>
-            <Link href="/about" className="studio-text-link">
-              Meet your manufacturing partner <ArrowUpRight size={17} />
-            </Link>
-          </Reveal>
+            <figcaption>
+              <span>BUILT TO DRAWING OR SAMPLE</span>
+              <span>ALUMINIUM / TOOLING</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
+
       <section
-        className="studio-quote-section"
-        aria-labelledby="project-heading"
+        id="our-services"
+        className="studio-section home-services"
+        aria-labelledby="services-heading"
       >
-        <div className="studio-shell studio-project-panel">
-          <div className="project-grid-art" aria-hidden="true" />
-          <Reveal paused={paused} className="project-copy">
-            <p className="studio-kicker light">
-              GOOD COMPONENTS START WITH A CONVERSATION.
-            </p>
-            <h2 id="project-heading">
-              Your next idea.
-              <br />
-              <span>Let’s make it real.</span>
-            </h2>
-            <p>
-              A drawing, a sample or a challenge to solve.
-              <br />
-              Tell us what you have in mind.
-            </p>
-            <div className="studio-actions">
-              <OpenQuoteButton label="Request a Quote" />
-              <a
-                href={COMPANY_INFO.whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="studio-text-link light"
-              >
-                <MessageSquare size={16} /> Discuss on WhatsApp{" "}
-                <ArrowUpRight size={15} />
-              </a>
+        <div className="studio-shell">
+          <div className="home-services-intro">
+            <div>
+              <p className="studio-kicker light">Services</p>
+              <h2 id="services-heading" className="home-section-heading">
+                Our Services
+              </h2>
             </div>
-          </Reveal>
-          <div className="project-contact">
-            <span className="project-contact-label">DIRECT TO OUR TEAM</span>
-            <a href={`tel:${COMPANY_INFO.phoneRaw}`}>
-              {COMPANY_INFO.phone}
-              <ArrowUpRight size={24} />
+            <p>
+              Practical support at every stage, from your first specification to
+              dispatch.
+            </p>
+          </div>
+          <ol className="home-service-grid">
+            {SERVICES.map((service, index) => (
+              <li key={service.title} className="home-service-card">
+                <span className="home-service-number" aria-hidden="true">
+                  0{index + 1}.
+                </span>
+                <service.icon size={42} strokeWidth={1.3} aria-hidden="true" />
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="home-facts" aria-label="S Square at a glance">
+        <dl className="studio-shell home-facts-grid">
+          {COMPANY_FACTS.map((fact) => (
+            <div key={fact.label}>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section
+        id="quick-service"
+        className="home-quick-service"
+        aria-labelledby="quick-service-heading"
+      >
+        <div className="home-quick-photos">
+          <div>
+            <SmartProductImage
+              src="/images/division-rubber.jpg"
+              fallbackSrc="/images/division-rubber.jpg"
+              illustrative
+              alt="Rubber seals, gaskets and molded components"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div>
+            <SmartProductImage
+              src={MACHINED_COMPONENTS}
+              fallbackSrc="/images/division-steel.jpg"
+              alt="Custom-machined metal component range"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <p>RUBBER / STEEL / ALUMINIUM</p>
+        </div>
+        <div className="home-quick-copy">
+          <p className="studio-kicker">Quick Service on Your Needs</p>
+          <h2 id="quick-service-heading">Call {COMPANY_INFO.hours}</h2>
+          <p>
+            Reach out to our team for expert guidance and reliable support on
+            custom rubber, steel, and aluminium manufacturing.
+          </p>
+          <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="home-quick-phone">
+            <Phone size={24} aria-hidden="true" />
+            {COMPANY_INFO.phone}
+          </a>
+          <div className="home-quick-actions">
+            <a
+              href="/contact#quote"
+              className="home-quick-quote"
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                // Preserve native navigation, new-tab shortcuts and the no-JS path.
+                if (
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
+                event.preventDefault();
+                openQuoteModal({
+                  division:
+                    "Rubber Products, Steel Products, Aluminium Products",
+                });
+              }}
+            >
+              Request a Quote <ArrowRight size={16} aria-hidden="true" />
             </a>
             <a href={`mailto:${COMPANY_INFO.emails.sales}`}>
+              <Mail size={16} aria-hidden="true" />
               {COMPANY_INFO.emails.sales}
             </a>
-            <span>COIMBATORE, TAMIL NADU, INDIA</span>
           </div>
+          <p className="home-quick-location">
+            <MapPin size={13} aria-hidden="true" />
+            {COMPANY_INFO.address.locality}, {COMPANY_INFO.address.city},{" "}
+            {COMPANY_INFO.address.country}
+          </p>
         </div>
       </section>
     </div>
