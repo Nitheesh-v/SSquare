@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowRight,
@@ -25,6 +25,9 @@ import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { STUDIO_MATERIALS } from "./materials";
 import { ComponentInspector } from "./ComponentInspector";
+import { HomeMotion, MotionLetters } from "./HomeMotion";
+import type { HomeMotionState } from "./home-motion";
+import "./home-motion.css";
 
 const PROCESS = [
   {
@@ -46,11 +49,31 @@ const PROCESS = [
 
 export function IndustrialHome() {
   const [active, setActive] = useState(1),
-    [paused, setPaused] = useState(false);
+    [paused, setPaused] = useState(false),
+    [previous, setPrevious] = useState<number | null>(null),
+    [rotation, setRotation] = useState(0),
+    [motionState, setMotionState] = useState<HomeMotionState>("static");
   const reduced = useReducedMotion(),
-    hero = useRef<HTMLElement>(null);
+    home = useRef<HTMLDivElement>(null),
+    hero = useRef<HTMLElement>(null),
+    selected = useRef(active);
   const { openQuoteModal } = useQuoteModal();
   const m = STUDIO_MATERIALS[active];
+  const selectMaterial = useCallback((index: number) => {
+    if (selected.current === index) return;
+    setPrevious(selected.current);
+    selected.current = index;
+    setActive(index);
+  }, []);
+  useEffect(() => {
+    if (previous === null) return;
+    if (paused || reduced) {
+      setPrevious(null);
+      return;
+    }
+    const timer = window.setTimeout(() => setPrevious(null), 950);
+    return () => clearTimeout(timer);
+  }, [active, previous, paused, reduced]);
   useEffect(() => {
     const node = hero.current;
     if (!node) return;
@@ -95,6 +118,7 @@ export function IndustrialHome() {
   }, [reduced, paused]);
   return (
     <div
+      ref={home}
       className="studio-home"
       data-testid="industrial-home"
       data-motion-paused={paused || reduced}
@@ -105,9 +129,20 @@ export function IndustrialHome() {
         aria-labelledby="home-heading"
         data-active-material={m.slug}
       >
+        {previous !== null && !paused && !reduced && (
+          <div
+            className="precision-hero-photo home-photo-previous"
+            data-photo-material={STUDIO_MATERIALS[previous].slug}
+            aria-hidden="true"
+          >
+            <img src={STUDIO_MATERIALS[previous].hero} alt="" />
+          </div>
+        )}
         <div
           className="precision-hero-photo"
           key={m.slug}
+          data-photo-material={m.slug}
+          data-revealing={previous !== null && !paused && !reduced}
           data-testid="hero-photo-plane"
         >
           <img
@@ -144,10 +179,14 @@ export function IndustrialHome() {
             <p className="studio-kicker light">
               CUSTOM MANUFACTURING. CONSIDERED ENGINEERING.
             </p>
-            <h1 id="home-heading">
-              Small parts.
+            <h1 id="home-heading" aria-label="Small parts. Big possibilities.">
+              <span className="home-heading-first" aria-hidden="true">
+                <MotionLetters text="Small parts." />
+              </span>
               <br />
-              <span>Big possibilities.</span>
+              <span className="home-heading-second" aria-hidden="true">
+                <MotionLetters text="Big possibilities." />
+              </span>
             </h1>
             <p className="hero-introduction">
               Custom rubber, steel and aluminium components.
@@ -177,6 +216,11 @@ export function IndustrialHome() {
               </p>
             </div>
           </div>
+          <div
+            className="home-carousel-gesture"
+            data-testid="home-carousel-gesture"
+            aria-hidden="true"
+          />
           <div className="hero-visual-marker" aria-hidden="true">
             <span className="marker-cross">+</span>
             <div>
@@ -195,7 +239,7 @@ export function IndustrialHome() {
                   key={item.slug}
                   aria-label={`0${i + 1} ${item.name}`}
                   aria-pressed={active === i}
-                  onClick={() => setActive(i)}
+                  onClick={() => selectMaterial(i)}
                 >
                   <span className="material-index">0{i + 1}</span>
                   <span>
@@ -351,9 +395,12 @@ export function IndustrialHome() {
           <div>
             <ComponentInspector
               active={active}
-              onSelect={setActive}
+              onSelect={selectMaterial}
               paused={paused}
               onPause={() => setPaused((p) => !p)}
+              state={motionState}
+              rotation={rotation}
+              onRotate={setRotation}
             />
             <p className="studio-inspector-note">
               A closer look at form and material. Scroll to rotate, or explore
@@ -462,6 +509,14 @@ export function IndustrialHome() {
           </div>
         </div>
       </section>
+      <HomeMotion
+        root={home}
+        active={active}
+        paused={paused}
+        rotation={rotation}
+        onSelect={selectMaterial}
+        onState={setMotionState}
+      />
     </div>
   );
 }

@@ -17,7 +17,8 @@ test.afterEach(() => expect(errors, "Application runtime errors").toEqual([]));
 
 async function inspect(page: Page) {
   await page.goto("/");
-  await expect(page.locator("canvas")).toHaveCount(0);
+  // The reference-style traveller now starts in the existing hero and lands here.
+  await expect(page.locator("canvas")).toHaveCount(1);
   await page.getByTestId("component-inspector").scrollIntoViewIfNeeded();
   await expect(page.getByTestId("component-inspector")).toHaveAttribute(
     "data-state",
@@ -147,7 +148,7 @@ test("hero photo responds to scroll and pause also freezes the material photo pl
   );
 });
 
-test("contained 3D study lazy-loads one persistent part with keyboard and drag rotation", async ({
+test("the shared 3D study keeps one persistent part with keyboard and drag rotation", async ({
   page,
 }) => {
   const canvas = await inspect(page);
@@ -184,10 +185,11 @@ test("contained 3D study lazy-loads one persistent part with keyboard and drag r
   await expect
     .poll(async () => Number(await canvas.getAttribute("data-angle")))
     .toBeGreaterThan(before + 34);
+  const progress = Number(await canvas.getAttribute("data-progress"));
   await page.evaluate(() => scrollBy(0, 70));
   await expect
-    .poll(async () => Number(await canvas.getAttribute("data-angle")))
-    .toBeGreaterThan(before + 38);
+    .poll(async () => Number(await canvas.getAttribute("data-progress")))
+    .toBeGreaterThan(progress + 0.03);
   await expect(canvas).toHaveAttribute("data-traveller-id", id!);
   await noOverflow(page);
 });
@@ -199,7 +201,14 @@ test("paused 3D does not render on scroll but explicit rotation remains availabl
   await page
     .getByRole("button", { name: "Pause 3D motion", exact: true })
     .click();
+  await expect(canvas).toHaveAttribute("data-mode", "contained");
   await expect(canvas).toHaveAttribute("data-angle", "0.00");
+  // A hero frame can also be at zero degrees. Wait for the paused, local
+  // inspector pose to finish drawing before measuring scroll redraws.
+  const center = await page
+    .locator(".inspector-viewport")
+    .evaluate((node) => ((node as HTMLElement).clientWidth / 2).toFixed(2));
+  await expect(canvas).toHaveAttribute("data-traveller-x", center);
   const renders = await canvas.getAttribute("data-render-count");
   await page.evaluate(() => scrollBy(0, 45));
   await page.waitForTimeout(200);
