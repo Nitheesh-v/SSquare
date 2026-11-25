@@ -14,6 +14,7 @@ import {
 import { Logo } from "./Logo";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { useQuoteModal } from "@/hooks";
+import { ReferenceHeader } from "@/features/reference/ReferenceHeader";
 
 const PRODUCT_LINKS = [
   {
@@ -83,6 +84,8 @@ export function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   const navClass = (href: string) =>
     `nav-link ${active(href) ? "nav-link-active" : ""}`;
+
+  if (pathname === "/") return <ReferenceHeader />;
 
   return (
     <header className="site-header sticky top-0 z-40 w-full border-b border-slate-200 bg-white">

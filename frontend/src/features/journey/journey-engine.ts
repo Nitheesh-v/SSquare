@@ -1,6 +1,6 @@
 import {
-  MATERIALS,
-  STORY_STEPS,
+  MATERIALS as ORIGINAL_MATERIALS,
+  STORY_STEPS as ORIGINAL_STEPS,
   bezier,
   clamp,
   mix,
@@ -32,20 +32,50 @@ const seeded = (n: number) => {
   return x - Math.floor(x);
 };
 
-/** DOM anchors are the source of truth: no duplicate travelling object or scroll hijack on touch. */
+type JourneyOptions = {
+  appearance?: "original" | "reference";
+  materials?: readonly {
+    name: string;
+    color: string;
+    part: string;
+    slug: string;
+  }[];
+  steps?: readonly { heading: readonly string[]; caption: string }[];
+  nativeScroll?: boolean;
+};
+
+/** DOM anchors are the source of truth: one traveller, with native scrolling on the reference home. */
 export function createJourneyEngine(
   root: HTMLElement,
   canvas: HTMLCanvasElement | null,
   reduced: boolean,
   initial: number,
   callbacks: Callbacks,
+  options: JourneyOptions = {},
 ) {
-  const hero = root.querySelector<HTMLElement>("#materials")!;
+  const MATERIALS = options.materials || ORIGINAL_MATERIALS;
+  const STORY_STEPS = options.steps || ORIGINAL_STEPS;
+  const reference = options.appearance === "reference";
+  const hero = root.querySelector<HTMLElement>(".journey-hero")!;
   const arc = root.querySelector<HTMLElement>(".journey-arc")!;
   const inside = root.querySelector<HTMLElement>("#inside")!;
   const front = root.querySelector<HTMLElement>("#inFront")!;
   const insideAnchor = root.querySelector<HTMLElement>("#inBar")!;
-  const shop = root.querySelector<HTMLElement>("#material-divisions")!;
+  const shop = root.querySelector<HTMLElement>(".journey-shop")!;
+  const spotlight = root.querySelector<HTMLElement>(".reference-spotlight");
+  const spotlightAnchor = spotlight?.querySelector<HTMLElement>(
+    ".spotlight-component-anchor",
+  );
+  const spotlightPhoto =
+    spotlight?.querySelector<HTMLElement>(".spotlight-photo");
+  const spotlightGears =
+    spotlight?.querySelectorAll<SVGElement>(".spotlight-gear");
+  const navLinks = Array.from(
+    root.querySelectorAll<HTMLAnchorElement>(".journey-rail a[data-section]"),
+  );
+  const navSections = navLinks.map((link) =>
+    root.querySelector<HTMLElement>(link.getAttribute("href")!),
+  );
   const cards = Array.from(root.querySelectorAll<HTMLElement>(".journey-card"));
   const cardAnchors = cards.map((card) =>
     card.querySelector<HTMLElement>(".component-anchor")!,
@@ -170,7 +200,9 @@ export function createJourneyEngine(
   }
   function fitTitle() {
     if (!measure) return;
-    measure.font = '400 100px "Archivo Black"';
+    measure.font = reference
+      ? '700 100px "Barlow Condensed"'
+      : '400 100px "Archivo Black"';
     const name = MATERIALS[active].name.toUpperCase();
     const h = hero.getBoundingClientRect().height;
     const u = Math.min(vw / 1440, h / 900);
@@ -181,7 +213,12 @@ export function createJourneyEngine(
     let size = phone
       ? Math.min(clamp(vw * 0.125, 40, 64), ((vw - 36) * 100) / width)
       : Math.min(96 * u, (760 * u * 100) / width);
-    if (vw < 820 && vh < 520) size = Math.min(36, ((vw - 40) * 100) / width);
+    if (reference)
+      size = phone
+        ? Math.min(clamp(vw * 0.26, 76, 156), ((vw - 40) * 100) / width)
+        : Math.min(204 * u, (1040 * u * 100) / width);
+    if (vw < 820 && vh < 520)
+      size = Math.min(reference ? 90 : 36, ((vw - 40) * 100) / width);
     title.style.fontSize = `${size}px`;
   }
   function setTitle(direction = 1, immediate = false) {
@@ -438,6 +475,9 @@ export function createJourneyEngine(
       if (t >= 1) {
         pos = tween.to;
         tween = null;
+        // Start the dwell after the glide (and any first-frame shader work),
+        // not during it. A slow GPU must not immediately skip the first material.
+        interaction = now;
       }
     }
     const heroRect = hero.getBoundingClientRect(),
@@ -454,6 +494,8 @@ export function createJourneyEngine(
       !paused &&
       !reduced &&
       !drag &&
+      !tween &&
+      !document.querySelector("dialog[open],.reference-menu") &&
       heroRatio >= 0.6 &&
       now - interaction >= 3200
     )
@@ -544,6 +586,37 @@ export function createJourneyEngine(
     };
     let pose = p1 > 0 ? mixPose(a, b, smooth(p1)) : a;
     if (p3 > 0) pose = mixPose(b, c, smooth(p3));
+    let spotlightTravel = 0;
+    if (spotlight && spotlightAnchor) {
+      const rect = spotlight.getBoundingClientRect();
+      const anchor = spotlightAnchor.getBoundingClientRect();
+      const progress = clamp(
+        (headerHeight - rect.top) / Math.max(1, rect.height - avail),
+      );
+      spotlightTravel = clamp((vh - rect.top) / (avail * 0.85));
+      const motion = reduced || paused ? 0 : progress;
+      const d: ComponentPose = {
+        ...c,
+        x: anchor.left + anchor.width / 2,
+        y: anchor.top + anchor.height / 2,
+        h: anchor.height,
+        ry: Math.round(b.ry / 360) * 360 + motion * 720,
+        rx: motion * 24,
+        rz: -10 + motion * 20,
+        shadow: 0.3,
+      };
+      if (spotlightTravel > 0) pose = mixPose(c, d, smooth(spotlightTravel));
+      root.dataset.spotlightProgress = progress.toFixed(4);
+      root.style.setProperty("--spotlight-p", progress.toFixed(4));
+      spotlightGears?.forEach((gear, i) => {
+        gear.style.transform = `rotate(${motion * (i === 0 ? 720 : -960)}deg)`;
+      });
+      if (spotlightPhoto)
+        spotlightPhoto.style.transform =
+          reduced || paused
+            ? "none"
+            : `translate3d(0,${(progress - 0.5) * 70}px,0) scale(1.12)`;
+    }
     if (poke && poke.index === active) {
       const t = clamp((now - poke.start) / 500);
       if (t < 0.3) {
@@ -611,15 +684,19 @@ export function createJourneyEngine(
       if (t >= 1) finishReveal();
     }
     const stage =
-      p3 >= 0.999
-        ? "card"
-        : p3 > 0
-          ? "landing"
-          : p1 >= 0.999
-            ? "inside"
-            : p1 > 0
-              ? "travelling"
-              : "hero";
+      spotlightTravel >= 0.999
+        ? "spotlight"
+        : spotlightTravel > 0
+          ? "spotlight-travelling"
+          : p3 >= 0.999
+            ? "card"
+            : p3 > 0
+              ? "landing"
+              : p1 >= 0.999
+                ? "inside"
+                : p1 > 0
+                  ? "travelling"
+                  : "hero";
     root.dataset.stage = stage;
     root.dataset.position = pos.toFixed(3);
     if (canvas) {
@@ -634,15 +711,10 @@ export function createJourneyEngine(
         false;
     rail.style.visibility =
       root.getBoundingClientRect().bottom > vh * 0.2 ? "visible" : "hidden";
-    const sections = [
-      hero,
-      inside,
-      shop,
-      root.querySelector<HTMLElement>("#range")!,
-    ];
     let current = 0;
-    sections.forEach((section, i) => {
-      if (section.getBoundingClientRect().top < vh * 0.35) current = i;
+    navSections.forEach((section, i) => {
+      if (section && section.getBoundingClientRect().top < vh * 0.35)
+        current = i;
     });
     root.dataset.section = String(current);
     const links = rail.querySelectorAll<HTMLAnchorElement>("a[data-section]");
@@ -689,6 +761,12 @@ export function createJourneyEngine(
     }) as EventListener,
     { passive: true },
   );
+  listen(
+    root.querySelector<HTMLElement>(".journey-grid")!,
+    "scroll",
+    invalidate,
+    { passive: true },
+  );
   listen(document, "visibilitychange", () => {
     visible = !document.hidden;
     interaction = performance.now();
@@ -704,6 +782,10 @@ export function createJourneyEngine(
     window,
     "wheel",
     ((event: WheelEvent) => {
+      if (options.nativeScroll) {
+        interaction = performance.now();
+        return;
+      }
       if (
         reduced ||
         paused ||
@@ -782,7 +864,9 @@ export function createJourneyEngine(
     if (!drag) {
       if (e.pointerType === "mouse")
         arc.style.cursor =
-          scene?.hit(e.clientX, e.clientY) !== null ? "pointer" : "grab";
+          scene && scene.hit(e.clientX, e.clientY) !== null
+            ? "pointer"
+            : "grab";
       return;
     }
     const dx = e.clientX - drag.start;
@@ -834,6 +918,16 @@ export function createJourneyEngine(
   listen(arc, "pointerup", release as EventListener);
   listen(arc, "pointercancel", release as EventListener);
   cards.forEach((card, index) => {
+    // CSS reveal motion moves the DOM anchor too. Keep tracking until it ends,
+    // then demand one final draw so the traveller never lands a few pixels adrift.
+    listen(card, "animationstart", () => {
+      settleUntil = performance.now() + 1200;
+      invalidate();
+    });
+    listen(card, "animationend", () => {
+      settleUntil = performance.now() + 100;
+      invalidate();
+    });
     listen(card, "pointermove", ((e: PointerEvent) => {
       if (e.pointerType !== "mouse" || reduced || paused) return;
       const rect = card.getBoundingClientRect();
@@ -866,14 +960,19 @@ export function createJourneyEngine(
       .then(({ createJourneyScene }) => {
         if (disposed) return;
         try {
-          scene = createJourneyScene(canvas, () => {
-            scene?.dispose();
-            scene = undefined;
-            pendingGpu = false;
-            root.dataset.webgl = "unavailable";
-            canvas.style.visibility = "hidden";
-            invalidate();
-          });
+          scene = createJourneyScene(
+            canvas,
+            () => {
+              scene?.dispose();
+              scene = undefined;
+              pendingGpu = false;
+              root.dataset.webgl = "unavailable";
+              canvas.style.visibility = "hidden";
+              invalidate();
+            },
+            11,
+            options.appearance,
+          );
           scene.resize(vw, vh);
           interaction = performance.now();
           if (tween?.entrance) {
@@ -911,6 +1010,7 @@ export function createJourneyEngine(
   resizeObserver.observe(hero);
   if (header) resizeObserver.observe(header);
   setTitle(1, true);
+  setStepCopy();
   resize();
   return {
     goTo,
