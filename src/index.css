@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "Fira Code",
+    Consolas, "Courier New", monospace;
+
+  --color-void: #07090c;
+  --color-panel: #0b0f14;
+  --color-cyan-glow: #00f0ff;
+  --color-amber-glow: #f97316;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-void);
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: #e8edf2;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(0, 240, 255, 0.28);
+}
+
+/* ---- Glassmorphic CAD HUD ---- */
+.glass {
+  background: rgba(11, 15, 20, 0.55);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.glass-strong {
+  background: rgba(9, 13, 18, 0.72);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.hairline {
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+.glow-ring {
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.35),
+    0 0 24px rgba(0, 240, 255, 0.18);
+}
+
+.text-glow {
+  text-shadow: 0 0 18px rgba(0, 240, 255, 0.45);
+}
+
+/* ---- Chapter fade choreography ---- */
+@keyframes chapterIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chapter-card {
+  animation: chapterIn 0.55s ease both;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.chapter-hidden {
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+}
+
+.chapter-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- CAD range sliders ---- */
+input[type="range"].cad-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.65),
+    rgba(0, 240, 255, 0.15)
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"].cad-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #0b0f14;
+  border: 1.5px solid #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.55);
+  cursor: grab;
+}
+
+input[type="range"].cad-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #0b0f14;
+  border: 1.5px solid #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.55);
+  cursor: grab;
+}
+
+/* ---- Scroll hint bobbing ---- */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 0.45;
+  }
+}
+
+.bob {
+  animation: bob 2.2s ease-in-out infinite;
+}
+
+/* ---- Scanline / grid texture for panels ---- */
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ---- Thin scrollbar ---- */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.35);
+  border-radius: 999px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
