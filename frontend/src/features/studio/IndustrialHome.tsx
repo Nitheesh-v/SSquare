@@ -20,7 +20,7 @@ import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { STUDIO_MATERIALS } from "./materials";
 import { ComponentInspector } from "./ComponentInspector";
-import { MaterialCarouselHero } from "./MaterialCarouselHero";
+import { HeroShowcase } from "@/features/products/HeroShowcase";
 
 const PROCESS = [
   {
@@ -50,10 +50,7 @@ export function IndustrialHome() {
       data-testid="industrial-home"
       data-motion-paused={paused || reduced}
     >
-      <MaterialCarouselHero
-        paused={paused}
-        onPause={() => setPaused((p) => !p)}
-      />
+      <HeroShowcase paused={paused} onPause={() => setPaused((p) => !p)} />
       <div className="studio-trust-strip">
         <div className="studio-shell">
           <span>

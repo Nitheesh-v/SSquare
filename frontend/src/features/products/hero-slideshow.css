@@ -1,0 +1,52 @@
+/* Restore the original slideshow's typography and dark palette only here. */
+.original-slideshow-hero {
+  --color-carbon-950: #0b0f17;
+  --color-carbon-900: #111827;
+  --color-carbon-800: #1e293b;
+  --color-carbon-700: #334155;
+  font-family: "Poppins", ui-sans-serif, sans-serif;
+  color: #fff;
+}
+.studio-home .original-slideshow-hero .original-slideshow-heading {
+  min-height: 3.45em;
+  font-family: "Poppins", ui-sans-serif, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.original-slideshow-glow {
+  background: radial-gradient(circle at 82% 28%, #ea580c29, transparent 48%);
+}
+.original-slideshow-description {
+  min-height: 6.5em;
+}
+.original-slideshow-metric {
+  overflow-wrap: anywhere;
+}
+.original-slideshow-hero[data-autoplay="true"] .original-slideshow-progress {
+  transform-origin: left center;
+  animation: original-slide-progress 5.5s linear forwards;
+}
+.original-slideshow-hero[data-paused="true"] *,
+.original-slideshow-hero[data-reduced="true"] * {
+  animation: none !important;
+  transition: none !important;
+}
+@keyframes original-slide-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (max-width: 639px) {
+  .original-slideshow-description {
+    min-height: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .original-slideshow-hero * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

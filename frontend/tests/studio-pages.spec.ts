@@ -17,10 +17,8 @@ test.afterEach(() => expect(errors, "Application runtime errors").toEqual([]));
 
 async function inspect(page: Page) {
   await page.goto("/");
-  await expect(page.getByTestId("material-carousel-hero")).toHaveAttribute(
-    "data-webgl",
-    "ready",
-  );
+  await expect(page.getByTestId("original-slideshow-hero")).toBeVisible();
+  await expect(page.locator("canvas")).toHaveCount(0);
   await expect(page.getByTestId("inspector-canvas")).toHaveCount(0);
   await page.getByTestId("component-inspector").scrollIntoViewIfNeeded();
   await expect(page.getByTestId("component-inspector")).toHaveAttribute(
@@ -44,32 +42,60 @@ async function noOverflow(page: Page) {
   expect(layout.viewport).toBe(page.viewportSize()!.width);
 }
 
-test("restored carousel keeps material selection, provenance and contextual RFQs", async ({
+test("original slideshow keeps division selection, provenance and contextual RFQs", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-    "Rubber",
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Your Trusted Partner",
   );
-  const choices = page.getByRole("group", {
-    name: "Explore manufacturing materials",
+  const hero = page.getByTestId("original-slideshow-hero");
+  const choices = hero.getByRole("group", {
+    name: "Explore manufacturing divisions",
   });
-  for (const [i, name] of ["Rubber", "Steel", "Aluminium"].entries()) {
+  const slides = [
+    [
+      "Multi-Material OEM",
+      "overview",
+      "Your Trusted Partner",
+      "hero-manufacturing",
+    ],
+    [
+      "Rubber & Bonded Seals",
+      "rubber",
+      "Custom Molded Rubber",
+      "division-rubber",
+    ],
+    [
+      "Stainless & Alloy Steel",
+      "steel",
+      "High-Strength Stainless",
+      "division-steel",
+    ],
+    [
+      "Aluminium & Die Molds",
+      "aluminium",
+      "Precision 6061 Aluminium",
+      "division-aluminium",
+    ],
+  ];
+  for (const [index, [label, id, heading, image]] of slides.entries()) {
     const button = choices.getByRole("button", {
-      name: `0${i + 1} ${name}`,
+      name: `0${index + 1} ${label}`,
       exact: true,
     });
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByTestId("material-carousel-hero")).toHaveAttribute(
-      "data-active-material",
-      name.toLowerCase(),
+    await expect(hero).toHaveAttribute("data-active-slide", id);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      heading,
     );
-    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      name,
+    await expect(hero.locator('img[aria-hidden="false"]')).toHaveAttribute(
+      "src",
+      `/images/${image}.jpg`,
     );
   }
-  await expect(page.locator(".material-carousel-provenance")).toContainText(
+  await expect(hero.locator(".original-slideshow-provenance")).toContainText(
     "ILLUSTRATIVE",
   );
   await expect(page.locator(".studio-material-card")).toHaveCount(3);
@@ -78,8 +104,7 @@ test("restored carousel keeps material selection, provenance and contextual RFQs
       .locator(".studio-material-card")
       .getByTestId("illustrative-visual-label"),
   ).toHaveCount(3);
-  await page
-    .getByTestId("material-carousel-hero")
+  await hero
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
   const quote = page.getByRole("dialog", {
@@ -97,14 +122,12 @@ test("restored carousel keeps material selection, provenance and contextual RFQs
   await noOverflow(page);
 });
 
-test("hero pause freezes the carousel and keeps the existing material photo planes still", async ({
+test("slideshow pause also keeps the unchanged material photo planes still", async ({
   page,
 }) => {
   await page.goto("/");
-  const hero = page.getByTestId("material-carousel-hero");
-  await expect(hero).toHaveAttribute("data-webgl", "ready");
-  const canvas = page.getByTestId("material-carousel-canvas");
-  await page
+  const hero = page.getByTestId("original-slideshow-hero");
+  await hero
     .getByRole("button", { name: "Pause visual motion", exact: true })
     .click();
   await expect(page.getByTestId("industrial-home")).toHaveAttribute(
@@ -112,27 +135,28 @@ test("hero pause freezes the carousel and keeps the existing material photo plan
     "true",
   );
   await expect(hero).toHaveAttribute("data-paused", "true");
-  // Wait for the explicit still frame, including slow/software GPU back-pressure.
-  await expect(canvas).toHaveAttribute("data-paused", "true");
-  const renders = await canvas.getAttribute("data-render-count");
-  await page.waitForTimeout(350);
-  await expect(canvas).toHaveAttribute("data-render-count", renders!);
+  await expect(hero).toHaveAttribute("data-autoplay", "false");
+  await expect(hero.locator("img").first()).toHaveCSS(
+    "transition-duration",
+    "0s",
+  );
+  await hero.getByRole("button", { name: "Next slide", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await page.locator("#material-divisions").scrollIntoViewIfNeeded();
   const plane = page
     .locator(".studio-material-card [data-depth-image] > div")
     .first();
   await expect(plane).toHaveCSS("transform", "none");
-  await page.evaluate(() => scrollTo(0, 0));
-  await page
+  await hero
     .getByRole("button", { name: "Resume visual motion", exact: true })
     .click();
   await expect(hero).toHaveAttribute("data-paused", "false");
-  await expect
-    .poll(async () => Number(await canvas.getAttribute("data-render-count")))
-    .toBeGreaterThan(Number(renders));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(canvas).toHaveCount(0);
-  await expect(page.locator(".material-carousel-flat-2 svg")).toBeVisible();
+  await expect(hero).toHaveAttribute("data-reduced", "true");
+  await expect(hero).toHaveAttribute("data-autoplay", "false");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Custom Molded Rubber",
+  );
 });
 
 test("contained 3D study lazy-loads one persistent part with keyboard and drag rotation", async ({
@@ -140,7 +164,7 @@ test("contained 3D study lazy-loads one persistent part with keyboard and drag r
 }) => {
   const canvas = await inspect(page);
   await expect(page.getByTestId("inspector-canvas")).toHaveCount(1);
-  await expect(page.getByTestId("material-carousel-canvas")).toHaveCount(1);
+  await expect(page.locator("canvas")).toHaveCount(1);
   const id = await canvas.getAttribute("data-traveller-id");
   expect(id).toBeTruthy();
   const initial = Number(await canvas.getAttribute("data-angle"));
@@ -229,7 +253,7 @@ test("reduced motion keeps still illustrations, readable content and usable stud
     "ready",
   );
   await expect(page.getByTestId("inspector-canvas")).toHaveCount(1);
-  await expect(page.getByTestId("material-carousel-canvas")).toHaveCount(1);
+  await expect(page.locator("canvas")).toHaveCount(1);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("canvas")).toHaveCount(0);
   await noOverflow(page);
@@ -261,7 +285,7 @@ test("WebGL-unavailable study retains the fallback and direct quotation", async 
     "Static view — WebGL unavailable.",
   );
   await page
-    .getByTestId("material-carousel-hero")
+    .getByTestId("original-slideshow-hero")
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
   await expect(
@@ -305,9 +329,9 @@ test("without JavaScript the new home still exposes products and direct contact 
   });
   const staticPage = await context.newPage();
   await staticPage.goto("/");
-  await expect(
-    staticPage.getByRole("heading", { level: 1 }),
-  ).toHaveAccessibleName("Rubber");
+  await expect(staticPage.getByRole("heading", { level: 1 })).toContainText(
+    "Your Trusted Partner",
+  );
   await expect(staticPage.locator(".studio-material-card")).toHaveCount(3);
   await expect(
     staticPage.locator('main a[href="tel:+917530080040"]').first(),
