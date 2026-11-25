@@ -1,109 +1,103 @@
-# S Square — industrial visual refresh QA
+# S Square — hero-only restoration QA
 
 Review date: **2026-11-23**
 
 Branch: `arena/8987795b-ssquare`
 
-## Delivery status
+## Current scope
 
-The rejected carousel-led presentation has been replaced on the homepage by an **imagery-led industrial layout**, with a consistent refresh of the catalog, three material divisions, division index, company, infrastructure, FAQ, contact page and navy footer. The genuine company logos and working RFQ/contact paths remain.
+The user selected the **earlier 3D material carousel** to replace the photographed “Small parts. Big possibilities.” hero. Only the first homepage section has been replaced. The carousel starts with **Rubber**, followed by Steel and Aluminium, using the earlier warm material colours, large titles and illustrative component arc.
 
-The full travelling-component animation and three-part brief have **not been deleted**: they now live at **`/material-experience`**, linked from the new homepage study and footer. The detailed aluminium assembly story remains at **`/products/aluminium`**.
+The existing header, photographic material cards, independent lower 3D study, manufacturing process, quote/contact panel, footer, catalog and inner pages are unchanged. The shared homepage pause still reaches the lower study/photo planes. The lower study retains its original Steel default and its own material selection.
 
-The final production-build Chromium run completed **118 passing checks, six intentional duplicate-matrix skips and zero failures**: 124 configured cases, one worker, approximately 12.6 minutes. **Visual approval is still the user's decision.** Passing tests are not design acceptance or unconditional production-launch approval.
+This does **not** restore the previously reverted sitewide motion package or the entire old journey homepage. There is no homepage intro/body lock, fixed journey canvas, travelling object over lower sections, pinned extra story, navigation rail or project brief. The complete experience remains unchanged at `/material-experience`; the detailed aluminium story remains at `/products/aluminium`.
 
-## New presentation
+### Content-preservation evidence
 
-- A full-width illustrative industrial hero with manual Rubber / Steel / Aluminium selection, matching material imagery, a subtle scroll-depth image plane and material-specific quote prefill. No forced intro or autoplay blocks the main homepage.
-- Warm paper and sage backgrounds, condensed display type, Inter body copy, copper accents, clearer hierarchy, framed imagery and more generous section spacing.
-- Three visible material cards, a component-detail section, a three-step manufacturing overview and a direct quote/contact panel.
-- A contained 3D study that loads only near the viewport. It reuses the existing illustrative geometry with **no decorative copies**, retaining the selected object while materials change. Native scroll, pointer dragging and keyboard-operated rotation buttons control the part.
-- Demand-driven rendering, GPU back-pressure, visibility handling and resource disposal. Pause freezes automatic scroll/photo movement but leaves explicit rotation usable. Reduced motion removes the canvas and nonessential animation while preserving controls and still illustrations.
-- Shared `PageIntro` and division-hero layouts, cohesive catalog controls/cards, an updated contact treatment and a rebuilt navy footer with real contact links.
-- Prominent illustrative/replaceable notes remain on concept imagery, the catalog's material previews and the procedural models. No certification, dimension, numerical tolerance, stock or price claim was added.
+- Every source line from `.studio-trust-strip` to the end of `IndustrialHome.tsx` matches the pre-change `17ba6a2` version.
+- A JavaScript-disabled DOM comparison against the running pre-change production site found identical text, headings, image paths/alt text, links and buttons in all five below-hero blocks.
+- No changes to the shared header/footer, `studio.css`, `ComponentInspector.tsx`, product routes, company data, assets, full journey or RFQ implementation.
 
-Implementation: `features/studio/{IndustrialHome,ComponentInspector}.tsx`, `features/studio/{materials.ts,studio.css}`, `components/shared/PageIntro.tsx` and the existing catalog/RFQ components. The full animation still uses `features/journey/{MaterialJourney.tsx,journey-engine.ts,journey-scene.ts}`.
+## Restored hero
 
-This is the existing **Next.js adaptation**, not a standalone single-file/base64-font export or a claim of compliance with the reference's literal network-host restriction. Food artwork and the protein-bar intro video are not used as engineering assets.
+- A standalone, clipped **absolute-positioned hero canvas**, never a fixed viewport overlay. Initial normal-motion home mounts only this canvas; the unchanged lower study mounts its own canvas near the viewport.
+- Original procedural rubber gasket, steel flange and aluminium profile, plus repeated arc items and clearly labelled replaceable-CAD illustrations. No production specifications or company-photography claims are invented.
+- Fractional horizontal drag/flick with snapping, geometry-based picking, previous/next buttons, direct selectors, left/right keys and Home/End. Native vertical scrolling is not intercepted.
+- Optional 3.2-second autoplay with visible toggle and global homepage pause. Focus/hover on controls, open navigation/quote dialogs, offscreen state and document visibility suspend automatic advancement. Heading announcements are polite during focused/manual use rather than continuous autoplay announcements.
+- Pause stops automatic motion/transitions while deliberate material changes and actual contextual RFQs remain usable. The lower study's deliberate rotation remains available.
+- Live reduced motion removes WebGL and nonessential transitions, retains selection and provides still SVGs. Unavailable/lost WebGL uses the same fallback without blocking enquiry controls.
+- Resize temporarily exposes the SVG fallback while the WebGL buffer is redrawn. Renderer, observers, listeners, idle callbacks, timers and animation frames are cleaned up on unmount or reduced-motion changes.
+- With JavaScript disabled, the hero has a still Rubber illustration, hides inert carousel controls and provides a native `/contact#quote` link. Existing product-page and direct-contact links remain usable below.
+
+Implementation: `frontend/src/features/studio/{IndustrialHome.tsx,MaterialCarouselHero.tsx,material-carousel.ts,material-carousel.css}`. The hero reuses the **unmodified** `features/journey/{journey-data.ts,journey-scene.ts,ComponentIllustration.tsx}`; it does not mount `MaterialJourney` or run `journey-engine.ts`.
 
 ## Build and dependency checks
 
-| Check                             | Result                                                                                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Frontend `npm run typecheck`      | Pass                                                                                                              |
-| Frontend `npm run build`          | Pass — Next.js 15.5.29; 19 generated static pages                                                                 |
-| Homepage framework estimate       | 6.75 kB route / 118 kB first-load JS; 103 kB shared                                                               |
-| Full material experience estimate | 7.72 kB route / 119 kB first-load JS                                                                              |
-| Frontend `npm audit`              | **0 findings**, including development dependencies                                                                |
-| Prettier / `git diff --check`     | Pass                                                                                                              |
-| Credential-pattern review         | No private-key/provider/GitHub-token patterns found in changed text; not a dedicated secret-scanner certification |
-| Optional backend                  | Unchanged, stopped and still deployment-blocked by the inherited dependency findings below                        |
+| Check                                  | Result                                             |
+| -------------------------------------- | -------------------------------------------------- |
+| Frontend `npm run typecheck`           | Pass                                               |
+| Frontend `npm run build`               | Pass — Next.js 15.5.29, 19 generated static pages  |
+| Homepage framework estimate            | 9.6 kB route / 122 kB first-load JS; 103 kB shared |
+| Full experience framework estimate     | 6.83 kB route / 119 kB first-load JS               |
+| Frontend `npm audit --audit-level=low` | 0 findings, including development dependencies     |
+| Formatting / `git diff --check`        | Pass                                               |
+| Dependencies and lockfiles             | Unchanged                                          |
 
-Fonts are locally served through Fontsource with swap display. Inter, Barlow Condensed and IBM Plex Mono support the new presentation; Archivo Black and DM Mono remain available to the immersive reference experience. Build estimates are **not** Lighthouse scores or real-device performance guarantees.
+Fonts are locally served through Fontsource. The restored hero uses Archivo Black / Inter / DM Mono; typography below it is unchanged. Bundle/DPR/frame-rate figures are not Lighthouse results or real-device performance guarantees.
 
-## Browser test results
+## Browser test evidence
 
-Sources: [`industrial-site.spec.ts`](../frontend/tests/industrial-site.spec.ts), [`material-journey.spec.ts`](../frontend/tests/material-journey.spec.ts), [`studio-pages.spec.ts`](../frontend/tests/studio-pages.spec.ts). Configuration: [`playwright.config.ts`](../frontend/playwright.config.ts).
+Sources: [`material-carousel.spec.ts`](../frontend/tests/material-carousel.spec.ts), [`studio-pages.spec.ts`](../frontend/tests/studio-pages.spec.ts), [`industrial-site.spec.ts`](../frontend/tests/industrial-site.spec.ts) and the unchanged [`material-journey.spec.ts`](../frontend/tests/material-journey.spec.ts).
 
-| Project              | Viewport                       | Result                                        |
-| -------------------- | ------------------------------ | --------------------------------------------- |
-| Desktop              | 1440 × 1000                    | 31 pass                                       |
-| Tablet / touch       | 768 × 1024                     | 29 pass, 2 duplicate-matrix skips             |
-| Mobile / touch       | 390 × 844                      | 29 pass, 2 duplicate-matrix skips             |
-| Small mobile / touch | 320 × 844                      | 29 pass, 2 duplicate-matrix skips             |
-| **Total**            | Production website, one worker | **118 pass, 6 intentional skips, 0 failures** |
+The production-build full run had **142 passes, 17 intentional skips and one drag-test synchronization failure** (160 configured cases, one worker, approximately 20.4 minutes). The failing assertion sampled a newer in-flight position while treating an older integer GPU frame as settled. The helper was corrected to wait for **both simulation and rendered positions**. The corrected drag/picking/keyboard test then passed **12/12 repeated cases**, three runs in each of the four projects, with no application changes required.
 
-Two supplemental five-size layout matrices run once in the desktop project: one for the preserved immersive experience, one for the refreshed home/interior layouts. Their duplicate invocations in the other three projects are explicitly skipped. Each includes **1440 × 900, 390 × 844, 320 × 844, 844 × 390 and 768 × 1024**.
+The final autoplay/focus/dialog/navigation checks also passed **4/4 projects** after that helper correction. Thus **all 143 distinct non-skipped cases passed across the full run and corrected targeted reruns**. There was **not** a fresh, single clean full-suite run after that test-only correction; this is not described as one.
 
-### Refreshed-page coverage
+| Project              | Viewport    | Full run                                   | Corrected drag repeat |
+| -------------------- | ----------- | ------------------------------------------ | --------------------- |
+| Desktop              | 1440 × 1000 | 37 pass, 2 skip, 1 synchronization failure | 3/3 pass              |
+| Tablet / touch       | 768 × 1024  | 35 pass, 5 skip                            | 3/3 pass              |
+| Mobile / touch       | 390 × 844   | 35 pass, 5 skip                            | 3/3 pass              |
+| Small mobile / touch | 320 × 844   | 35 pass, 5 skip                            | 3/3 pass              |
 
-- Eleven public routes, one main H1 per page, no horizontal document inflation, working legacy division redirects and removed commerce/auth/admin routes returning 404.
-- Primary/mobile navigation, skip link, Escape behavior, quote focus containment/restoration and material-context prefills.
-- Matching hero selection/image paths and persistent illustrative labels. Hero scroll depth responds to native scroll; pause freezes it and the material photo planes.
-- No homepage canvas at initial load; a single persistent component near the study, keyboard rotation, drag rotation, scroll response and material changes without replacing the object's UUID.
-- Paused study does not redraw on scroll, while explicit rotation remains available. Live reduced-motion changes remove/recreate the renderer without losing the selected material.
-- Unavailable WebGL and synthetic context loss retain labelled SVG views and usable controls/quote paths.
-- JavaScript-disabled homepage keeps material-page links, readable content, fallback illustrations and direct contact actions. A native link reaches the rubber division without client JavaScript.
-- Search/filter/reset, quick specs and product-specific RFQ prefills remain functional.
-- Successful isolated RFQ writes report storage separately from delivery; mocked failures retain entered details, focus the error and offer direct-contact alternatives. API validation, honeypot and response flags remain covered.
-- The detailed aluminium story still lazy-loads, exposes four static stages in reduced motion and falls back when WebGL is unavailable.
-- **Zero axe WCAG 2 A/AA / 2.1 AA tagged violations** on home, catalog, contact, FAQ, company, divisions, infrastructure, rubber and the immersive experience, plus the open RFQ dialog across the four projects. An initial low-contrast card index was darkened before the final passing run. Automated checks are a subset, **not** conformance certification.
+Skips: **eight explicitly disabled RFQ-write cases**, plus **nine duplicate layout-matrix invocations**. Each of the three five-size layout matrices runs once in desktop instead of repeating in every project. RFQ selection, form focus, close/restore behavior and mocked submission-failure retention were exercised; successful actual storage/delivery was not re-tested in this change.
 
-### Preserved full-experience coverage
+Coverage includes:
 
-- One canvas, at least seven visible real-WebGL arc items, fractional drag/flick snapping, keys, material/title/counter/colour updates and stable selected-object identity.
-- Pinned flips at 0° / 180° / 360° / 720°, one 20-fragment storm and no repeated burst after the section ends.
-- Selected-card landing within one CSS pixel, plus card tilt/poke behavior and the matching hidden flat SVG.
-- Three-slot autofill, removal, duplicates, add-to-brief flights, sequential combination flights, contextual quote fields and retained selection. No order/payment/submission is invented by the animation.
-- Intro Skip, required local font faces, pause/reduced motion and unavailable/lost-WebGL fallbacks.
+- Hero-first placement, at least seven real-WebGL arc items, stable selected-object identity, colour/title/count updates, drag/flick, picking and keyboard operation.
+- Independent lower study, lazy loading, native-scroll/drag/button rotation, pause and context-loss fallback.
+- Autoplay focus/dialog/menu suspension, offscreen render suspension, simulated hidden-tab lifecycle, unavailable/lost WebGL and live reduced-motion changes.
+- All three real material-specific quote prefills and focus restoration; a native no-JavaScript contact-page quote link.
+- Public/removed routes and legacy redirects, catalog filters/spec dialogs, truthful mocked RFQ failures, the aluminium story and full material experience/brief regression coverage.
+- Zero axe WCAG 2 A/AA / 2.1 AA tagged violations on the checked core and inner pages and open RFQ dialogs across all four projects. Automated scans are a subset, not accessibility conformance certification.
 
-There were **no application `pageerror` events** in the final test run. Third-party catalog images are deliberately made invalid in site/refresh tests to exercise labelled fallbacks; local official-site copies still load. Mouse/pointer and touch emulation do not replace real hardware testing.
+No application `pageerror` events were observed in these tests. Third-party catalog photos are intentionally made unavailable in the existing site tests to exercise their labelled fallbacks.
 
-## Final visual and fallback review
+## Visual, responsive and native-scroll supplement
 
-- Reviewed the refreshed hero, material cards, contained study and complete homepage at **1440px and 390px**; reviewed new catalog, rubber, company, contact and division-index screenshots at both widths.
-- The final real-WebGL supplement checks **1440 × 900, 390 × 844, 320 × 844, 768 × 1024 and 844 × 390**. The study reached `ready` at all five sizes, with no application errors or document-width overflow. No canvas was mounted in the initial hero view.
-- Rotation controls remain visible at tablet and phone sizes. Native vertical touch scrolling is not replaced by a page-wide carousel or scroll trap on the new home.
-- Review tooling/screenshots are in ignored `.cache/qa/studio-review.mjs`, `studio-review.json` and `studio-*.png`; they are not committed application assets.
+The final production hero was browser-reviewed with all three materials at **1440 × 900, 390 × 844, 320 × 844, 768 × 1024 and 844 × 390**. At every size:
 
-## RFQ safety and operational limits
+- Real WebGL reached `ready`; material titles stayed inside the viewport width.
+- Document width equalled viewport width; no horizontal inflation or application errors.
+- The canvas remained absolute and clipped to the hero, not over the unchanged lower content.
 
-Outbound email/webhooks were disabled during QA; the optional backend remained offline. The eight actual test enquiries were marked `ARENA_QA` / `ARENA_QA_ONLY`. Cleanup removed **only those eight marked frontend records**, retained zero other frontend records, left the log at mode **0600**, and did not modify backend enquiry data.
+The landscape hero keeps a readable 500px minimum height, with ordinary vertical page scrolling, instead of shrinking controls to an unusable strip. Automated layout checks also verify title/control bounds in reduced motion. A Chromium touch-input supplement scrolled the page **189 CSS pixels** with a vertical swipe over the live carousel and left Rubber selected.
 
-**Local storage is not delivered mail or durable production CRM retention.** Provider acceptance does not establish inbox receipt. Production notification delivery, shared rate limiting, durable retention, monitoring, access controls and backups still require configuration and verification.
+Review scripts, screenshots, baseline content capture and logs are in ignored `.cache/qa/hero-restore/`; they are not application assets. SwiftShader/touch emulation and synthetic context-loss/visibility events do not replace real hardware/browser/assistive-technology checks.
 
-## Backend launch gate — unchanged
+## RFQ and production safety
 
-**Do not publicly deploy the optional inherited NestJS 10 backend until its dependencies are remediated and regression-tested.** Its previously recorded audit has **26 findings overall (11 high, 12 moderate, 3 low)** and **12 production findings (7 high, 5 moderate)**. `npm audit fix` did not resolve them; a forced framework migration was not included in this visual update. The frontend's zero-finding audit does not remediate those backend dependencies. An API key, CORS restrictions and private networking are not dependency fixes.
+Outbound email/webhooks were disabled, the optional backend remained offline, and `QA_ALLOW_RFQ_WRITES=0` was explicit for this QA. No live sales enquiry was submitted. The frontend fallback log remains **0 bytes**, mode **0600**; no enquiry cleanup was needed. RFQ transport/storage code and backend data were not changed by this implementation.
 
-The frontend can use a correctly configured email service or authenticated sales webhook without deploying that optional service. Backend/API security and persistence implementation are otherwise unchanged in this refresh.
+**Saved is not delivered.** Local files are not a durable production CRM; provider acceptance does not establish inbox receipt. Production notification delivery, durable retention, shared rate limiting, monitoring, access controls and backups remain separate configuration/verification requirements.
 
-## Remaining approval and human checks
+### Unchanged backend launch gate
 
-- User approval of the new visual direction; company-approved photographs, representative CAD, copy, address/contact/inbox ownership and usage permissions.
-- Actual provider acceptance **and inbox receipt**, durable production enquiry retention, privacy/legal wording and operational monitoring.
-- Current Safari/iOS, Firefox, Chrome/Android, assistive technology and a real lower-powered phone. Headless Chromium/SwiftShader is not a GPU/FPS benchmark; context-loss events are simulated.
-- HTTPS, shared/edge abuse protection, secure secret deployment and backend remediation if that optional service is used.
+Do not publicly deploy the optional inherited NestJS 10 service until dependency remediation and regression testing. Its previously recorded audit has **26 findings overall (11 high, 12 moderate, 3 low)** and **12 production findings (7 high, 5 moderate)**. This hero restoration did not re-audit or remediate that service. The frontend's zero-finding audit does not resolve those backend findings.
+
+### Remaining approval and human checks
+
+User approval of the restored hero, company-approved CAD/photos/copy, current Safari/iOS and Firefox/Android testing, assistive-technology review and a real lower-powered phone are still needed. Actual provider acceptance **and inbox receipt**, durable production retention, privacy/legal wording, secure deployment and operational monitoring remain launch gates.
 
 ## Reproduce
 
@@ -114,9 +108,9 @@ npx playwright install chromium
 npm run typecheck
 npm run build
 # Start the production site separately, then:
-npm run test:e2e
+QA_ALLOW_RFQ_WRITES=0 npm run test:e2e
 ```
 
-Tests reuse an existing local server by default; otherwise Playwright starts a dev server. `QA_BASE_URL` can target an isolated test preview. Set `QA_ALLOW_RFQ_WRITES=1` **only with outbound notifications disabled**, never against a live sales inbox. A custom browser path can be supplied through `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
+Playwright reuses an existing local server by default or starts a dev server. `QA_BASE_URL` targets an isolated preview; `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` supports a custom Chromium binary. Enable `QA_ALLOW_RFQ_WRITES=1` only on an isolated test instance with outbound notifications disabled, never against a live inbox.
 
-See [README](../README.md), [launch checklist](LAUNCH-CHECKLIST.md), the `.env.example` files and [asset provenance](../frontend/public/images/ssquare/README.md) for deployment inputs. Secrets, runtime enquiries, browser tooling, traces and screenshots remain excluded from Git.
+See [README](../README.md), [launch checklist](LAUNCH-CHECKLIST.md), `.env.example` files and [asset provenance](../frontend/public/images/ssquare/README.md). Secrets, runtime enquiries, dependencies, builds, traces and screenshots remain excluded from Git.

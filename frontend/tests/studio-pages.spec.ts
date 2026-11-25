@@ -17,7 +17,11 @@ test.afterEach(() => expect(errors, "Application runtime errors").toEqual([]));
 
 async function inspect(page: Page) {
   await page.goto("/");
-  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.getByTestId("material-carousel-hero")).toHaveAttribute(
+    "data-webgl",
+    "ready",
+  );
+  await expect(page.getByTestId("inspector-canvas")).toHaveCount(0);
   await page.getByTestId("component-inspector").scrollIntoViewIfNeeded();
   await expect(page.getByTestId("component-inspector")).toHaveAttribute(
     "data-state",
@@ -40,12 +44,12 @@ async function noOverflow(page: Page) {
   expect(layout.viewport).toBe(page.viewportSize()!.width);
 }
 
-test("photographic home keeps material selection, provenance and contextual RFQs", async ({
+test("restored carousel keeps material selection, provenance and contextual RFQs", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Small parts.",
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    "Rubber",
   );
   const choices = page.getByRole("group", {
     name: "Explore manufacturing materials",
@@ -57,15 +61,15 @@ test("photographic home keeps material selection, provenance and contextual RFQs
     });
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator(".precision-hero")).toHaveAttribute(
+    await expect(page.getByTestId("material-carousel-hero")).toHaveAttribute(
       "data-active-material",
       name.toLowerCase(),
     );
-    await expect(
-      page.getByTestId("hero-photo-plane").locator("img"),
-    ).toHaveAttribute("src", `/images/division-${name.toLowerCase()}.jpg`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+      name,
+    );
   }
-  await expect(page.locator(".hero-photo-provenance")).toContainText(
+  await expect(page.locator(".material-carousel-provenance")).toContainText(
     "ILLUSTRATIVE",
   );
   await expect(page.locator(".studio-material-card")).toHaveCount(3);
@@ -75,7 +79,7 @@ test("photographic home keeps material selection, provenance and contextual RFQs
       .getByTestId("illustrative-visual-label"),
   ).toHaveCount(3);
   await page
-    .locator(".precision-hero")
+    .getByTestId("material-carousel-hero")
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
   const quote = page.getByRole("dialog", {
@@ -93,22 +97,13 @@ test("photographic home keeps material selection, provenance and contextual RFQs
   await noOverflow(page);
 });
 
-test("hero photo responds to scroll and pause also freezes the material photo planes", async ({
+test("hero pause freezes the carousel and keeps the existing material photo planes still", async ({
   page,
 }) => {
   await page.goto("/");
-  const hero = page.locator(".precision-hero");
-  await page.evaluate(() => scrollTo(0, 230));
-  await expect
-    .poll(() =>
-      hero.evaluate((n) => Number(n.style.getPropertyValue("--photo-depth"))),
-    )
-    .toBeGreaterThan(0.15);
-  await expect(page.getByTestId("hero-photo-plane")).toHaveCSS(
-    "transform",
-    /matrix3d/,
-  );
-  await page.evaluate(() => scrollTo(0, 0));
+  const hero = page.getByTestId("material-carousel-hero");
+  await expect(hero).toHaveAttribute("data-webgl", "ready");
+  const canvas = page.getByTestId("material-carousel-canvas");
   await page
     .getByRole("button", { name: "Pause visual motion", exact: true })
     .click();
@@ -116,15 +111,12 @@ test("hero photo responds to scroll and pause also freezes the material photo pl
     "data-motion-paused",
     "true",
   );
-  const transform = await page
-    .getByTestId("hero-photo-plane")
-    .evaluate((n) => getComputedStyle(n).transform);
-  await page.evaluate(() => scrollTo(0, 240));
-  await page.waitForTimeout(150);
-  await expect(page.getByTestId("hero-photo-plane")).toHaveCSS(
-    "transform",
-    transform,
-  );
+  await expect(hero).toHaveAttribute("data-paused", "true");
+  // Wait for the explicit still frame, including slow/software GPU back-pressure.
+  await expect(canvas).toHaveAttribute("data-paused", "true");
+  const renders = await canvas.getAttribute("data-render-count");
+  await page.waitForTimeout(350);
+  await expect(canvas).toHaveAttribute("data-render-count", renders!);
   await page.locator("#material-divisions").scrollIntoViewIfNeeded();
   const plane = page
     .locator(".studio-material-card [data-depth-image] > div")
@@ -134,24 +126,21 @@ test("hero photo responds to scroll and pause also freezes the material photo pl
   await page
     .getByRole("button", { name: "Resume visual motion", exact: true })
     .click();
-  await page.evaluate(() => scrollTo(0, 200));
+  await expect(hero).toHaveAttribute("data-paused", "false");
   await expect
-    .poll(() =>
-      hero.evaluate((n) => Number(n.style.getPropertyValue("--photo-depth"))),
-    )
-    .toBeGreaterThan(0.15);
+    .poll(async () => Number(await canvas.getAttribute("data-render-count")))
+    .toBeGreaterThan(Number(renders));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.getByTestId("hero-photo-plane")).toHaveCSS(
-    "transform",
-    "none",
-  );
+  await expect(canvas).toHaveCount(0);
+  await expect(page.locator(".material-carousel-flat-2 svg")).toBeVisible();
 });
 
 test("contained 3D study lazy-loads one persistent part with keyboard and drag rotation", async ({
   page,
 }) => {
   const canvas = await inspect(page);
-  await expect(page.locator("canvas")).toHaveCount(1);
+  await expect(page.getByTestId("inspector-canvas")).toHaveCount(1);
+  await expect(page.getByTestId("material-carousel-canvas")).toHaveCount(1);
   const id = await canvas.getAttribute("data-traveller-id");
   expect(id).toBeTruthy();
   const initial = Number(await canvas.getAttribute("data-angle"));
@@ -239,7 +228,8 @@ test("reduced motion keeps still illustrations, readable content and usable stud
     "data-state",
     "ready",
   );
-  await expect(page.locator("canvas")).toHaveCount(1);
+  await expect(page.getByTestId("inspector-canvas")).toHaveCount(1);
+  await expect(page.getByTestId("material-carousel-canvas")).toHaveCount(1);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("canvas")).toHaveCount(0);
   await noOverflow(page);
@@ -271,7 +261,7 @@ test("WebGL-unavailable study retains the fallback and direct quotation", async 
     "Static view — WebGL unavailable.",
   );
   await page
-    .locator(".precision-hero")
+    .getByTestId("material-carousel-hero")
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
   await expect(
@@ -315,9 +305,9 @@ test("without JavaScript the new home still exposes products and direct contact 
   });
   const staticPage = await context.newPage();
   await staticPage.goto("/");
-  await expect(staticPage.getByRole("heading", { level: 1 })).toContainText(
-    "Small parts.",
-  );
+  await expect(
+    staticPage.getByRole("heading", { level: 1 }),
+  ).toHaveAccessibleName("Rubber");
   await expect(staticPage.locator(".studio-material-card")).toHaveCount(3);
   await expect(
     staticPage.locator('main a[href="tel:+917530080040"]').first(),

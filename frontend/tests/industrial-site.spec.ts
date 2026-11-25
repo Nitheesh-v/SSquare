@@ -118,11 +118,13 @@ test("navigation, hero controls, and quote dialog keyboard access", async ({
     await expect(toggle).toBeFocused();
   }
   await page.getByRole("button", { name: /03 Aluminium/ }).click();
-  await expect(page.locator(".precision-hero")).toHaveAttribute(
+  await expect(page.getByTestId("material-carousel-hero")).toHaveAttribute(
     "data-active-material",
     "aluminium",
   );
-  await expect(page.locator("h1")).toContainText("Big possibilities.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+    "Aluminium",
+  );
   await expect(
     page.getByRole("button", { name: /03 Aluminium/ }),
   ).toHaveAttribute("aria-pressed", "true");

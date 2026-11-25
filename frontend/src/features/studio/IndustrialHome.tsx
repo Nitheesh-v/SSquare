@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
-  ArrowDown,
   ArrowRight,
   ArrowUpRight,
   Check,
@@ -12,19 +11,16 @@ import {
   Focus,
   Layers3,
   MessageSquare,
-  Pause,
-  Phone,
-  Play,
   Plus,
   Rotate3D,
 } from "lucide-react";
 import { Reveal, useReducedMotion } from "@/components/shared/MotionPrimitives";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
 import { OpenQuoteButton } from "@/components/shared/OpenQuoteButton";
-import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { STUDIO_MATERIALS } from "./materials";
 import { ComponentInspector } from "./ComponentInspector";
+import { MaterialCarouselHero } from "./MaterialCarouselHero";
 
 const PROCESS = [
   {
@@ -47,174 +43,17 @@ const PROCESS = [
 export function IndustrialHome() {
   const [active, setActive] = useState(1),
     [paused, setPaused] = useState(false);
-  const reduced = useReducedMotion(),
-    hero = useRef<HTMLElement>(null);
-  const { openQuoteModal } = useQuoteModal();
-  const m = STUDIO_MATERIALS[active];
-  useEffect(() => {
-    const node = hero.current;
-    if (!node) return;
-    if (reduced || paused) {
-      node.style.setProperty("--photo-depth", "0");
-      return;
-    }
-    let frame = 0,
-      visible = true;
-    const update = () => {
-      frame = 0;
-      if (!visible || document.hidden) return;
-      const r = node.getBoundingClientRect(),
-        header =
-          document.querySelector(".site-header")?.getBoundingClientRect()
-            .height || 113;
-      node.style.setProperty(
-        "--photo-depth",
-        Math.max(0, Math.min(1, (header - r.top) / r.height)).toFixed(4),
-      );
-    };
-    const schedule = () => {
-      if (!frame && visible) frame = requestAnimationFrame(update);
-    };
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      schedule();
-    });
-    observer.observe(node);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    document.addEventListener("visibilitychange", schedule);
-    schedule();
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      document.removeEventListener("visibilitychange", schedule);
-      node.style.removeProperty("--photo-depth");
-    };
-  }, [reduced, paused]);
+  const reduced = useReducedMotion();
   return (
     <div
       className="studio-home"
       data-testid="industrial-home"
       data-motion-paused={paused || reduced}
     >
-      <section
-        ref={hero}
-        className="precision-hero"
-        aria-labelledby="home-heading"
-        data-active-material={m.slug}
-      >
-        <div
-          className="precision-hero-photo"
-          key={m.slug}
-          data-testid="hero-photo-plane"
-        >
-          <img
-            src={m.hero}
-            alt={`Illustrative ${m.detail.toLowerCase()}, not an actual S Square product photograph`}
-            fetchPriority="high"
-            decoding="async"
-          />
-        </div>
-        <div className="precision-hero-shade" />
-        <div className="precision-hero-grain" aria-hidden="true" />
-        <div className="studio-shell precision-hero-inner">
-          <div className="hero-top-caption">
-            <span>
-              <i /> S SQUARE ENGINEERING SERVICES
-            </span>
-            <button
-              type="button"
-              onClick={() => setPaused((p) => !p)}
-              disabled={reduced}
-              aria-label={
-                paused ? "Resume visual motion" : "Pause visual motion"
-              }
-            >
-              {reduced || paused ? <Play size={12} /> : <Pause size={12} />}{" "}
-              {reduced
-                ? "REDUCED MOTION"
-                : paused
-                  ? "MOTION PAUSED"
-                  : "MOTION ON"}
-            </button>
-          </div>
-          <div className="precision-hero-copy">
-            <p className="studio-kicker light">
-              CUSTOM MANUFACTURING. CONSIDERED ENGINEERING.
-            </p>
-            <h1 id="home-heading">
-              Small parts.
-              <br />
-              <span>Big possibilities.</span>
-            </h1>
-            <p className="hero-introduction">
-              Custom rubber, steel and aluminium components.
-              <br className="desktop-break" /> Made to your drawing. Built
-              around your world.
-            </p>
-            <div className="studio-actions">
-              <button
-                type="button"
-                className="studio-button"
-                onClick={() => openQuoteModal({ division: m.division })}
-              >
-                Request a Quote <ArrowUpRight size={18} />
-              </button>
-              <a href="#material-divisions" className="studio-text-link light">
-                Explore our capabilities <ArrowDown size={17} />
-              </a>
-            </div>
-            <div className="hero-experience">
-              <span>
-                20<span>+</span>
-              </span>
-              <p>
-                YEARS OF EXPERIENCE
-                <br />
-                <strong>A partner in the details.</strong>
-              </p>
-            </div>
-          </div>
-          <div className="hero-visual-marker" aria-hidden="true">
-            <span className="marker-cross">+</span>
-            <div>
-              <span>MADE FOR YOUR APPLICATION</span>
-              <strong>{m.detail}</strong>
-            </div>
-          </div>
-          <span className="hero-photo-provenance">
-            ILLUSTRATIVE VISUAL · REPLACEABLE WITH COMPANY PHOTOGRAPHY
-          </span>
-          <div className="hero-material-strip">
-            <div role="group" aria-label="Explore manufacturing materials">
-              {STUDIO_MATERIALS.map((item, i) => (
-                <button
-                  type="button"
-                  key={item.slug}
-                  aria-label={`0${i + 1} ${item.name}`}
-                  aria-pressed={active === i}
-                  onClick={() => setActive(i)}
-                >
-                  <span className="material-index">0{i + 1}</span>
-                  <span>
-                    <strong>{item.name}</strong>
-                    <small>{item.detail}</small>
-                  </span>
-                  <ArrowUpRight size={21} />
-                </button>
-              ))}
-            </div>
-            <a className="hero-phone" href={`tel:${COMPANY_INFO.phoneRaw}`}>
-              <Phone size={18} />
-              <span>
-                LET’S TALK DETAILS<strong>{COMPANY_INFO.phone}</strong>
-              </span>
-            </a>
-          </div>
-        </div>
-      </section>
+      <MaterialCarouselHero
+        paused={paused}
+        onPause={() => setPaused((p) => !p)}
+      />
       <div className="studio-trust-strip">
         <div className="studio-shell">
           <span>
