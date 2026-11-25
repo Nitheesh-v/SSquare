@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,38 +12,153 @@ import {
 import { useReducedMotion } from "@/components/shared/MotionPrimitives";
 import { ComponentIllustration } from "@/features/journey/ComponentIllustration";
 import { STUDIO_MATERIALS } from "./materials";
-import type { HomeMotionState } from "./home-motion";
+import type { JourneyScene } from "@/features/journey/journey-scene";
 
-/** The existing study controls; the shared traveller arrives in this viewport. */
+/** A contained, demand-rendered material study. Never floats over page content. */
 export function ComponentInspector({
   active,
   onSelect,
   paused,
   onPause,
-  state,
-  rotation,
-  onRotate,
 }: {
   active: number;
   onSelect: (index: number) => void;
   paused: boolean;
   onPause: () => void;
-  state: HomeMotionState;
-  rotation: number;
-  onRotate: (angle: number) => void;
 }) {
+  const host = useRef<HTMLDivElement>(null),
+    canvas = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
-  const drag = useRef<{
-    x: number;
-    y: number;
-    angle: number;
-    captured: boolean;
-  } | null>(null);
+  const [near, setNear] = useState(false);
+  const [state, setState] = useState("static");
+  const [rotation, setRotation] = useState(0);
+  const draw = useRef<() => void>(() => {});
+  const settings = useRef({ active, paused, rotation });
+  settings.current = { active, paused, rotation };
+  const drag = useRef<{ x: number; angle: number; captured: boolean } | null>(
+    null,
+  );
+  useEffect(() => {
+    const node = host.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setNear(entry.isIntersecting),
+      { rootMargin: "220px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const node = host.current,
+      c = canvas.current;
+    if (!near || reduced || !node || !c) {
+      setState("static");
+      return;
+    }
+    let scene: JourneyScene | undefined,
+      disposed = false,
+      frame = 0,
+      visible = !document.hidden;
+    let w = node.clientWidth,
+      h = node.clientHeight,
+      lastSignature = "";
+    const render = () => {
+      frame = 0;
+      if (disposed || !visible || !scene) return;
+      const rect = node.getBoundingClientRect();
+      const progress = Math.max(
+        0,
+        Math.min(1, (innerHeight - rect.top) / (innerHeight + rect.height)),
+      );
+      const { active, paused, rotation } = settings.current;
+      const angle = rotation + (paused ? 0 : (progress - 0.5) * 160);
+      const signature = [w, h, active, angle.toFixed(3)].join("/");
+      if (signature === lastSignature) return;
+      const completed = scene.render([], {
+        slot: 0,
+        type: active,
+        pose: {
+          x: w / 2,
+          y: h * 0.48,
+          h: Math.min(w * 0.66, h * 0.7),
+          rx: 14,
+          ry: angle,
+          rz: -12,
+          z: 0,
+          op: 1,
+          sx: 1,
+          sy: 1,
+          shadow: 0.45,
+        },
+      });
+      c.dataset.progress = progress.toFixed(4);
+      if (completed === false) frame = requestAnimationFrame(render);
+      else lastSignature = signature;
+    };
+    const schedule = () => {
+      if (!frame && !disposed && visible) frame = requestAnimationFrame(render);
+    };
+    draw.current = schedule;
+    const resize = () => {
+      w = node.clientWidth;
+      h = node.clientHeight;
+      scene?.resize(w, h);
+      schedule();
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(node);
+    const visibility = () => {
+      visible = !document.hidden;
+      if (!visible) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      } else schedule();
+    };
+    document.addEventListener("visibilitychange", visibility);
+    window.addEventListener("scroll", schedule, { passive: true });
+    import("@/features/journey/journey-scene")
+      .then(({ createJourneyScene }) => {
+        if (disposed) return;
+        try {
+          scene = createJourneyScene(
+            c,
+            () => {
+              setState("unavailable");
+              scene?.dispose();
+              scene = undefined;
+              cancelAnimationFrame(frame);
+              frame = 0;
+            },
+            0,
+          );
+          scene.resize(w, h);
+          setState("ready");
+          schedule();
+        } catch {
+          scene?.dispose();
+          scene = undefined;
+          setState("unavailable");
+        }
+      })
+      .catch(() => {
+        if (!disposed) setState("unavailable");
+      });
+    return () => {
+      disposed = true;
+      draw.current = () => {};
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      document.removeEventListener("visibilitychange", visibility);
+      scene?.dispose();
+    };
+  }, [near, reduced]);
+  useEffect(() => draw.current(), [active, paused, rotation]);
   return (
     <div
       className="component-inspector"
       data-testid="component-inspector"
-      data-state={reduced ? "static" : state}
+      data-state={state}
     >
       <div className="inspector-toolbar">
         <span>
@@ -64,13 +179,12 @@ export function ComponentInspector({
         </button>
       </div>
       <div
+        ref={host}
         className="inspector-viewport"
         role="img"
         aria-label={`Illustrative ${STUDIO_MATERIALS[active].name} component; drag horizontally or use the rotation buttons`}
       >
         <div className="inspector-orbit" aria-hidden="true" />
-        <InspectorGear className="home-study-gear home-study-gear-a" />
-        <InspectorGear className="home-study-gear home-study-gear-b" />
         <span className="inspector-cross cross-one" aria-hidden="true">
           +
         </span>
@@ -85,32 +199,29 @@ export function ComponentInspector({
         >
           <ComponentIllustration type={active} />
         </div>
+        {!reduced && near && (
+          <canvas
+            ref={canvas}
+            data-testid="inspector-canvas"
+            aria-hidden="true"
+          />
+        )}
         <div
           className="inspector-gesture"
           aria-hidden="true"
           onPointerDown={(e) => {
             if (e.button !== 0) return;
-            drag.current = {
-              x: e.clientX,
-              y: e.clientY,
-              angle: rotation,
-              captured: false,
-            };
+            drag.current = { x: e.clientX, angle: rotation, captured: false };
           }}
           onPointerMove={(e) => {
             const start = drag.current;
             if (!start) return;
-            const dx = e.clientX - start.x,
-              dy = e.clientY - start.y;
-            if (!start.captured && Math.abs(dy) > Math.max(8, Math.abs(dx))) {
-              drag.current = null;
-              return;
-            }
-            if (!start.captured && Math.abs(dx) > 6) {
+            if (!start.captured && Math.abs(e.clientX - start.x) > 6) {
               start.captured = true;
               e.currentTarget.setPointerCapture(e.pointerId);
             }
-            if (start.captured) onRotate(start.angle + dx * 0.45);
+            if (start.captured)
+              setRotation(start.angle + (e.clientX - start.x) * 0.45);
           }}
           onPointerUp={(e) => {
             drag.current = null;
@@ -118,9 +229,6 @@ export function ComponentInspector({
               e.currentTarget.releasePointerCapture(e.pointerId);
           }}
           onPointerCancel={() => {
-            drag.current = null;
-          }}
-          onLostPointerCapture={() => {
             drag.current = null;
           }}
         />
@@ -148,7 +256,7 @@ export function ComponentInspector({
           <button
             type="button"
             aria-label="Rotate component left"
-            onClick={() => onRotate(rotation - 30)}
+            onClick={() => setRotation((r) => r - 30)}
           >
             <ArrowLeft size={15} />
           </button>
@@ -156,7 +264,7 @@ export function ComponentInspector({
           <button
             type="button"
             aria-label="Rotate component right"
-            onClick={() => onRotate(rotation + 30)}
+            onClick={() => setRotation((r) => r + 30)}
           >
             <ArrowRight size={15} />
           </button>
@@ -169,31 +277,5 @@ export function ComponentInspector({
         )}
       </p>
     </div>
-  );
-}
-
-function InspectorGear({ className }: { className: string }) {
-  const points = Array.from({ length: 80 }, (_, i) => {
-    const angle = (i / 80) * Math.PI * 2 - Math.PI / 2;
-    const radius = i % 4 < 2 ? 46 : 39;
-    return `${50 + Math.cos(angle) * radius},${50 + Math.sin(angle) * radius}`;
-  }).join(" ");
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 100 100"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <polygon
-        points={points}
-        fill="#9ab1bc"
-        fillOpacity=".13"
-        stroke="#b2c6ce"
-      />
-      <circle cx="50" cy="50" r="22" fill="#17272e" stroke="#b2c6ce" />
-      <circle cx="50" cy="50" r="27" stroke="#b2c6ce" strokeOpacity=".4" />
-    </svg>
   );
 }

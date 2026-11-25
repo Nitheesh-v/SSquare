@@ -4,43 +4,6 @@ Review date: **2026-11-23**
 
 Branch: `arena/8987795b-ssquare`
 
-## Current follow-up: animations only
-
-The photographic homepage restored at `f8533d6` remains the content/layout baseline. The full reference redesign was **not restored**. The current change adds motion to the existing targets only; no reference comparison table, enquiry pack, demo form, replacement copy, navigation or sections were introduced. The catalog, inner pages, RFQ implementation and original `/material-experience` engine are unchanged.
-
-### Reference review and implementation
-
-The live reference's structure was fetched. Direct retrieval of its raw HTML from the sandbox was blocked by the network, so the earlier reference reproduction at `3f4e2c2` was extracted into an **ignored, isolated local directory**, run on a temporary server, and inspected through Chromium before this implementation. Carousel/drag, sequential flips, particles and the assembly were reviewed in captured frames. That temporary server was stopped; no historical homepage files were restored to the working tree.
-
-The existing rubber gasket, steel flange and aluminium profile now share one homepage canvas and a persistent traveller: hero carousel → selected material photograph → existing inspector. The reference's motion is adapted to the preserved page geometry, **not a claim that the original supplied standalone HTML was executed unchanged**.
-
-Added motion: 4.4-second settled-frame carousel dwell/autoplay, horizontal drag and local keyboard selection, idle floating, radial photo reveals, staggered original heading letters/detail rows, perspective card hover, transition fragments, stepped 0° / 180° / 360° / 720° study turns, counter-rotating decorative gears and a non-submitting quote-arrow flight. Existing image/background parallax remains. There is no new scroll spacer, scroll hijack, forced intro, fake enquiry delivery or replacement form.
-
-Pause returns the same renderer/object to the contained study. Native scrolling then needs no redraw, while deliberate rotation remains available. Reduced motion removes the canvas, cancels the animations and retains still SVGs and controls; unavailable/lost WebGL retains the existing labelled fallback. Autoplay suspends around focused/hovered controls, open menus/dialogs and hidden tabs. Native vertical touch panning is preserved.
-
-Implementation: `features/studio/{HomeMotion.tsx,home-motion.ts,home-motion.css}`, the existing `IndustrialHome.tsx` and `ComponentInspector.tsx`; only the material-photo selectors in shared `studio.css` changed to distinguish outgoing/incoming photo layers.
-
-### Current verification — production build
-
-- `npm run build` and `npm run typecheck`: **pass**, Next.js 15.5.29 / 19 static pages. Homepage estimate: **11.3 kB route / 124 kB first-load JS**; shared 103 kB. The existing 3D geometry module is dynamically loaded. These are framework estimates, not Lighthouse/FPS guarantees.
-- Fresh frontend `npm audit --audit-level=low`: **zero vulnerabilities**. No dependency changes were made; the optional backend's inherited launch gate below is unchanged.
-- A pre-change, JavaScript-disabled content capture was compared against the updated homepage: **zero differences in all original visible copy, headings, link targets/text, image paths/alt text and button contents/labels**. `tests/home-motion.spec.ts` retains the five original SHA-256 fingerprints as a regression guard.
-- Full production-browser run: **132 passed, 10 intentional skips, 2 test-assertion failures**, 144 configured cases / one worker / approximately 17.1 minutes. Both failures sampled an earlier GPU pose: a previous card's 360° frame counted as the study's settled 180°, and a previous 0° frame counted as the first contained paused frame. Those failures required **only assertion changes** to wait for the actual settled/local pose.
-- Targeted recheck of both corrected checks in **all four projects: 8 passed, zero failures**, approximately 1.3 minutes. Final review also restricted carousel keys to the material buttons, preserving native keyboard behaviour on the adjacent phone link; the production build/typecheck were repeated successfully. On that final build, **all new motion checks plus paused-scroll/direct-rotation checks passed: 20 passed, 4 intentional skips, zero failures**, approximately 3.5 minutes, across all four projects. No application source changed after that build.
-- All **134 non-skipped configured cases have a passing result across the full run and targeted rechecks**; this is **not described as a fresh, single clean full-suite rerun**. Ten full-matrix skips are six duplicate layout-matrix invocations, three duplicate fixed-size content comparisons and one desktop-only omission of the native-touch test.
-- The full run covers current carousel autoplay/float, drag, keyboard selection, photo/card landing, fragments, study flips, perspective hover, quote feedback/prefill, actual touch swipes/native vertical pan, no-JavaScript content/contact, live reduced motion, pause/direct rotation, unavailable/context-lost WebGL, navigation/catalog/redirects, the unchanged full journey and real RFQ validation/storage semantics. Automated axe WCAG A/AA-tagged checks passed on the covered core/inner pages and RFQ dialog; this is not accessibility conformance certification.
-- Supplemental final review: **1440×900, 390×844, 320×844, 768×1024, 844×390** — one ready canvas, same traveller UUID through photo/study, no page errors or horizontal overflow, no paused-scroll redraws, explicit 30° rotation, and **zero canvases in reduced motion** at every size. The heading/photographic layout and static content were inspected alongside the isolated reference frames. Headless Chromium/SwiftShader and touch emulation are not real-device/GPU certification.
-
-Sources: `tests/home-motion.spec.ts`, `tests/studio-pages.spec.ts`, existing `tests/industrial-site.spec.ts` and `tests/material-journey.spec.ts`. Ignored supporting artifacts: `.cache/qa/motion-reference/`, `.cache/qa/motion-only-review.mjs`. No screenshots, reference clone, generated assets or runtime enquiries are committed.
-
-The production preview runs with outbound email/webhooks disabled and the optional backend offline. Cleanup removed **only the eight marked frontend QA enquiry rows** from this follow-up, retained zero other frontend rows, left the log at **0 bytes / mode 0600**, and did not modify backend enquiry data. Real RFQ code and storage-versus-delivery messages were not modified. User visual approval, company-approved assets, actual notification receipt and the remaining launch requirements below are still separate gates.
-
----
-
-## Prior photographic-refresh record (historical baseline)
-
-**The remaining report documents the pre-animation photographic refresh at `41cc786`, restored by `f8533d6`. Statements below about manual-only selection, no initial hero canvas, near-study loading and a copy-free contained renderer describe that baseline, not the animation follow-up above. Its 118-pass result is historical.**
-
 ## Delivery status
 
 The rejected carousel-led presentation has been replaced on the homepage by an **imagery-led industrial layout**, with a consistent refresh of the catalog, three material divisions, division index, company, infrastructure, FAQ, contact page and navy footer. The genuine company logos and working RFQ/contact paths remain.

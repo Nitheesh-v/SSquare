@@ -147,13 +147,13 @@ body {
   object-position: center;
   opacity: 0.9;
 }
-.precision-hero-photo[data-photo-material="rubber"] {
+.precision-hero[data-active-material="rubber"] .precision-hero-photo {
   left: 35%;
   top: -20%;
   bottom: -10%;
   right: -12%;
 }
-.precision-hero-photo[data-photo-material="rubber"] img {
+.precision-hero[data-active-material="rubber"] .precision-hero-photo img {
   object-position: 60% center;
 }
 .precision-hero-shade {
@@ -1559,7 +1559,7 @@ body {
     object-position: 60% center;
     opacity: 0.65;
   }
-  .precision-hero-photo[data-photo-material="rubber"] {
+  .precision-hero[data-active-material="rubber"] .precision-hero-photo {
     inset: 18% -32% -1% -9%;
   }
   .precision-hero-shade {
