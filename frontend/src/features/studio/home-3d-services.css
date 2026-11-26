@@ -1,15 +1,18 @@
 /* Scroll-linked "OUR SERVICES" 3D choreography.
-   Scoped under .home3d so the shared industrial pages stay untouched. */
+   Visual target: supplied reference screenshots. Scoped under .home3d. */
 
 .home3d .services3d {
   --services-nav-offset: 112px;
+  --services-red: #e84b3b;
+  --services-cream: #f6f3ee;
+  --services-card: #0d1626;
   position: relative;
   z-index: 4;
   isolation: isolate;
   height: 420svh;
   min-height: 100svh;
   background: #070d19;
-  color: #f6f3ee;
+  color: var(--services-cream);
   overflow: clip;
 }
 
@@ -19,10 +22,18 @@
   height: 100svh;
   overflow: hidden;
   padding-top: var(--services-nav-offset);
+  background: #070d19;
+}
+
+.home3d .services3d-pin::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 72% 38%, rgba(35, 64, 102, 0.5) 0, transparent 46%),
-    radial-gradient(circle at 18% 78%, rgba(232, 113, 42, 0.14) 0, transparent 38%),
-    linear-gradient(180deg, #070d19 0%, #0a1426 52%, #070d19 100%);
+    linear-gradient(180deg, #070d19 0%, #070d19 48%, #272735 48%, #272735 66%, #162b4a 66%, #162b4a 76%, #070d19 76%, #070d19 100%),
+    radial-gradient(circle at 72% 36%, rgba(35, 64, 102, 0.35) 0, transparent 42%);
 }
 
 .home3d .services3d-canvas {
@@ -47,184 +58,311 @@
   z-index: 2;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(7, 13, 25, 0.94) 0%, rgba(7, 13, 25, 0.72) 34%, rgba(7, 13, 25, 0.06) 62%, rgba(7, 13, 25, 0.38) 100%),
-    linear-gradient(180deg, rgba(7, 13, 25, 0.5) 0%, transparent 24%, transparent 68%, rgba(7, 13, 25, 0.72) 100%);
+    linear-gradient(90deg, rgba(7, 13, 25, 0.86) 0%, rgba(7, 13, 25, 0.18) 36%, rgba(7, 13, 25, 0.04) 62%, rgba(7, 13, 25, 0.28) 100%),
+    linear-gradient(180deg, rgba(7, 13, 25, 0.42) 0%, transparent 22%, transparent 62%, rgba(7, 13, 25, 0.82) 100%);
 }
 
 .home3d .services3d-overlay {
   position: absolute;
   inset: var(--services-nav-offset) 0 0 0;
   z-index: 3;
-  display: grid;
-  grid-template-columns: minmax(300px, 38%) 1fr;
-  grid-template-rows: auto 1fr auto;
-  gap: 18px 32px;
-  padding: clamp(22px, 3.2vw, 48px) clamp(20px, 4vw, 64px) clamp(24px, 3vw, 44px);
   pointer-events: none;
 }
 
+/* ---------- header ---------- */
 .home3d .services3d-head {
-  grid-column: 1;
-  grid-row: 1;
-  max-width: 560px;
+  position: absolute;
+  left: clamp(20px, 4vw, 64px);
+  top: clamp(26px, 5vh, 54px);
+  z-index: 4;
 }
 
-.home3d .services3d-head .eb {
-  margin-bottom: 10px;
+.home3d .services3d-kicker {
+  margin: 0 0 8px;
+  font: 600 11px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--services-red);
 }
 
 .home3d .services3d-title {
-  font-size: clamp(48px, 6.2vw, 92px);
-  text-transform: uppercase;
-  line-height: 0.9;
-  text-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
-}
-
-.home3d .services3d-lead {
-  margin-top: 16px;
-  max-width: 440px;
-  font-size: clamp(13px, 1.15vw, 16px);
-  line-height: 1.55;
-  color: rgba(246, 243, 238, 0.72);
-}
-
-.home3d .services3d-steps {
-  grid-column: 1;
-  grid-row: 2;
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px, 1.4vw, 18px);
-  max-width: 500px;
-  will-change: transform, opacity;
-  transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
-}
-
-.home3d .services3d-card {
   position: relative;
-  padding: clamp(14px, 1.6vw, 22px) clamp(16px, 1.8vw, 24px);
-  border: 1px solid rgba(246, 243, 238, 0.12);
-  border-left: 2px solid rgba(232, 113, 42, 0.4);
-  border-radius: 14px;
-  background: rgba(8, 14, 26, 0.52);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 18px 44px -28px rgba(0, 0, 0, 0.8);
-  opacity: 0.3;
-  transform: translate3d(0, 16px, 0) scale(0.985);
-  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), border-color 0.55s var(--ease), background 0.55s var(--ease);
-  will-change: transform, opacity;
+  margin: 0;
+  padding-bottom: 14px;
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-size: clamp(38px, 4.5vw, 66px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  text-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.home3d .services3d-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 58px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--services-red);
+}
+
+/* ---------- control pill + percent ---------- */
+.home3d .services3d-control {
+  position: absolute;
+  top: clamp(26px, 5vh, 54px);
+  right: clamp(20px, 4vw, 64px);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(520px, 52vw);
+  padding: 7px 8px 7px 12px;
+  border: 1px solid rgba(246, 243, 238, 0.14);
+  border-radius: 999px;
+  background: rgba(8, 14, 26, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 16px 36px -24px rgba(0, 0, 0, 0.9);
+  font: 500 10px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  color: rgba(246, 243, 238, 0.78);
+  white-space: nowrap;
+}
+
+.home3d .services3d-control-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: var(--services-red);
+  flex: 0 0 auto;
+}
+
+.home3d .services3d-control-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home3d .services3d-control-touch {
+  display: none;
+}
+
+.home3d .services3d-percent {
+  display: inline-grid;
+  place-items: center;
+  min-width: 42px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #1b2536;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- scroll track ---------- */
+.home3d .services3d-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 56%;
+  z-index: 2;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(69, 200, 224, 0.55), rgba(69, 200, 224, 0.12));
   pointer-events: none;
 }
 
-.home3d .services3d-card::before {
+.home3d .services3d-track::after {
   content: "";
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 2px;
-  background: var(--orange);
-  opacity: 0;
-  transform: scaleY(0.2);
-  transform-origin: center;
-  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+  right: 2.5%;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 12px solid #f2c14e;
+  opacity: 0.85;
+}
+
+.home3d .services3d-track-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--services-red), #ff8a5c);
+  box-shadow: 0 0 14px rgba(232, 75, 59, 0.65);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* ---------- service cards ---------- */
+.home3d .services3d-cards {
+  position: absolute;
+  left: clamp(20px, 4vw, 64px);
+  right: clamp(20px, 4vw, 64px);
+  bottom: clamp(24px, 4vh, 48px);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 18px);
+  pointer-events: auto;
+}
+
+.home3d .services3d-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 168px;
+  padding: clamp(14px, 1.5vw, 20px);
+  border: 1px solid rgba(246, 243, 238, 0.1);
+  border-radius: 14px;
+  background: var(--services-card);
+  color: var(--services-cream);
+  box-shadow: 0 18px 44px -30px rgba(0, 0, 0, 0.9);
+  opacity: 0.9;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 0.5s var(--ease),
+    opacity 0.5s var(--ease),
+    background 0.5s var(--ease),
+    color 0.5s var(--ease),
+    border-color 0.5s var(--ease),
+    box-shadow 0.5s var(--ease);
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+.home3d .services3d-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.home3d .services3d-num {
+  font: 500 11px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  color: rgba(246, 243, 238, 0.7);
+}
+
+.home3d .services3d-tag {
+  padding: 5px 9px;
+  border: 1px solid rgba(246, 243, 238, 0.12);
+  border-radius: 999px;
+  background: rgba(246, 243, 238, 0.06);
+  color: rgba(246, 243, 238, 0.72);
+  font: 500 9px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease), border-color 0.35s var(--ease);
+  pointer-events: auto;
+}
+
+.home3d .services3d-tag:hover {
+  background: rgba(246, 243, 238, 0.14);
+}
+
+.home3d .services3d-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.home3d .services3d-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: rgba(246, 243, 238, 0.07);
+  color: rgba(246, 243, 238, 0.7);
+  transition: background 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+.home3d .services3d-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home3d .services3d-card h3 {
+  margin: 1px 0 0;
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-size: clamp(15px, 1.25vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.home3d .services3d-card p {
+  margin: 8px 0 0;
+  font-size: clamp(11.5px, 0.92vw, 13px);
+  line-height: 1.48;
+  color: rgba(246, 243, 238, 0.7);
 }
 
 .home3d .services3d[data-step="0"] .services3d-card[data-i="0"],
 .home3d .services3d[data-step="1"] .services3d-card[data-i="1"],
-.home3d .services3d[data-step="2"] .services3d-card[data-i="2"],
-.home3d .services3d[data-step="all"] .services3d-card,
-.home3d .services3d[data-fallback="true"] .services3d-card {
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"] {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
-  border-color: rgba(246, 243, 238, 0.24);
-  background: rgba(11, 20, 36, 0.82);
-  pointer-events: auto;
+  transform: translate3d(0, -10px, 0);
+  background: var(--services-cream);
+  color: #0f141c;
+  border-color: rgba(15, 20, 28, 0.08);
+  box-shadow: 0 30px 64px -28px rgba(0, 0, 0, 0.75);
 }
 
-.home3d .services3d[data-step="0"] .services3d-card[data-i="0"]::before,
-.home3d .services3d[data-step="1"] .services3d-card[data-i="1"]::before,
-.home3d .services3d[data-step="2"] .services3d-card[data-i="2"]::before,
-.home3d .services3d[data-step="all"] .services3d-card::before,
-.home3d .services3d[data-fallback="true"] .services3d-card::before {
-  opacity: 1;
-  transform: scaleY(1);
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"] .services3d-num,
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"] .services3d-num,
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"] .services3d-num {
+  color: var(--services-red);
 }
 
-.home3d .services3d-num {
-  display: block;
-  margin-bottom: 6px;
-  font: 500 11px "DM Mono", ui-monospace, monospace;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--orange);
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"] .services3d-tag,
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"] .services3d-tag,
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"] .services3d-tag {
+  background: rgba(232, 75, 59, 0.12);
+  border-color: rgba(232, 75, 59, 0.28);
+  color: #c53a2d;
 }
 
-.home3d .services3d-card h3 {
-  font-size: clamp(22px, 2.2vw, 34px);
-  text-transform: uppercase;
-  line-height: 0.96;
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"] .services3d-icon,
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"] .services3d-icon,
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"] .services3d-icon {
+  background: var(--services-red);
+  color: #fff;
 }
 
-.home3d .services3d-card p {
-  margin-top: 10px;
-  font-size: clamp(12.5px, 1.02vw, 14.5px);
-  line-height: 1.5;
-  color: rgba(246, 243, 238, 0.78);
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"] p,
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"] p,
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"] p {
+  color: rgba(15, 20, 28, 0.72);
 }
 
-.home3d .services3d-spec-trigger {
-  margin-top: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 0 3px;
-  border-bottom: 1px solid rgba(246, 243, 238, 0.4);
-  font: 500 10.5px "DM Mono", ui-monospace, monospace;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #f6f3ee;
-  pointer-events: auto;
-}
-
-.home3d .services3d-spec-trigger svg {
-  width: 12px;
-  height: 12px;
-}
-
-.home3d .services3d-counter {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
-  align-self: start;
-  font: 500 12px "DM Mono", ui-monospace, monospace;
-  letter-spacing: 0.18em;
-  color: rgba(246, 243, 238, 0.55);
-}
-
-.home3d .services3d-counter strong {
-  font-size: clamp(38px, 5vw, 72px);
-  font-family: "Barlow Condensed", Impact, sans-serif;
-  color: transparent;
-  -webkit-text-stroke: 1.4px rgba(246, 243, 238, 0.85);
-  letter-spacing: 0;
-}
-
+/* ---------- spec popover ---------- */
 .home3d .services3d-spec {
-  grid-column: 2;
-  grid-row: 2;
-  align-self: end;
-  justify-self: end;
-  width: min(340px, 30vw);
+  position: absolute;
+  top: 27%;
+  right: clamp(20px, 4vw, 64px);
+  z-index: 6;
+  width: min(320px, 28vw);
   padding: 18px 20px;
-  border: 1px solid rgba(246, 243, 238, 0.2);
+  border: 1px solid rgba(246, 243, 238, 0.18);
   border-radius: 16px;
-  background: rgba(10, 18, 32, 0.86);
+  background: rgba(9, 16, 29, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 28px 60px -28px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 28px 60px -28px rgba(0, 0, 0, 0.85);
   pointer-events: auto;
   transform: translate3d(0, 0, 0);
-  opacity: 1;
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }
 
@@ -240,7 +378,7 @@
   font: 500 10px "DM Mono", ui-monospace, monospace;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--services-red);
 }
 
 .home3d .services3d-spec-close {
@@ -255,72 +393,33 @@
 }
 
 .home3d .services3d-spec h4 {
-  font-size: clamp(20px, 1.8vw, 26px);
+  margin: 0;
+  font-family: "Inter Variable", Inter, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 1.05;
 }
 
 .home3d .services3d-spec p {
-  margin-top: 8px;
-  font-size: 12.5px;
+  margin: 8px 0 0;
+  font-size: 12px;
   line-height: 1.5;
   color: rgba(246, 243, 238, 0.72);
 }
 
-.home3d .services3d-progress {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  align-self: end;
-  position: relative;
-  height: 2px;
-  width: 100%;
-  background: rgba(246, 243, 238, 0.14);
-  overflow: hidden;
-}
-
-.home3d .services3d-progress span {
-  display: block;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, var(--orange), #ffb36b);
-  box-shadow: 0 0 14px rgba(232, 113, 42, 0.7);
-  transform: scaleX(0);
-  transform-origin: left center;
-  will-change: transform;
-}
-
-.home3d .services3d-hint {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  align-self: end;
-  justify-self: center;
-  margin-bottom: 14px;
-  font: 500 10.5px "DM Mono", ui-monospace, monospace;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(246, 243, 238, 0.58);
-  text-align: center;
-  pointer-events: none;
-}
-
-.home3d .services3d-hint-touch {
-  display: none;
-}
-
-.home3d .services3d[data-step="all"] .services3d-progress,
-.home3d .services3d[data-fallback="true"] .services3d-progress,
-.home3d .services3d[data-step="all"] .services3d-hint,
-.home3d .services3d[data-fallback="true"] .services3d-hint,
+/* ---------- static / reduced / no-JS states ---------- */
+.home3d .services3d[data-step="all"] .services3d-track,
+.home3d .services3d[data-fallback="true"] .services3d-track,
+.home3d .services3d[data-step="all"] .services3d-control,
+.home3d .services3d[data-fallback="true"] .services3d-control,
 .home3d .services3d[data-step="all"] .services3d-canvas,
 .home3d .services3d[data-fallback="true"] .services3d-canvas,
 .home3d .services3d[data-step="all"] .services3d-veil,
-.home3d .services3d[data-fallback="true"] .services3d-veil {
-  display: none;
-}
-
-.home3d .services3d[data-step="all"] .services3d-steps,
-.home3d .services3d[data-fallback="true"] .services3d-steps {
-  gap: 12px;
+.home3d .services3d[data-fallback="true"] .services3d-veil,
+.home3d .services3d[data-step="all"] .services3d-spec,
+.home3d .services3d[data-fallback="true"] .services3d-spec {
+  display: none !important;
 }
 
 .home3d .services3d[data-step="all"],
@@ -334,8 +433,7 @@
   position: relative;
   height: auto;
   min-height: 0;
-  padding-top: 0;
-  padding-bottom: 64px;
+  padding: 72px 16px 80px;
 }
 
 .home3d .services3d[data-step="all"] .services3d-overlay,
@@ -343,53 +441,70 @@
   position: relative;
   inset: auto;
   display: block;
-  padding: 64px clamp(20px, 4vw, 64px) 0;
+  padding: 0;
 }
 
-.home3d .services3d[data-step="all"] .services3d-steps,
-.home3d .services3d[data-fallback="true"] .services3d-steps {
-  max-width: 760px;
-  margin-top: 28px;
-}
-
-.home3d .services3d[data-step="all"] .services3d-spec,
-.home3d .services3d[data-fallback="true"] .services3d-spec {
+.home3d .services3d[data-step="all"] .services3d-head,
+.home3d .services3d[data-fallback="true"] .services3d-head {
   position: relative;
-  inset: auto;
-  width: min(100%, 480px);
-  margin-top: 24px;
-  justify-self: start;
+  left: auto;
+  top: auto;
+  margin-bottom: 28px;
 }
 
-.home3d .services3d[data-step="all"] .services3d-counter,
-.home3d .services3d[data-fallback="true"] .services3d-counter {
-  display: none;
+.home3d .services3d[data-step="all"] .services3d-cards,
+.home3d .services3d[data-fallback="true"] .services3d-cards {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  overflow: visible;
 }
 
-/* ---------- desktop short / tablet ---------- */
+.home3d .services3d[data-step="all"] .services3d-card,
+.home3d .services3d[data-fallback="true"] .services3d-card {
+  opacity: 1;
+  transform: none;
+  background: var(--services-card);
+  color: var(--services-cream);
+  border-color: rgba(246, 243, 238, 0.1);
+  box-shadow: none;
+}
+
+.home3d .services3d[data-step="all"] .services3d-card p,
+.home3d .services3d[data-fallback="true"] .services3d-card p {
+  color: rgba(246, 243, 238, 0.7);
+}
+
+.home3d .services3d[data-step="all"] .services3d-tag,
+.home3d .services3d[data-fallback="true"] .services3d-tag {
+  pointer-events: none;
+}
+
+/* ---------- desktop short ---------- */
 @media (min-width: 820px) and (max-height: 620px) {
-  .home3d .services3d-overlay {
-    gap: 10px 24px;
-    padding-top: 18px;
+  .home3d .services3d-head {
+    top: 18px;
   }
   .home3d .services3d-title {
-    font-size: clamp(40px, 4.8vw, 64px);
+    font-size: clamp(34px, 4vw, 52px);
   }
-  .home3d .services3d-lead {
-    display: none;
+  .home3d .services3d-control {
+    top: 18px;
+    font-size: 9px;
   }
   .home3d .services3d-card {
-    padding: 12px 16px;
-  }
-  .home3d .services3d-card h3 {
-    font-size: 22px;
+    min-height: 140px;
+    gap: 10px;
+    padding: 12px 14px;
   }
   .home3d .services3d-card p {
-    margin-top: 6px;
-    font-size: 12px;
+    font-size: 11px;
   }
-  .home3d .services3d-spec-trigger {
-    margin-top: 8px;
+  .home3d .services3d-cards {
+    bottom: 18px;
   }
 }
 
@@ -399,106 +514,112 @@
     --services-nav-offset: 104px;
     height: 360svh;
   }
-  .home3d .services3d-veil {
+  .home3d .services3d-pin::before {
     background:
-      linear-gradient(180deg, rgba(7, 13, 25, 0.82) 0%, rgba(7, 13, 25, 0.24) 32%, rgba(7, 13, 25, 0.08) 48%, rgba(7, 13, 25, 0.92) 76%, #070d19 100%);
-  }
-  .home3d .services3d-overlay {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 18px 16px 22px;
+      linear-gradient(180deg, #070d19 0%, #070d19 46%, #272735 46%, #272735 64%, #162b4a 64%, #162b4a 74%, #070d19 74%, #070d19 100%);
   }
   .home3d .services3d-head {
-    max-width: none;
+    left: 16px;
+    top: 18px;
   }
   .home3d .services3d-title {
-    font-size: clamp(38px, 11vw, 58px);
+    font-size: clamp(32px, 9vw, 48px);
   }
-  .home3d .services3d-lead {
-    display: none;
-  }
-  .home3d .services3d-counter {
-    position: absolute;
+  .home3d .services3d-control {
+    top: 18px;
     right: 16px;
-    top: 16px;
-    font-size: 10px;
+    max-width: 62vw;
+    padding: 6px 6px 6px 9px;
+    gap: 6px;
+    font-size: 8.5px;
+    letter-spacing: 0;
   }
-  .home3d .services3d-counter strong {
-    font-size: 34px;
+  .home3d .services3d-control-icon {
+    width: 14px;
+    height: 14px;
   }
-  .home3d .services3d-steps {
-    margin-top: auto;
-    max-width: none;
-    gap: 8px;
+  .home3d .services3d-control-icon svg {
+    width: 14px;
+    height: 14px;
   }
-  .home3d .services3d-card {
-    padding: 12px 14px;
-    border-radius: 12px;
-  }
-  .home3d .services3d-num {
-    font-size: 9.5px;
-    margin-bottom: 4px;
-  }
-  .home3d .services3d-card h3 {
-    font-size: clamp(19px, 5.4vw, 24px);
-  }
-  .home3d .services3d-card p {
-    margin-top: 6px;
-    font-size: 11.5px;
-    line-height: 1.42;
-  }
-  .home3d .services3d-spec-trigger {
-    margin-top: 8px;
-    font-size: 9.5px;
-  }
-  .home3d .services3d-hint-desktop {
+  .home3d .services3d-control-desktop {
     display: none;
   }
-  .home3d .services3d-hint-touch {
+  .home3d .services3d-control-touch {
     display: inline;
   }
-  .home3d .services3d-hint {
-    margin-bottom: 8px;
+  .home3d .services3d-percent {
+    min-width: 36px;
+    height: 22px;
     font-size: 9px;
-    letter-spacing: 0.1em;
-    line-height: 1.5;
   }
-  .home3d .services3d-spec {
-    position: absolute;
+  .home3d .services3d-track {
+    top: 54%;
+  }
+  .home3d .services3d-cards {
     left: 16px;
     right: 16px;
-    bottom: 58px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    touch-action: pan-x pan-y;
+  }
+  .home3d .services3d-cards::-webkit-scrollbar {
+    display: none;
+  }
+  .home3d .services3d-card {
+    flex: 0 0 min(78vw, 300px);
+    min-height: 158px;
+    padding: 13px 14px;
+    scroll-snap-align: center;
+  }
+  .home3d .services3d-card h3 {
+    font-size: 15px;
+  }
+  .home3d .services3d-card p {
+    font-size: 11.5px;
+  }
+  .home3d .services3d-tag {
+    font-size: 8.5px;
+    padding: 4px 7px;
+  }
+  .home3d .services3d-spec {
+    left: 16px;
+    right: 16px;
+    top: auto;
+    bottom: calc(190px + env(safe-area-inset-bottom));
     width: auto;
     padding: 14px 16px;
-    z-index: 5;
+    z-index: 7;
   }
-  .home3d .services3d[data-spec-open="true"] .services3d-steps {
-    opacity: 0.22;
-    transform: translate3d(0, -8px, 0);
+  .home3d .services3d[data-spec-open="true"] .services3d-cards {
+    opacity: 0.35;
+    transform: translate3d(0, 8px, 0);
   }
 }
 
 @media (max-width: 359px) {
   .home3d .services3d-title {
-    font-size: 34px;
+    font-size: 30px;
   }
-  .home3d .services3d-card h3 {
-    font-size: 18px;
+  .home3d .services3d-control {
+    max-width: 58vw;
+    font-size: 7.5px;
   }
-  .home3d .services3d-card p {
-    font-size: 10.5px;
-  }
-  .home3d .services3d-hint {
-    font-size: 8px;
+  .home3d .services3d-card {
+    flex-basis: 84vw;
   }
 }
 
 @media (hover: none), (pointer: coarse) {
-  .home3d .services3d-hint-desktop {
+  .home3d .services3d-control-desktop {
     display: none;
   }
-  .home3d .services3d-hint-touch {
+  .home3d .services3d-control-touch {
     display: inline;
   }
 }
@@ -507,9 +628,8 @@
   .home3d .services3d,
   .home3d .services3d-pin,
   .home3d .services3d-overlay,
-  .home3d .services3d-steps,
+  .home3d .services3d-cards,
   .home3d .services3d-card,
-  .home3d .services3d-card::before,
   .home3d .services3d-spec {
     transition: none !important;
   }
@@ -521,36 +641,44 @@
     position: relative;
     height: auto;
     min-height: 0;
-    padding-top: 0;
-    padding-bottom: 64px;
+    padding: 72px 16px 80px;
   }
   .home3d .services3d-canvas,
   .home3d .services3d-veil,
-  .home3d .services3d-progress,
-  .home3d .services3d-hint,
-  .home3d .services3d-counter {
+  .home3d .services3d-track,
+  .home3d .services3d-control,
+  .home3d .services3d-spec {
     display: none !important;
   }
   .home3d .services3d-overlay {
     position: relative;
     inset: auto;
     display: block;
-    padding: 64px clamp(20px, 4vw, 64px) 0;
+    padding: 0;
   }
-  .home3d .services3d-steps {
-    max-width: 760px;
-    margin-top: 28px;
-    gap: 12px;
+  .home3d .services3d-head {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin-bottom: 28px;
+  }
+  .home3d .services3d-cards {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    overflow: visible;
   }
   .home3d .services3d-card {
     opacity: 1;
     transform: none;
-    pointer-events: auto;
+    background: var(--services-card);
+    color: var(--services-cream);
   }
-  .home3d .services3d-spec {
-    position: relative;
-    inset: auto;
-    width: min(100%, 480px);
-    margin-top: 24px;
+  .home3d .services3d-card p {
+    color: rgba(246, 243, 238, 0.7);
   }
 }

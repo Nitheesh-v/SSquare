@@ -3,14 +3,15 @@
 /**
  * Scroll-linked "OUR SERVICES" 3D choreography.
  *
- * Runs inside Services3DSection. Everything is imperative because the
- * surrounding homepage already uses an imperative Three.js engine; this module
- * owns its own canvas, renderer, OrbitControls and cleanup so the two scenes
- * never share WebGL state.
+ * Visual target: the supplied reference screenshots. This module owns its own
+ * canvas, renderer and damped OrbitControls so the separate homepage WebGL
+ * engine is never touched. Wheel zoom and touch rotation are deliberately
+ * disabled in OrbitControls; a horizontal-only touch gesture inspects the
+ * scene while vertical swipes remain page scrolls.
  */
 
 export async function createServices3DEngine(options) {
-  const { section, canvas, progressEl, onSpec } = options;
+  const { section, canvas, progressEl, percentEl, cardsEl, onSpec } = options;
   const THREE = await import("three");
   const { OrbitControls } = await import(
     "three/addons/controls/OrbitControls.js"
@@ -19,7 +20,6 @@ export async function createServices3DEngine(options) {
   const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
   const ease = (t) =>
     t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  const lerp = (a, b, t) => a + (b - a) * t;
 
   const reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
   let reduced = reduceMQ.matches;
@@ -30,12 +30,15 @@ export async function createServices3DEngine(options) {
   let last = performance.now();
   let touchYaw = 0;
   let stageScale = 1;
+  let lastStep = -1;
   const ac = new AbortController();
   const signal = ac.signal;
 
   delete section.dataset.fallback;
   section.dataset.reduced = String(reduced);
   section.dataset.step = reduced ? "all" : "0";
+  percentEl.textContent = reduced ? "55%" : "00%";
+  progressEl.style.transform = reduced ? "scaleX(.55)" : "scaleX(0)";
 
   let renderer;
   try {
@@ -61,7 +64,7 @@ export async function createServices3DEngine(options) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
-  const target = new THREE.Vector3(0, 1.05, 0);
+  const target = new THREE.Vector3(0, 1.1, 0);
   const tmpOffset = new THREE.Vector3();
   const yAxis = new THREE.Vector3(0, 1, 0);
 
@@ -77,8 +80,6 @@ export async function createServices3DEngine(options) {
   controls.maxPolarAngle = Math.PI * 0.49;
   controls.minAzimuthAngle = -Math.PI * 0.42;
   controls.maxAzimuthAngle = Math.PI * 0.42;
-  // Let the browser own vertical touch scrolling. Horizontal drags are handled
-  // by the lightweight inspect gesture below, not by OrbitControls' rotate.
   controls.touches.ONE = -1;
   controls.touches.TWO = -1;
   canvas.style.touchAction = "pan-y";
@@ -87,10 +88,10 @@ export async function createServices3DEngine(options) {
   });
 
   /* ---------------- lighting ---------------- */
-  scene.add(new THREE.AmbientLight(0xc9dcff, 0.42));
+  scene.add(new THREE.AmbientLight(0xc9dcff, 0.46));
   const hemi = new THREE.HemisphereLight(0xdfe9ff, 0x080e19, 0.8);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 2.05);
+  const key = new THREE.DirectionalLight(0xffffff, 2.1);
   key.position.set(-6, 10, 8);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
@@ -106,33 +107,25 @@ export async function createServices3DEngine(options) {
   rim.position.set(8, 5, -6);
   scene.add(rim);
   const follow = new THREE.PointLight(0xffa45c, 16, 28, 2);
-  follow.position.set(-6, 4, 3);
+  follow.position.set(-6, 4.2, 3.2);
   scene.add(follow);
 
-  /* ---------------- materials / geometry ---------------- */
+  /* ---------------- materials ---------------- */
+  const RED = 0xe84b3b;
   const mat = {
+    steel: new THREE.MeshStandardMaterial({ color: 0xc9d2dc, roughness: 0.3, metalness: 0.92 }),
+    steelDark: new THREE.MeshStandardMaterial({ color: 0x7f8a98, roughness: 0.38, metalness: 0.85 }),
     rubber: new THREE.MeshStandardMaterial({ color: 0x20242d, roughness: 0.78, metalness: 0.05 }),
-    steel: new THREE.MeshStandardMaterial({ color: 0xc9d2dc, roughness: 0.26, metalness: 0.95 }),
-    alu: new THREE.MeshStandardMaterial({ color: 0xaeb8c4, roughness: 0.42, metalness: 0.85 }),
-    navy: new THREE.MeshStandardMaterial({ color: 0x132b4a, roughness: 0.55, metalness: 0.35 }),
-    orange: new THREE.MeshStandardMaterial({ color: 0xe8712a, roughness: 0.42, metalness: 0.2 }),
-    glass: new THREE.MeshStandardMaterial({ color: 0x8fb3d9, roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.78 }),
+    cream: new THREE.MeshStandardMaterial({ color: 0xf1ede5, roughness: 0.62, metalness: 0.08 }),
+    red: new THREE.MeshStandardMaterial({ color: RED, roughness: 0.48, metalness: 0.18 }),
+    navy: new THREE.MeshStandardMaterial({ color: 0x172b45, roughness: 0.6, metalness: 0.3 }),
     dark: new THREE.MeshStandardMaterial({ color: 0x0b111c, roughness: 0.82, metalness: 0.18 }),
-    line: new THREE.MeshBasicMaterial({ color: 0xe8712a, transparent: true, opacity: 0.35 }),
+    glass: new THREE.MeshStandardMaterial({ color: 0x8fb3d9, roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.78 }),
+    line: new THREE.MeshBasicMaterial({ color: 0x45c8e0, transparent: true, opacity: 0.45 }),
     cyan: new THREE.MeshBasicMaterial({ color: 0x7bd3ff, transparent: true, opacity: 0.65 }),
-    sage: new THREE.MeshBasicMaterial({ color: 0x8fa8a3, transparent: true, opacity: 0.8 }),
   };
 
   const clickables = [];
-  const partMeshes = [];
-  const qaRings = [];
-  const wheels = [];
-  let qaPart;
-  let scan;
-  let label;
-  let labelTex;
-  const jaws = [];
-
   function tag(mesh, spec) {
     mesh.userData.spec = spec;
     mesh.castShadow = true;
@@ -141,74 +134,118 @@ export async function createServices3DEngine(options) {
     return mesh;
   }
 
-  function makeNutGeometry() {
-    const shape = new THREE.Shape();
-    const R = 0.55;
-    for (let i = 0; i < 6; i++) {
-      const a = Math.PI / 6 + i * Math.PI / 3;
-      const x = Math.cos(a) * R;
-      const y = Math.sin(a) * R;
-      if (i) shape.lineTo(x, y);
-      else shape.moveTo(x, y);
+  function makeGearGeometry(teeth, r0, r1, hole, depth) {
+    const sh = new THREE.Shape();
+    for (let i = 0; i < teeth; i++) {
+      const t = (i / teeth) * Math.PI * 2;
+      const dt = (Math.PI * 2) / teeth;
+      const p = (r, a) => [Math.cos(a) * r, Math.sin(a) * r];
+      const a = p(r0, t);
+      const b = p(r1, t + dt * 0.2);
+      const c = p(r1, t + dt * 0.42);
+      const d = p(r0, t + dt * 0.62);
+      if (i) sh.lineTo(a[0], a[1]);
+      else sh.moveTo(a[0], a[1]);
+      sh.lineTo(b[0], b[1]);
+      sh.lineTo(c[0], c[1]);
+      sh.lineTo(d[0], d[1]);
     }
-    shape.closePath();
-    const hole = new THREE.Path();
-    hole.absarc(0, 0, 0.22, 0, Math.PI * 2, true);
-    shape.holes.push(hole);
-    const geo = new THREE.ExtrudeGeometry(shape, {
-      depth: 0.42,
+    sh.closePath();
+    const h = new THREE.Path();
+    h.absarc(0, 0, hole, 0, Math.PI * 2, true);
+    sh.holes.push(h);
+    const geo = new THREE.ExtrudeGeometry(sh, {
+      depth,
       bevelEnabled: true,
-      bevelThickness: 0.03,
-      bevelSize: 0.03,
-      bevelSegments: 2,
-      curveSegments: 6,
+      bevelThickness: depth * 0.1,
+      bevelSize: depth * 0.06,
+      bevelSegments: 1,
+      curveSegments: 2,
     });
     geo.center();
     return geo;
   }
 
-  function makeHousingGeometry() {
-    const pts = [
-      [0.18, -0.5], [0.45, -0.5], [0.45, -0.4], [0.32, -0.4],
-      [0.32, -0.12], [0.285, -0.1], [0.285, -0.02], [0.32, 0],
-      [0.32, 0.28], [0.37, 0.3], [0.37, 0.43], [0.34, 0.47], [0.18, 0.47],
-    ].map((p) => new THREE.Vector2(p[0], p[1]));
-    return new THREE.LatheGeometry(pts, 48);
+  function makeBolt(spec) {
+    const g = new THREE.Group();
+    const shaft = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 1.15, 20),
+      mat.steel.clone(),
+    );
+    shaft.position.y = 0.58;
+    const head = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.28, 0.28, 0.28, 6),
+      mat.steel.clone(),
+    );
+    head.position.y = 1.22;
+    head.rotation.y = Math.PI / 6;
+    g.add(tag(shaft, spec), tag(head, spec));
+    return g;
   }
 
-  function makeLabelTexture(text) {
+  function makeWireBox() {
+    const geo = new THREE.EdgesGeometry(new THREE.BoxGeometry(3.2, 2.2, 2.2));
+    return new THREE.LineSegments(
+      geo,
+      new THREE.LineBasicMaterial({ color: 0x7bd3ff, transparent: true, opacity: 0.45 }),
+    );
+  }
+
+  function makeTruckSideTexture() {
     const c = document.createElement("canvas");
-    c.width = 512;
-    c.height = 128;
+    c.width = 1024;
+    c.height = 512;
     const x = c.getContext("2d");
-    x.fillStyle = "rgba(8,16,28,.92)";
-    x.fillRect(0, 0, 512, 128);
-    x.strokeStyle = "#8fa8a3";
-    x.lineWidth = 4;
-    x.strokeRect(6, 6, 500, 116);
-    x.fillStyle = "#f6f3ee";
-    x.font = '600 44px "DM Mono", monospace';
-    x.textAlign = "center";
-    x.textBaseline = "middle";
-    x.fillText(text, 256, 66);
+    x.fillStyle = "#f1ede5";
+    x.fillRect(0, 0, 1024, 512);
+    x.fillStyle = "#e84b3b";
+    x.fillRect(0, 0, 1024, 14);
+    x.fillStyle = "#0f141c";
+    x.font = '800 92px "Inter Variable", Arial, sans-serif';
+    x.fillText("S SQUARE", 64, 148);
+    x.fillStyle = "#7a7f88";
+    x.font = '500 32px "DM Mono", monospace';
+    x.fillText("CUSTOM METAL & RUBBER EXPRESS", 66, 208);
+    x.fillStyle = "#e84b3b";
+    x.fillRect(0, 360, 1024, 78);
+    x.fillStyle = "#fff";
+    x.font = '600 28px "DM Mono", monospace';
+    x.fillText("GLOBAL DOOR DELIVERY · 3-4 DAYS (DHL / FEDEX)", 34, 410);
+    x.fillStyle = "#f2c14e";
+    x.fillRect(0, 452, 1024, 16);
+    x.fillStyle = "#2f9f6f";
+    x.fillRect(0, 474, 1024, 12);
+    x.strokeStyle = "rgba(15,20,28,.12)";
+    x.lineWidth = 3;
+    x.strokeRect(2, 2, 1020, 508);
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
   }
 
+  /* ---------------- ground / route ---------------- */
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(80, 34),
-    new THREE.MeshStandardMaterial({ color: 0x0a1220, roughness: 0.96, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ color: 0x252536, roughness: 0.96, metalness: 0.04 }),
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.02;
   ground.receiveShadow = true;
   scene.add(ground);
 
-  const grid = new THREE.GridHelper(36, 36, 0x1c2c46, 0x132038);
-  grid.position.y = 0.005;
+  const road = new THREE.Mesh(
+    new THREE.PlaneGeometry(80, 6),
+    new THREE.MeshStandardMaterial({ color: 0x162b4a, roughness: 0.88, metalness: 0.08 }),
+  );
+  road.rotation.x = -Math.PI / 2;
+  road.position.set(0, 0.005, 0.4);
+  road.receiveShadow = true;
+  scene.add(road);
+
+  const grid = new THREE.GridHelper(36, 36, 0x22324c, 0x1a2740);
+  grid.position.y = 0.012;
   grid.material.transparent = true;
-  grid.material.opacity = 0.28;
+  grid.material.opacity = 0.22;
   grid.material.depthWrite = false;
   scene.add(grid);
 
@@ -223,7 +260,7 @@ export async function createServices3DEngine(options) {
     new THREE.TubeGeometry(route, 96, 0.055, 8, false),
     mat.line.clone(),
   );
-  routeMesh.position.y = 0.035;
+  routeMesh.position.y = 0.04;
   scene.add(routeMesh);
 
   const dashGroup = new THREE.Group();
@@ -233,86 +270,97 @@ export async function createServices3DEngine(options) {
     const pt = route.getPointAt(t);
     const tan = route.getTangentAt(t);
     const dash = new THREE.Mesh(dashGeo, mat.line.clone());
-    dash.position.set(pt.x, 0.055, pt.z);
+    dash.position.set(pt.x, 0.06, pt.z);
     dash.rotation.y = Math.atan2(-tan.z, tan.x);
     dash.material.opacity = 0.42;
     dashGroup.add(dash);
   }
   scene.add(dashGroup);
 
-  /* ---------------- 01 customization: raw parts form ---------------- */
-  const parts = new THREE.Group();
-  parts.position.set(-6, 1.05, 2.4);
-  scene.add(parts);
+  /* ---------------- 01 customization: gear + bolt + wireframe stage ---------------- */
+  const custom = new THREE.Group();
+  custom.position.set(-5.4, 0, 1.7);
+  scene.add(custom);
 
-  const billet = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.42, 0.42, 1.25, 32),
+  const customGear = new THREE.Mesh(
+    makeGearGeometry(14, 0.34, 0.52, 0.12, 0.16),
+    mat.steel.clone(),
+  );
+  customGear.position.set(-0.55, 1.05, 0);
+  customGear.rotation.x = Math.PI / 2;
+  custom.add(tag(customGear, 0));
+
+  const customBolt = makeBolt(0);
+  customBolt.position.set(0.72, 0.02, 0.05);
+  custom.add(customBolt);
+
+  const customSeal = new THREE.Mesh(
+    new THREE.TorusGeometry(0.38, 0.1, 14, 40),
     mat.rubber.clone(),
   );
-  billet.rotation.z = Math.PI / 2;
-  billet.position.set(-1.15, 0, 0);
-  parts.add(tag(billet, 0));
-  partMeshes.push(billet);
+  customSeal.position.set(0.05, 0.28, 0.55);
+  customSeal.rotation.x = Math.PI / 2.4;
+  custom.add(tag(customSeal, 0));
 
-  const seal = new THREE.Mesh(
-    new THREE.TorusGeometry(0.46, 0.14, 18, 56),
-    mat.rubber.clone(),
-  );
-  seal.rotation.x = Math.PI / 2.6;
-  seal.position.set(0, 0.18, 0);
-  parts.add(tag(seal, 0));
-  partMeshes.push(seal);
+  const wire = makeWireBox();
+  wire.position.y = 1.1;
+  custom.add(wire);
 
-  const nut = new THREE.Mesh(makeNutGeometry(), mat.steel.clone());
-  nut.position.set(1.05, 0, 0);
-  nut.rotation.set(-0.25, 0.3, 0.15);
-  parts.add(tag(nut, 0));
-  partMeshes.push(nut);
-
-  const housing = new THREE.Mesh(makeHousingGeometry(), mat.alu.clone());
-  housing.position.set(2.05, 0.05, 0);
-  housing.scale.setScalar(0.78);
-  housing.rotation.set(-0.35, 0, 0.25);
-  parts.add(tag(housing, 0));
-  partMeshes.push(housing);
-
-  partMeshes.forEach((m) => {
-    m.material = m.material.clone();
-    m.material.transparent = true;
-    m.material.opacity = 0;
+  const customMats = [];
+  custom.traverse((o) => {
+    if (o.isMesh && o.material) {
+      o.material = o.material.clone();
+      o.material.transparent = true;
+      customMats.push(o.material);
+    }
   });
 
-  /* ---------------- 02 QA: caliper rings / tolerance scan ---------------- */
+  /* ---------------- 02 QA: caliper arch + tolerance rings ---------------- */
   const qa = new THREE.Group();
-  qa.position.set(0, 0, 2.15);
+  qa.position.set(0, 0, 1.7);
   scene.add(qa);
 
-  qaPart = new THREE.Mesh(makeNutGeometry(), mat.steel.clone());
-  qaPart.position.y = 1.05;
-  qaPart.scale.setScalar(1.15);
-  qaPart.material = qaPart.material.clone();
-  qaPart.material.transparent = true;
-  qa.add(tag(qaPart, 1));
+  const archTop = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 0.22), mat.red.clone());
+  archTop.position.y = 2.55;
+  qa.add(archTop);
+  const legGeo = new THREE.BoxGeometry(0.2, 2.5, 0.22);
+  [-1.35, 1.35].forEach((x) => {
+    const leg = new THREE.Mesh(legGeo, mat.navy.clone());
+    leg.position.set(x, 1.28, 0);
+    leg.castShadow = true;
+    qa.add(leg);
+  });
 
+  const qaGear = new THREE.Mesh(
+    makeGearGeometry(14, 0.34, 0.52, 0.12, 0.16),
+    mat.steel.clone(),
+  );
+  qaGear.position.set(-0.5, 1.0, 0);
+  qaGear.rotation.x = Math.PI / 2;
+  qa.add(tag(qaGear, 1));
+
+  const qaBolt = makeBolt(1);
+  qaBolt.position.set(0.7, 0.02, 0.05);
+  qa.add(qaBolt);
+
+  const qaRings = [];
   for (let i = 0; i < 3; i++) {
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(1.0 + i * 0.18, 0.025, 8, 64),
+      new THREE.TorusGeometry(0.95 + i * 0.16, 0.025, 8, 64),
       mat.cyan.clone(),
     );
     ring.rotation.x = Math.PI / 2;
-    ring.position.y = 0.65 + i * 0.42;
-    ring.material = ring.material.clone();
-    ring.material.transparent = true;
+    ring.position.set(0.05, 0.14 + i * 0.05, 0.15);
     qa.add(ring);
     qaRings.push(ring);
   }
 
-  scan = new THREE.Mesh(
+  const scan = new THREE.Mesh(
     new THREE.PlaneGeometry(2.7, 2.7),
     new THREE.MeshBasicMaterial({
       color: 0x7bd3ff,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.14,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
@@ -321,25 +369,16 @@ export async function createServices3DEngine(options) {
   scan.position.y = 0.8;
   qa.add(scan);
 
-  for (let i = 0; i < 2; i++) {
-    const jaw = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 1.25, 0.16),
-      mat.orange.clone(),
-    );
-    jaw.position.set(i ? 1.35 : -1.35, 1.05, 0);
-    qa.add(jaw);
-    jaws.push(jaw);
-  }
+  const qaMats = [];
+  qa.traverse((o) => {
+    if ((o.isMesh || o.isLineSegments) && o.material) {
+      o.material = o.material.clone();
+      o.material.transparent = true;
+      qaMats.push(o.material);
+    }
+  });
 
-  const tolerance = new THREE.Mesh(
-    new THREE.TorusGeometry(0.72, 0.018, 6, 48),
-    mat.sage.clone(),
-  );
-  tolerance.rotation.x = Math.PI / 2;
-  tolerance.position.y = 1.92;
-  qa.add(tolerance);
-
-  /* ---------------- 03 delivery: container truck ---------------- */
+  /* ---------------- 03 delivery: branded container truck ---------------- */
   const truck = new THREE.Group();
   scene.add(truck);
 
@@ -347,19 +386,27 @@ export async function createServices3DEngine(options) {
   chassis.position.y = 0.62;
   truck.add(tag(chassis, 2));
 
-  const container = new THREE.Mesh(new THREE.BoxGeometry(4.15, 1.72, 1.86), mat.navy);
-  container.position.set(-0.65, 1.62, 0);
+  const container = new THREE.Mesh(new THREE.BoxGeometry(4.15, 1.78, 1.86), mat.cream);
+  container.position.set(-0.65, 1.64, 0);
   truck.add(tag(container, 2));
 
-  const ribGeo = new THREE.BoxGeometry(0.055, 1.74, 1.9);
+  const truckTex = makeTruckSideTexture();
+  const truckLabel = new THREE.Mesh(
+    new THREE.PlaneGeometry(4.05, 1.72),
+    new THREE.MeshBasicMaterial({ map: truckTex, transparent: true }),
+  );
+  truckLabel.position.set(-0.65, 1.64, 0.94);
+  truck.add(tag(truckLabel, 2));
+
+  const ribGeo = new THREE.BoxGeometry(0.055, 1.8, 1.9);
   for (let i = 0; i < 9; i++) {
-    const rib = new THREE.Mesh(ribGeo, mat.steel);
-    rib.position.set(-2.58 + i * 0.48, 1.62, 0);
+    const rib = new THREE.Mesh(ribGeo, mat.steelDark);
+    rib.position.set(-2.58 + i * 0.48, 1.64, 0.96);
     rib.castShadow = true;
     truck.add(rib);
   }
 
-  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.38, 1.76), mat.orange);
+  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.38, 1.76), mat.red);
   cab.position.set(2.15, 1.3, 0);
   truck.add(tag(cab, 2));
 
@@ -374,6 +421,7 @@ export async function createServices3DEngine(options) {
   const wheelGeo = new THREE.TorusGeometry(0.34, 0.12, 12, 28);
   const hubGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.3, 16);
   hubGeo.rotateX(Math.PI / 2);
+  const wheels = [];
   [-2.15, -0.95, 1.7].forEach((x) => {
     [-0.96, 0.96].forEach((z) => {
       const wheel = new THREE.Mesh(wheelGeo, mat.dark);
@@ -387,40 +435,38 @@ export async function createServices3DEngine(options) {
     });
   });
 
-  labelTex = makeLabelTexture("QA VERIFIED");
-  label = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.9, 0.48),
-    new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, opacity: 0 }),
-  );
-  label.position.set(-0.65, 1.62, 0.94);
-  truck.add(tag(label, 2));
-
   const load = new THREE.Group();
-  load.position.set(-0.65, 2.62, 0);
+  load.position.set(-0.65, 2.68, 0);
   truck.add(load);
-
-  const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.45), mat.dark);
+  const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.4), mat.dark);
   pallet.castShadow = true;
   load.add(pallet);
+  const loadGear = new THREE.Mesh(
+    makeGearGeometry(12, 0.28, 0.42, 0.1, 0.12),
+    mat.steel.clone(),
+  );
+  loadGear.position.set(-0.65, 0.42, 0);
+  loadGear.rotation.x = Math.PI / 2;
+  load.add(tag(loadGear, 2));
+  const loadBolt = makeBolt(2);
+  loadBolt.position.set(0.45, 0.02, 0);
+  loadBolt.scale.setScalar(0.7);
+  load.add(loadBolt);
 
-  const loadSeal = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.1, 14, 40), mat.rubber.clone());
-  loadSeal.position.set(-0.75, 0.42, 0);
-  loadSeal.rotation.x = Math.PI / 2.4;
-  load.add(tag(loadSeal, 2));
-
-  const loadNut = new THREE.Mesh(makeNutGeometry(), mat.steel.clone());
-  loadNut.position.set(0, 0.42, 0);
-  loadNut.scale.setScalar(0.72);
-  load.add(tag(loadNut, 2));
-
-  const loadHousing = new THREE.Mesh(makeHousingGeometry(), mat.alu.clone());
-  loadHousing.position.set(0.78, 0.44, 0);
-  loadHousing.scale.setScalar(0.55);
-  load.add(tag(loadHousing, 2));
-
-  const verified = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.035, 8, 40), mat.sage.clone());
-  verified.position.set(0, 0.95, 0);
-  load.add(verified);
+  /* tall dispatch gate behind the truck, as in the reference */
+  const gate = new THREE.Group();
+  gate.position.set(6.2, 0, -2.2);
+  scene.add(gate);
+  const gateTop = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.24, 0.26), mat.red.clone());
+  gateTop.position.y = 3.5;
+  gate.add(gateTop);
+  const gateLegGeo = new THREE.BoxGeometry(0.24, 3.5, 0.26);
+  [-1.7, 1.7].forEach((x) => {
+    const leg = new THREE.Mesh(gateLegGeo, mat.navy.clone());
+    leg.position.set(x, 1.75, 0);
+    leg.castShadow = true;
+    gate.add(leg);
+  });
 
   /* ---------------- pose / scroll choreography ---------------- */
   function applyPose(p, t, dt) {
@@ -431,39 +477,40 @@ export async function createServices3DEngine(options) {
     truck.rotation.y = Math.atan2(-tan.z, tan.x);
     follow.position.set(pos.x, 4.2, pos.z + 3.2);
 
-    const form = ease(clamp(p / 0.28));
-    parts.visible = p < 0.52;
-    parts.scale.setScalar(stageScale * (0.02 + form * 0.98));
-    parts.position.set(-6 + form * 1.15, 1.05 + Math.sin(t * 0.001) * 0.06, 2.4 - form * 0.42);
-    parts.rotation.y = t * 0.00035;
-    const partFade = form * (1 - clamp((p - 0.36) / 0.13));
-    partMeshes.forEach((m) => {
-      m.material.opacity = partFade;
+    const form = ease(clamp(p / 0.26));
+    custom.visible = p < 0.5;
+    custom.scale.setScalar(stageScale * (0.02 + form * 0.98));
+    custom.position.set(-5.4 + form * 1.1, 0, 1.7);
+    custom.rotation.y = t * 0.0003;
+    const customFade = form * (1 - clamp((p - 0.36) / 0.12));
+    customMats.forEach((m) => {
+      m.opacity = customFade;
     });
+    wire.material.opacity = 0.45 * customFade;
+    customGear.rotation.z = t * 0.0002;
+    customBolt.rotation.y = t * 0.0005;
 
-    const qaOn = clamp((p - 0.3) / 0.12) * (1 - clamp((p - 0.62) / 0.14));
+    const qaOn = clamp((p - 0.24) / 0.12) * (1 - clamp((p - 0.62) / 0.16));
     qa.visible = qaOn > 0.01;
-    qa.scale.setScalar(stageScale * (0.9 + 0.1 * qaOn));
-    qaPart.rotation.y = t * 0.0006;
-    qaPart.material.opacity = qaOn;
+    qa.scale.setScalar(stageScale * (0.92 + 0.08 * qaOn));
+    qaMats.forEach((m, i) => {
+      m.opacity = (i < 4 ? 0.95 : 0.6) * qaOn;
+    });
+    qaGear.rotation.z = -t * 0.00025;
     qaRings.forEach((r, i) => {
-      r.rotation.z = t * 0.0008 * (i % 2 ? -1 : 1);
-      r.scale.setScalar(1 + 0.1 * Math.sin(t * 0.002 + i));
-      r.material.opacity = 0.18 + 0.55 * qaOn;
+      r.scale.setScalar(1 + 0.12 * Math.sin(t * 0.002 + i));
+      r.material.opacity = 0.25 + 0.5 * qaOn;
     });
-    scan.position.y = 0.35 + 1.45 * (0.5 + 0.5 * Math.sin(t * 0.003));
+    scan.position.y = 0.3 + 1.5 * (0.5 + 0.5 * Math.sin(t * 0.003));
     scan.material.opacity = 0.2 * qaOn;
-    jaws.forEach((j, i) => {
-      j.position.x = (i ? 1 : -1) * (1.35 - 0.38 * qaOn);
-    });
 
-    const deliver = ease(clamp((p - 0.55) / 0.4));
+    const deliver = ease(clamp((p - 0.52) / 0.44));
     load.visible = p > 0.5;
-    // `load` is already a child of the stage-scaled truck group.
     load.scale.setScalar(0.02 + deliver * 0.98);
     load.rotation.y = t * 0.0004;
-    label.material.opacity = deliver;
-    routeMesh.material.opacity = 0.24 + 0.42 * deliver;
+    gate.visible = p > 0.52;
+    gate.scale.setScalar(stageScale * (0.02 + deliver * 0.98));
+    routeMesh.material.opacity = 0.25 + 0.45 * deliver;
     follow.intensity = 14 + 16 * deliver;
     rim.intensity = 0.55 + 0.2 * Math.sin(t * 0.0005);
     key.position.x = -6 + Math.sin(t * 0.0002) * 1.4;
@@ -482,12 +529,23 @@ export async function createServices3DEngine(options) {
     }
   }
 
+  /* ---------------- mobile card centering ---------------- */
+  function centerCard(step) {
+    if (lastStep === step) return;
+    lastStep = step;
+    if (cardsEl.scrollWidth <= cardsEl.clientWidth + 8) return;
+    const card = cardsEl.querySelector('[data-i="' + step + '"]');
+    if (!card) return;
+    const left = card.offsetLeft - (cardsEl.clientWidth - card.offsetWidth) / 2;
+    cardsEl.scrollTo({ left: Math.max(0, left), behavior: reduced ? "auto" : "smooth" });
+  }
+
   /* ---------------- resize ---------------- */
   function resize() {
     const w = Math.max(1, canvas.clientWidth || section.clientWidth);
     const h = Math.max(1, canvas.clientHeight || window.innerHeight);
     const mobile = w < 820;
-    stageScale = mobile ? 0.78 : 1;
+    stageScale = mobile ? 0.74 : 1;
     camera.aspect = w / h;
     camera.fov = mobile ? 46 : 38;
     camera.position.set(0, mobile ? 8.2 : 6.1, mobile ? 22 : 17);
@@ -495,9 +553,10 @@ export async function createServices3DEngine(options) {
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h, false);
-    parts.scale.setScalar(stageScale);
+    custom.scale.setScalar(stageScale);
     qa.scale.setScalar(stageScale);
     truck.scale.setScalar(stageScale);
+    gate.scale.setScalar(stageScale);
     routeMesh.scale.setScalar(stageScale);
     dashGroup.scale.setScalar(stageScale);
     controls.update();
@@ -555,13 +614,7 @@ export async function createServices3DEngine(options) {
     },
     { signal },
   );
-  window.addEventListener(
-    "pointercancel",
-    () => {
-      down = null;
-    },
-    { signal },
-  );
+  window.addEventListener("pointercancel", () => { down = null; }, { signal });
 
   /* ---------------- touch: vertical scroll, horizontal inspect ---------------- */
   let touch = null;
@@ -594,9 +647,7 @@ export async function createServices3DEngine(options) {
     },
     { passive: true, signal },
   );
-  const endTouch = () => {
-    touch = null;
-  };
+  const endTouch = () => { touch = null; };
   canvas.addEventListener("touchend", endTouch, { passive: true, signal });
   canvas.addEventListener("touchcancel", endTouch, { passive: true, signal });
 
@@ -607,11 +658,15 @@ export async function createServices3DEngine(options) {
     controls.enableDamping = !reduced;
     if (reduced) {
       section.dataset.step = "all";
-      progressEl.style.transform = "scaleX(0)";
+      percentEl.textContent = "55%";
+      progressEl.style.transform = "scaleX(.55)";
       applyPose(0.55, performance.now(), 16);
     } else {
       section.dataset.step = "0";
       smoothP = 0;
+      lastStep = -1;
+      percentEl.textContent = "00%";
+      progressEl.style.transform = "scaleX(0)";
     }
     needsRender = true;
   };
@@ -625,8 +680,6 @@ export async function createServices3DEngine(options) {
     cancelAnimationFrame(raf);
   };
   canvas.addEventListener("webglcontextlost", onContextLost, { signal });
-
-  const counterEl = section.querySelector(".services3d-counter strong");
 
   /* ---------------- frame loop ---------------- */
   function frame(t) {
@@ -647,8 +700,11 @@ export async function createServices3DEngine(options) {
       smoothP += (raw - smoothP) * (1 - Math.exp(-dt / 130));
       const p = smoothP;
       const step = p < 0.34 ? 0 : p < 0.68 ? 1 : 2;
-      if (section.dataset.step !== String(step)) section.dataset.step = String(step);
-      if (counterEl) counterEl.textContent = String(step + 1).padStart(2, "0");
+      if (section.dataset.step !== String(step)) {
+        section.dataset.step = String(step);
+        centerCard(step);
+      }
+      percentEl.textContent = String(Math.round(p * 100)).padStart(2, "0") + "%";
       progressEl.style.transform = "scaleX(" + p.toFixed(4) + ")";
       applyPose(p, t, dt);
     } else if (reduced) {
@@ -690,7 +746,6 @@ export async function createServices3DEngine(options) {
       geos.forEach((g) => g.dispose && g.dispose());
       mats.forEach((m) => m.dispose && m.dispose());
       textures.forEach((tex) => tex.dispose && tex.dispose());
-      labelTex?.dispose?.();
       renderer.dispose();
     } catch (_) {}
     section.dataset.reduced = "false";

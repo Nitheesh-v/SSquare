@@ -38,18 +38,26 @@ const STATIC_CSS = `
   .home3d .services3d { height: auto !important; min-height: 0 !important; }
   .home3d .services3d-pin {
     position: relative !important; height: auto !important; min-height: 0 !important;
-    padding: 64px 16px 80px !important;
+    padding: 72px 16px 80px !important;
   }
   .home3d .services3d-canvas, .home3d .services3d-veil,
-  .home3d .services3d-progress, .home3d .services3d-hint,
-  .home3d .services3d-counter, .home3d .services3d-spec { display: none !important; }
+  .home3d .services3d-track, .home3d .services3d-control,
+  .home3d .services3d-spec { display: none !important; }
   .home3d .services3d-overlay {
     position: relative !important; inset: auto !important; display: block !important;
     padding: 0 !important; transform: none !important;
   }
-  .home3d .services3d-steps { display: grid !important; gap: 14px !important; max-width: 760px !important; }
-  .home3d .services3d-card { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
-  .home3d .services3d-card::before { opacity: 1 !important; transform: scaleY(1) !important; }
+  .home3d .services3d-head { position: relative !important; left: auto !important; top: auto !important; margin-bottom: 28px !important; }
+  .home3d .services3d-cards {
+    position: relative !important; left: auto !important; right: auto !important; bottom: auto !important;
+    display: grid !important; grid-template-columns: 1fr !important; gap: 14px !important; overflow: visible !important;
+  }
+  .home3d .services3d-card {
+    opacity: 1 !important; transform: none !important; pointer-events: auto !important;
+    background: #0d1626 !important; color: #f6f3ee !important; box-shadow: none !important;
+  }
+  .home3d .services3d-card p { color: rgba(246,243,238,.7) !important; }
+  .home3d .services3d-tag { pointer-events: none !important; }
 `;
 
 export function Home3DAnimation() {
