@@ -1,0 +1,556 @@
+/* Scroll-linked "OUR SERVICES" 3D choreography.
+   Scoped under .home3d so the shared industrial pages stay untouched. */
+
+.home3d .services3d {
+  --services-nav-offset: 112px;
+  position: relative;
+  z-index: 4;
+  isolation: isolate;
+  height: 420svh;
+  min-height: 100svh;
+  background: #070d19;
+  color: #f6f3ee;
+  overflow: clip;
+}
+
+.home3d .services3d-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  padding-top: var(--services-nav-offset);
+  background:
+    radial-gradient(circle at 72% 38%, rgba(35, 64, 102, 0.5) 0, transparent 46%),
+    radial-gradient(circle at 18% 78%, rgba(232, 113, 42, 0.14) 0, transparent 38%),
+    linear-gradient(180deg, #070d19 0%, #0a1426 52%, #070d19 100%);
+}
+
+.home3d .services3d-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.home3d .services3d-canvas:active {
+  cursor: grabbing;
+}
+
+.home3d .services3d-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(7, 13, 25, 0.94) 0%, rgba(7, 13, 25, 0.72) 34%, rgba(7, 13, 25, 0.06) 62%, rgba(7, 13, 25, 0.38) 100%),
+    linear-gradient(180deg, rgba(7, 13, 25, 0.5) 0%, transparent 24%, transparent 68%, rgba(7, 13, 25, 0.72) 100%);
+}
+
+.home3d .services3d-overlay {
+  position: absolute;
+  inset: var(--services-nav-offset) 0 0 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(300px, 38%) 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px 32px;
+  padding: clamp(22px, 3.2vw, 48px) clamp(20px, 4vw, 64px) clamp(24px, 3vw, 44px);
+  pointer-events: none;
+}
+
+.home3d .services3d-head {
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 560px;
+}
+
+.home3d .services3d-head .eb {
+  margin-bottom: 10px;
+}
+
+.home3d .services3d-title {
+  font-size: clamp(48px, 6.2vw, 92px);
+  text-transform: uppercase;
+  line-height: 0.9;
+  text-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
+}
+
+.home3d .services3d-lead {
+  margin-top: 16px;
+  max-width: 440px;
+  font-size: clamp(13px, 1.15vw, 16px);
+  line-height: 1.55;
+  color: rgba(246, 243, 238, 0.72);
+}
+
+.home3d .services3d-steps {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.4vw, 18px);
+  max-width: 500px;
+  will-change: transform, opacity;
+  transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+
+.home3d .services3d-card {
+  position: relative;
+  padding: clamp(14px, 1.6vw, 22px) clamp(16px, 1.8vw, 24px);
+  border: 1px solid rgba(246, 243, 238, 0.12);
+  border-left: 2px solid rgba(232, 113, 42, 0.4);
+  border-radius: 14px;
+  background: rgba(8, 14, 26, 0.52);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 44px -28px rgba(0, 0, 0, 0.8);
+  opacity: 0.3;
+  transform: translate3d(0, 16px, 0) scale(0.985);
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), border-color 0.55s var(--ease), background 0.55s var(--ease);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.home3d .services3d-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--orange);
+  opacity: 0;
+  transform: scaleY(0.2);
+  transform-origin: center;
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+}
+
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"],
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"],
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"],
+.home3d .services3d[data-step="all"] .services3d-card,
+.home3d .services3d[data-fallback="true"] .services3d-card {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  border-color: rgba(246, 243, 238, 0.24);
+  background: rgba(11, 20, 36, 0.82);
+  pointer-events: auto;
+}
+
+.home3d .services3d[data-step="0"] .services3d-card[data-i="0"]::before,
+.home3d .services3d[data-step="1"] .services3d-card[data-i="1"]::before,
+.home3d .services3d[data-step="2"] .services3d-card[data-i="2"]::before,
+.home3d .services3d[data-step="all"] .services3d-card::before,
+.home3d .services3d[data-fallback="true"] .services3d-card::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.home3d .services3d-num {
+  display: block;
+  margin-bottom: 6px;
+  font: 500 11px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.home3d .services3d-card h3 {
+  font-size: clamp(22px, 2.2vw, 34px);
+  text-transform: uppercase;
+  line-height: 0.96;
+}
+
+.home3d .services3d-card p {
+  margin-top: 10px;
+  font-size: clamp(12.5px, 1.02vw, 14.5px);
+  line-height: 1.5;
+  color: rgba(246, 243, 238, 0.78);
+}
+
+.home3d .services3d-spec-trigger {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 3px;
+  border-bottom: 1px solid rgba(246, 243, 238, 0.4);
+  font: 500 10.5px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f6f3ee;
+  pointer-events: auto;
+}
+
+.home3d .services3d-spec-trigger svg {
+  width: 12px;
+  height: 12px;
+}
+
+.home3d .services3d-counter {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: start;
+  font: 500 12px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.18em;
+  color: rgba(246, 243, 238, 0.55);
+}
+
+.home3d .services3d-counter strong {
+  font-size: clamp(38px, 5vw, 72px);
+  font-family: "Barlow Condensed", Impact, sans-serif;
+  color: transparent;
+  -webkit-text-stroke: 1.4px rgba(246, 243, 238, 0.85);
+  letter-spacing: 0;
+}
+
+.home3d .services3d-spec {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+  width: min(340px, 30vw);
+  padding: 18px 20px;
+  border: 1px solid rgba(246, 243, 238, 0.2);
+  border-radius: 16px;
+  background: rgba(10, 18, 32, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 28px 60px -28px rgba(0, 0, 0, 0.8);
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.home3d .services3d-spec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.home3d .services3d-spec-head span {
+  font: 500 10px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.home3d .services3d-spec-close {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(246, 243, 238, 0.25);
+  border-radius: 50%;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.home3d .services3d-spec h4 {
+  font-size: clamp(20px, 1.8vw, 26px);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.home3d .services3d-spec p {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(246, 243, 238, 0.72);
+}
+
+.home3d .services3d-progress {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: end;
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background: rgba(246, 243, 238, 0.14);
+  overflow: hidden;
+}
+
+.home3d .services3d-progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--orange), #ffb36b);
+  box-shadow: 0 0 14px rgba(232, 113, 42, 0.7);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.home3d .services3d-hint {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: end;
+  justify-self: center;
+  margin-bottom: 14px;
+  font: 500 10.5px "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(246, 243, 238, 0.58);
+  text-align: center;
+  pointer-events: none;
+}
+
+.home3d .services3d-hint-touch {
+  display: none;
+}
+
+.home3d .services3d[data-step="all"] .services3d-progress,
+.home3d .services3d[data-fallback="true"] .services3d-progress,
+.home3d .services3d[data-step="all"] .services3d-hint,
+.home3d .services3d[data-fallback="true"] .services3d-hint,
+.home3d .services3d[data-step="all"] .services3d-canvas,
+.home3d .services3d[data-fallback="true"] .services3d-canvas,
+.home3d .services3d[data-step="all"] .services3d-veil,
+.home3d .services3d[data-fallback="true"] .services3d-veil {
+  display: none;
+}
+
+.home3d .services3d[data-step="all"] .services3d-steps,
+.home3d .services3d[data-fallback="true"] .services3d-steps {
+  gap: 12px;
+}
+
+.home3d .services3d[data-step="all"],
+.home3d .services3d[data-fallback="true"] {
+  height: auto;
+  min-height: 0;
+}
+
+.home3d .services3d[data-step="all"] .services3d-pin,
+.home3d .services3d[data-fallback="true"] .services3d-pin {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 64px;
+}
+
+.home3d .services3d[data-step="all"] .services3d-overlay,
+.home3d .services3d[data-fallback="true"] .services3d-overlay {
+  position: relative;
+  inset: auto;
+  display: block;
+  padding: 64px clamp(20px, 4vw, 64px) 0;
+}
+
+.home3d .services3d[data-step="all"] .services3d-steps,
+.home3d .services3d[data-fallback="true"] .services3d-steps {
+  max-width: 760px;
+  margin-top: 28px;
+}
+
+.home3d .services3d[data-step="all"] .services3d-spec,
+.home3d .services3d[data-fallback="true"] .services3d-spec {
+  position: relative;
+  inset: auto;
+  width: min(100%, 480px);
+  margin-top: 24px;
+  justify-self: start;
+}
+
+.home3d .services3d[data-step="all"] .services3d-counter,
+.home3d .services3d[data-fallback="true"] .services3d-counter {
+  display: none;
+}
+
+/* ---------- desktop short / tablet ---------- */
+@media (min-width: 820px) and (max-height: 620px) {
+  .home3d .services3d-overlay {
+    gap: 10px 24px;
+    padding-top: 18px;
+  }
+  .home3d .services3d-title {
+    font-size: clamp(40px, 4.8vw, 64px);
+  }
+  .home3d .services3d-lead {
+    display: none;
+  }
+  .home3d .services3d-card {
+    padding: 12px 16px;
+  }
+  .home3d .services3d-card h3 {
+    font-size: 22px;
+  }
+  .home3d .services3d-card p {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .home3d .services3d-spec-trigger {
+    margin-top: 8px;
+  }
+}
+
+/* ---------- phone ---------- */
+@media (max-width: 819px) {
+  .home3d .services3d {
+    --services-nav-offset: 104px;
+    height: 360svh;
+  }
+  .home3d .services3d-veil {
+    background:
+      linear-gradient(180deg, rgba(7, 13, 25, 0.82) 0%, rgba(7, 13, 25, 0.24) 32%, rgba(7, 13, 25, 0.08) 48%, rgba(7, 13, 25, 0.92) 76%, #070d19 100%);
+  }
+  .home3d .services3d-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 16px 22px;
+  }
+  .home3d .services3d-head {
+    max-width: none;
+  }
+  .home3d .services3d-title {
+    font-size: clamp(38px, 11vw, 58px);
+  }
+  .home3d .services3d-lead {
+    display: none;
+  }
+  .home3d .services3d-counter {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 10px;
+  }
+  .home3d .services3d-counter strong {
+    font-size: 34px;
+  }
+  .home3d .services3d-steps {
+    margin-top: auto;
+    max-width: none;
+    gap: 8px;
+  }
+  .home3d .services3d-card {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+  .home3d .services3d-num {
+    font-size: 9.5px;
+    margin-bottom: 4px;
+  }
+  .home3d .services3d-card h3 {
+    font-size: clamp(19px, 5.4vw, 24px);
+  }
+  .home3d .services3d-card p {
+    margin-top: 6px;
+    font-size: 11.5px;
+    line-height: 1.42;
+  }
+  .home3d .services3d-spec-trigger {
+    margin-top: 8px;
+    font-size: 9.5px;
+  }
+  .home3d .services3d-hint-desktop {
+    display: none;
+  }
+  .home3d .services3d-hint-touch {
+    display: inline;
+  }
+  .home3d .services3d-hint {
+    margin-bottom: 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+  }
+  .home3d .services3d-spec {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 58px;
+    width: auto;
+    padding: 14px 16px;
+    z-index: 5;
+  }
+  .home3d .services3d[data-spec-open="true"] .services3d-steps {
+    opacity: 0.22;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@media (max-width: 359px) {
+  .home3d .services3d-title {
+    font-size: 34px;
+  }
+  .home3d .services3d-card h3 {
+    font-size: 18px;
+  }
+  .home3d .services3d-card p {
+    font-size: 10.5px;
+  }
+  .home3d .services3d-hint {
+    font-size: 8px;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .home3d .services3d-hint-desktop {
+    display: none;
+  }
+  .home3d .services3d-hint-touch {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home3d .services3d,
+  .home3d .services3d-pin,
+  .home3d .services3d-overlay,
+  .home3d .services3d-steps,
+  .home3d .services3d-card,
+  .home3d .services3d-card::before,
+  .home3d .services3d-spec {
+    transition: none !important;
+  }
+  .home3d .services3d {
+    height: auto;
+    min-height: 0;
+  }
+  .home3d .services3d-pin {
+    position: relative;
+    height: auto;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 64px;
+  }
+  .home3d .services3d-canvas,
+  .home3d .services3d-veil,
+  .home3d .services3d-progress,
+  .home3d .services3d-hint,
+  .home3d .services3d-counter {
+    display: none !important;
+  }
+  .home3d .services3d-overlay {
+    position: relative;
+    inset: auto;
+    display: block;
+    padding: 64px clamp(20px, 4vw, 64px) 0;
+  }
+  .home3d .services3d-steps {
+    max-width: 760px;
+    margin-top: 28px;
+    gap: 12px;
+  }
+  .home3d .services3d-card {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .home3d .services3d-spec {
+    position: relative;
+    inset: auto;
+    width: min(100%, 480px);
+    margin-top: 24px;
+  }
+}

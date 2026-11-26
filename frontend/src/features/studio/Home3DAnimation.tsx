@@ -4,7 +4,11 @@ import { useEffect, useRef } from "react";
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource/dm-mono/latin-400.css";
 import "@fontsource/dm-mono/latin-500.css";
-import { HOME_3D_MARKUP } from "./home-3d-markup";
+import {
+  HOME_3D_MARKUP_AFTER,
+  HOME_3D_MARKUP_BEFORE,
+} from "./home-3d-markup";
+import { Services3DSection } from "./Services3DSection";
 import "./home-3d.css";
 
 /**
@@ -12,11 +16,10 @@ import "./home-3d.css";
  *
  * The source page is a full document (its own sections, footer, chapter rail
  * and imperative Three.js/WebGL module). Its top header nav was removed in
- * favour of the shared site Navbar rendered by app/page.tsx. It is mounted
- * here as scoped static markup plus a cleanup-aware engine effect rather than
- * rewritten into JSX, so all of the original geometry, scroll anchors and
- * interactions survive. All CSS lives under `.home3d`, so the shared site
- * styles are untouched.
+ * favour of the shared site Navbar rendered by app/page.tsx. Most of it is
+ * mounted as scoped static markup; the "OUR SERVICES" block is a real React
+ * component with its own scroll-linked Three.js scene. All CSS lives under
+ * `.home3d`, so the shared site styles are untouched.
  */
 const STATIC_CSS = `
   .home3d #intro, .home3d #gl, .home3d #gearsWorld, .home3d .hero-ghost,
@@ -32,6 +35,21 @@ const STATIC_CSS = `
     opacity: 1 !important; transform: none !important; translate: 0 0 !important;
   }
   .home3d .ln span { transform: none !important; }
+  .home3d .services3d { height: auto !important; min-height: 0 !important; }
+  .home3d .services3d-pin {
+    position: relative !important; height: auto !important; min-height: 0 !important;
+    padding: 64px 16px 80px !important;
+  }
+  .home3d .services3d-canvas, .home3d .services3d-veil,
+  .home3d .services3d-progress, .home3d .services3d-hint,
+  .home3d .services3d-counter, .home3d .services3d-spec { display: none !important; }
+  .home3d .services3d-overlay {
+    position: relative !important; inset: auto !important; display: block !important;
+    padding: 0 !important; transform: none !important;
+  }
+  .home3d .services3d-steps { display: grid !important; gap: 14px !important; max-width: 760px !important; }
+  .home3d .services3d-card { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+  .home3d .services3d-card::before { opacity: 1 !important; transform: scaleY(1) !important; }
 `;
 
 export function Home3DAnimation() {
@@ -62,6 +80,11 @@ export function Home3DAnimation() {
         tag.textContent =
           "Seals, gaskets, O-rings, cords, sheets & rubber-to-metal bonded components.";
       host.querySelectorAll(".rvw, .cat").forEach((el) => el.classList.add("on"));
+      const services = host.querySelector<HTMLElement>(".services3d");
+      if (services) {
+        services.dataset.fallback = "true";
+        services.dataset.step = "all";
+      }
       if (!host.querySelector("style[data-home3d-fallback]")) {
         const style = document.createElement("style");
         style.dataset.home3dFallback = "1";
@@ -91,17 +114,19 @@ export function Home3DAnimation() {
   }, []);
 
   return (
-    <>
-      <main
-        id="main-content"
-        className="home3d"
-        ref={hostRef}
-        tabIndex={-1}
-        dangerouslySetInnerHTML={{ __html: HOME_3D_MARKUP }}
+    <main id="main-content" className="home3d" ref={hostRef} tabIndex={-1}>
+      <div
+        className="home3d-segment"
+        dangerouslySetInnerHTML={{ __html: HOME_3D_MARKUP_BEFORE }}
+      />
+      <Services3DSection />
+      <div
+        className="home3d-segment"
+        dangerouslySetInnerHTML={{ __html: HOME_3D_MARKUP_AFTER }}
       />
       <noscript>
         <style>{STATIC_CSS}</style>
       </noscript>
-    </>
+    </main>
   );
 }

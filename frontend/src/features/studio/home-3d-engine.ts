@@ -605,8 +605,8 @@ function frame(t){
       const CAT={x:r.left+r.width/2,y:r.top+r.height/2,h:Math.min(r.width,r.height)*.7,rz:0,ry:(live._tx||0)*16,rx:-(live._ty||0)*12,z:28,op:1,shadow:.55};
       S=mix(S,CAT,easeIO(Math.min(pCat,1)));
     }
-    if(pE>0){ const r=procStage.getBoundingClientRect(); const ok=r.width>8; const E={x:ok?r.left+r.width/2:vw*.72, y:ok?r.top+r.height/2:vh*.46, h:ok?Math.min(r.width,r.height)*.95:Math.min(vw,vh)*.3, rz:10, ry:22+Math.sin(t/1600*2*Math.PI)*14, rx:-8, z:40, op:1, shadow:.8}; S=mix(S,E,easeIO(Math.min(pE,1))); }
-    if(pF>0){ const r=cmpStage.getBoundingClientRect(); const ok=r.width>8; const F={x:ok?r.left+r.width/2:vw*.82, y:ok?r.top+r.height/2:vh*.28, h:ok?Math.min(r.width,r.height)*.9:Math.min(vw,vh)*.26, rz:-8, ry:-18+Math.sin(t/1800*2*Math.PI)*10, rx:6, z:20, op:1, shadow:.65}; S=mix(S,F,easeIO(Math.min(pF,1))); }
+    if(pE>0){ const r=procStage?.getBoundingClientRect(); const ok=r&&r.width>8; const E={x:ok?r.left+r.width/2:vw*.72, y:ok?r.top+r.height/2:vh*.46, h:ok?Math.min(r.width,r.height)*.95:Math.min(vw,vh)*.3, rz:10, ry:22+Math.sin(t/1600*2*Math.PI)*14, rx:-8, z:40, op:1, shadow:.8}; S=mix(S,E,easeIO(Math.min(pE,1))); }
+    if(pF>0){ const r=cmpStage?.getBoundingClientRect(); const ok=r&&r.width>8; const F={x:ok?r.left+r.width/2:vw*.82, y:ok?r.top+r.height/2:vh*.28, h:ok?Math.min(r.width,r.height)*.9:Math.min(vw,vh)*.26, rz:-8, ry:-18+Math.sin(t/1800*2*Math.PI)*10, rx:6, z:20, op:1, shadow:.65}; S=mix(S,F,easeIO(Math.min(pF,1))); }
     if(pG>0){ const gEl=$('#glow'); const r=gEl?gEl.getBoundingClientRect():{left:vw/2,top:vh/2,width:200,height:200}; const G={x:r.left+r.width/2, y:r.top+r.height*.36, h:Math.min(r.width,r.height)*.48, rz:6, ry:14+Math.sin(t/2000*2*Math.PI)*8, rx:-4, z:50, op:1, shadow:.75}; S=mix(S,G,easeIO(Math.min(pG,1))); }
 
     S.flav=(pD>.42&&pE<.45)?SPOT[si].flav:tfv;
@@ -809,6 +809,14 @@ function staticFallback(host, on, getLabels, ac) {
     .home3d .hero { min-height:72svh }
     .home3d .proc, .home3d .quote { background:#0b1220!important }
     .home3d .cat { background:var(--cream)!important }
+    .home3d .services3d { height:auto!important; min-height:0!important }
+    .home3d .services3d-pin { position:relative!important; height:auto!important; min-height:0!important; padding:64px 16px 80px!important }
+    .home3d .services3d-canvas, .home3d .services3d-veil, .home3d .services3d-progress,
+    .home3d .services3d-hint, .home3d .services3d-counter, .home3d .services3d-spec { display:none!important }
+    .home3d .services3d-overlay { position:relative!important; inset:auto!important; display:block!important; padding:0!important; transform:none!important }
+    .home3d .services3d-steps { display:grid!important; gap:14px!important }
+    .home3d .services3d-card { opacity:1!important; transform:none!important; position:relative!important; left:auto!important; top:auto!important; width:auto!important }
+    .home3d .services3d-card::before { opacity:1!important; transform:scaleY(1)!important }
   `;
   host.appendChild(style);
   qa('a[href^="#"]').forEach((a) => on(a, "click", (e) => {

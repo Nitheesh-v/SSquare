@@ -1,11 +1,10 @@
 /**
- * Static markup from the supplied standalone 3D homepage.
- * Kept as an HTML string because the original page is driven entirely by
- * imperative DOM code (see home-3d-engine.ts); converting every inline SVG
- * and positional attribute to JSX would change behaviour without benefit.
+ * Static markup from the supplied standalone 3D homepage, split around the
+ * React-rendered Services3DSection. Kept as HTML strings because the rest of
+ * the page is driven by imperative DOM code (see home-3d-engine.ts).
  * The <script> block is deliberately NOT included here.
  */
-export const HOME_3D_MARKUP = String.raw`<canvas id="gl"></canvas>
+export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
 <div id="scrollProgress" aria-hidden="true"></div>
 <div id="gearsWorld" aria-hidden="true">
   <video class="g1" id="gearVid" muted loop playsinline preload="auto" poster="https://images.pexels.com/photos/7568428/pexels-photo-7568428.jpeg?auto=compress&cs=tinysrgb&w=1600">
@@ -27,7 +26,7 @@ export const HOME_3D_MARKUP = String.raw`<canvas id="gl"></canvas>
   <button type="button" data-h="#precision" aria-label="Precision"></button>
   <button type="button" data-h="#materials" aria-label="Materials"></button>
   <button type="button" data-h="#components" aria-label="Parts"></button>
-  <button type="button" data-h="#process" aria-label="Process"></button>
+  <button type="button" data-h="#process" aria-label="Services"></button>
   <button type="button" data-h="#compare" aria-label="Compare"></button>
   <button type="button" data-h="#quote" aria-label="Quote"></button>
 </nav>
@@ -212,31 +211,9 @@ export const HOME_3D_MARKUP = String.raw`<canvas id="gl"></canvas>
     <figure><img loading="lazy" src="https://ssquareengg.com/wp-content/uploads/2026/01/aluminim.webp" alt="Aluminium die moulds"><figcaption>Aluminium · Die</figcaption></figure>
     <figure><img loading="lazy" src="https://ssquareengg.com/wp-content/uploads/2025/12/aluminum-2-768x768-1.jpg" alt="Aluminium wheel and mouldings"><figcaption>Aluminium · Wheel</figcaption></figure>
   </div>
-</section>
+</section>`;
 
-<!-- ============ 5. PROCESS ============ -->
-<section id="process" class="proc" data-nav="dark">
-  <div class="gveil"></div>
-  <div class="rvw">
-    <div class="srow">
-      <div><p class="eb">03 / Engineered in Coimbatore</p><h2 class="disp">From the first drawing
-to the final component.</h2></div>
-      <p class="psub">A practical, collaborative approach to custom manufacturing. Clear requirements, agreed specifications and direct communication at every step.</p>
-    </div>
-    <div class="pgrid">
-      <div class="pphoto"><img src="https://images.pexels.com/photos/37561815/pexels-photo-37561815.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Industrial factory floor with CNC machines"><div id="procStage" aria-hidden="true"></div><div class="cap2"><span>Peelamedu · Coimbatore</span><span>Turning · Milling · Moulding</span></div></div>
-      <div class="steps">
-        <div class="step" style="--d:0ms"><span class="sn">01</span><div><h4 class="disp">Bring the requirement</h4><p>A drawing, a physical sample or an application challenge. Share material preferences and estimated quantity.</p></div></div>
-        <div class="step" style="--d:90ms"><span class="sn">02</span><div><h4 class="disp">Define the details</h4><p>We review geometry, material, finish and the scope of supply before confirming your custom quotation.</p></div></div>
-        <div class="step" style="--d:180ms"><span class="sn">03</span><div><h4 class="disp">Manufacture &amp; inspect</h4><p>Custom production and checks against the agreed technical specification, with direct project communication.</p></div></div>
-        <div class="step" style="--d:270ms"><span class="sn">04</span><div><h4 class="disp">Pack &amp; dispatch</h4><p>Protective packing and coordinated delivery from Coimbatore for domestic and international requirements.</p></div></div>
-        <div class="pfoot"><span>✓ Drawing or sample based</span><span>✓ Custom material selection</span><span>✓ 20+ years in production</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 6. COMPARE ============ -->
+export const HOME_3D_MARKUP_AFTER = String.raw`<!-- ============ 6. COMPARE ============ -->
 <section id="compare" class="cmp" data-nav="light">
   <div id="cmpStage" aria-hidden="true"></div>
   <div class="rvw">
