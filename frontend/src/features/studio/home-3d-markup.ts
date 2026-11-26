@@ -21,19 +21,7 @@ export const HOME_3D_MARKUP = String.raw`<canvas id="gl"></canvas>
   <div class="stamp" aria-hidden="true"><div class="smark">S</div><div class="sword">S SQUARE<small>Engineering Services</small></div></div>
 </div>
 
-<!-- ============ NAV ============ -->
-<header class="nav">
-  <a class="brand" href="#home" aria-label="S Square Engineering Services"><span class="mark">S</span><span><b>S SQUARE</b><small>Engineering Services</small></span></a>
-  <nav class="pill" id="pill" aria-label="Sections">
-    <span class="hl" aria-hidden="true"></span>
-    <a href="#home" class="on">Home</a><a href="#precision">Precision</a><a href="#materials">Materials</a><a href="#components">Parts</a><a href="#process">Process</a><a href="#compare">Compare</a><a href="#quote">Quote</a>
-  </nav>
-  <div class="nright">
-    <a class="chip phone" href="tel:+917530080040"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>+91 75300 80040</a>
-    <button class="chip basket" id="basket" aria-label="Your enquiry list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6M9 11h6M9 15h4"/></svg><span class="badge" id="badge">0</span></button>
-    <a class="cta" href="#quote">Request a Quote</a>
-  </div>
-</header>
+<!-- Top navigation is rendered by the shared Navbar component (app/page.tsx). -->
 <nav class="rail" id="rail" aria-label="Chapters">
   <button type="button" data-h="#home" class="on" aria-label="Hero"></button>
   <button type="button" data-h="#precision" aria-label="Precision"></button>
@@ -327,7 +315,7 @@ to the challenge.</h2></div>
 
 <footer>
   <div class="fgrid">
-    <div><a class="brand" href="#home"><span class="mark" style="width:36px;height:36px;font-size:22px">S</span><span><b style="font:800 15.5px Inter,sans-serif;letter-spacing:.06em;color:#fff">S SQUARE</b><small style="font:500 9px 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.7">Engineering Services</small></span></a><p>Specialising in custom rubber, steel and aluminium manufacturing with a commitment to precision, durability and timely delivery.</p></div>
+    <div><a class="brand" href="#home"><span class="mark" style="width:36px;height:36px;font-size:22px">S</span><span><b style="font:800 15.5px "Inter Variable", Inter, sans-serif;letter-spacing:.06em;color:#fff">S SQUARE</b><small style="font:500 9px 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.7">Engineering Services</small></span></a><p>Specialising in custom rubber, steel and aluminium manufacturing with a commitment to precision, durability and timely delivery.</p></div>
     <div><h5>Quick links</h5><div class="fl"><a href="#home">Home</a><a href="#precision">Precision</a><a href="#materials">Materials</a><a href="#components">Components</a><a href="#process">Process</a><a href="#compare">Compare</a><a href="#quote">Request a Quote</a></div></div>
     <div><h5>Contact info</h5><div class="fl"><a>S Square Engineering Services</a><a>56, Jeganathapuram, Avarampalayam Road,</a><a>Peelamedu, Coimbatore 641004</a><a href="tel:+917530080040">+91 75300 80040</a><a href="mailto:sales@ssquareengg.com">sales@ssquareengg.com</a></div></div>
   </div>

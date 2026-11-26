@@ -12,7 +12,7 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 }
 .home3d, .home3d *{box-sizing:border-box;margin:0;padding:0}
 .home3d{-webkit-text-size-adjust:100%}
-.home3d{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.4}
+.home3d{font-family:"Inter Variable", Inter, system-ui, sans-serif;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.4}
 .home3d button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .home3d a{color:inherit;text-decoration:none}
 .home3d img, .home3d svg{display:block}
@@ -50,14 +50,14 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 .home3d #intro.logo .stamp{display:flex;animation:pop .38s ease-out both}
 @keyframes pop{0%{transform:scale(.72);opacity:0}70%{transform:scale(1.04);opacity:1}100%{transform:scale(1);opacity:1}}
 .home3d .smark{width:calc(120*var(--u));height:calc(120*var(--u));border-radius:26%;background:var(--red);color:#fff;display:grid;place-items:center;font:700 calc(78*var(--u)) "Barlow Condensed",sans-serif}
-.home3d .sword{font:800 calc(72*var(--u)) Inter,sans-serif;letter-spacing:.06em;line-height:1}
+.home3d .sword{font:800 calc(72*var(--u)) "Inter Variable", Inter, sans-serif;letter-spacing:.06em;line-height:1}
 .home3d .sword small{display:block;font:500 calc(14*var(--u)) "DM Mono",monospace;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-top:8px}
 .home3d .nav{position:fixed;top:0;left:0;right:0;height:calc(94*var(--n));display:flex;align-items:center;justify-content:space-between;padding:0 calc(37*var(--n)) 0 calc(42*var(--n));z-index:50;color:#f6f3ee;transform:translateY(-110%);transition:transform .9s cubic-bezier(.22,.9,.24,1),color .4s}
 .home3d .nav.in{transform:none}
 .home3d .nav.light{color:var(--ink)}
 .home3d .brand{display:flex;align-items:center;gap:11px}
 .home3d .mark{width:calc(36*var(--n));height:calc(36*var(--n));border-radius:9px;background:var(--red);display:grid;place-items:center;color:#fff;font:700 calc(22*var(--n)) "Barlow Condensed",sans-serif}
-.home3d .brand b{display:block;font:800 calc(15.5*var(--n)) Inter,sans-serif;letter-spacing:.06em;line-height:1}
+.home3d .brand b{display:block;font:800 calc(15.5*var(--n)) "Inter Variable", Inter, sans-serif;letter-spacing:.06em;line-height:1}
 .home3d .brand small{display:block;font:500 calc(9*var(--n)) "DM Mono",monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin-top:3px}
 .home3d .pill{position:relative;display:flex;padding:calc(5*var(--n));border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:99px;transition:border-color .4s,background .4s}
 .home3d .nav.light .pill{border-color:rgba(15,20,28,.14);background:rgba(255,255,255,.35)}
@@ -176,7 +176,7 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 .home3d .spot-head h2{font-size:clamp(42px,calc(78*var(--w)),92px);margin-top:12px;text-shadow:0 10px 32px rgba(0,0,0,.5)}
 .home3d .spot-lead{margin-top:22px;font-size:clamp(14px,calc(17*var(--w)),18px);line-height:1.55;color:rgba(246,243,238,.84);max-width:540px}
 .home3d .spot-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;pointer-events:auto}
-.home3d .spot-pills button{height:42px;padding:0 18px 0 14px;border-radius:99px;border:1.5px solid rgba(255,255,255,.22);background:rgba(8,10,14,.4);color:#fff;font:600 11.5px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .3s,border-color .3s}
+.home3d .spot-pills button{height:42px;padding:0 18px 0 14px;border-radius:99px;border:1.5px solid rgba(255,255,255,.22);background:rgba(8,10,14,.4);color:#fff;font:600 11.5px "Inter Variable", Inter, sans-serif;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .3s,border-color .3s}
 .home3d .spot-pills button::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(232,113,42,.28)}
 .home3d .spot-pills button.on{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.5)}
 .home3d .spot-cardwrap{position:absolute;right:calc(48*var(--w));bottom:88px;width:min(380px,34vw);perspective:1100px}
@@ -327,10 +327,10 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 .home3d .tsq{width:100px;height:100px;border-radius:16px;background:var(--c);display:grid;place-items:center;transition:transform .3s;border:1px solid rgba(243,241,236,.1)}
 .home3d .thumb:hover .tsq{transform:translateY(-4px)}
 .home3d .tsq img{width:72%;height:72%;object-fit:contain}
-.home3d .tn{font:800 11px Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em}
+.home3d .tn{font:800 11px "Inter Variable", Inter, sans-serif;text-transform:uppercase;letter-spacing:.08em}
 .home3d .tk{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(243,241,236,.35);display:grid;place-items:center;font:500 11px "DM Mono",monospace;color:transparent;transition:background .3s,color .3s}
 .home3d .thumb.in .tk{background:var(--sage);border-color:var(--sage);color:var(--ink)}
-.home3d .buy{width:100%;height:max(44px,calc(54*var(--w)));margin-top:28px;border-radius:99px;background:var(--cream);color:var(--ink);font:700 max(14px,calc(16*var(--w))) Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:14px;transition:opacity .3s,background .3s,transform .2s}
+.home3d .buy{width:100%;height:max(44px,calc(54*var(--w)));margin-top:28px;border-radius:99px;background:var(--cream);color:var(--ink);font:700 max(14px,calc(16*var(--w))) "Inter Variable", Inter, sans-serif;display:flex;align-items:center;justify-content:center;gap:14px;transition:opacity .3s,background .3s,transform .2s}
 .home3d .buy:not(:disabled):hover{transform:translateY(-2px)}
 .home3d .buy:disabled{opacity:.38;cursor:default}
 .home3d .buy.ok{background:var(--sage);opacity:1!important;color:var(--ink)}
@@ -342,7 +342,7 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 .home3d .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
 .home3d .frow.one{grid-template-columns:1fr}
 .home3d .fld label{display:block;font:500 10.5px "DM Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,241,236,.6);margin-bottom:7px}
-.home3d .fld input, .home3d .fld select, .home3d .fld textarea{width:100%;height:46px;border-radius:10px;border:1px solid rgba(243,241,236,.16);background:rgba(255,255,255,.05);color:var(--cream);padding:0 14px;font:400 14px Inter,sans-serif;outline:none;transition:border-color .2s}
+.home3d .fld input, .home3d .fld select, .home3d .fld textarea{width:100%;height:46px;border-radius:10px;border:1px solid rgba(243,241,236,.16);background:rgba(255,255,255,.05);color:var(--cream);padding:0 14px;font:400 14px "Inter Variable", Inter, sans-serif;outline:none;transition:border-color .2s}
 .home3d .fld textarea{height:110px;padding:12px 14px;resize:vertical}
 .home3d .fld select option{color:var(--ink)}
 .home3d .fld input:focus, .home3d .fld select:focus, .home3d .fld textarea:focus{border-color:var(--orange)}

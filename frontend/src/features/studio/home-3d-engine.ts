@@ -68,7 +68,7 @@ const STEPS=[
 
 /* ---------------- DOM ---------------- */
 const body=document.body, docRoot=document.documentElement;
-const hero=$('#home'), reveal=$('.reveal'), titleEl=$('#title'), countEl=$('#count'), tagEl=$('#tag'), exploreBtn=$('#explore'), arc=$('#arc'), playBtn=$('#play'), autoBtn=$('#auto'), nav=$('.nav'), bitsEl=$('#bits');
+const hero=$('#home'), reveal=$('.reveal'), titleEl=$('#title'), countEl=$('#count'), tagEl=$('#tag'), exploreBtn=$('#explore'), arc=$('#arc'), playBtn=$('#play'), autoBtn=$('#auto'), nav=$('.nav')||{classList:{add(){},toggle(){}}}, bitsEl=$('#bits');
 const sec2=$('#precision'), inBar=$('#inBar'), inFront=$('#inFront'), frontFrame=$('#frontFrame'), inNumw=$('#inNumw'), inNum=$('#inNum'), inHead=$('#inHead'), inCap=$('#inCap'), inEyebrow=$('#inEyebrow'), inDark=$('.in-dark'), icons=$$('#inIcons button'), stormEl=$('#storm');
 const shop=$('#materials'), cardsEl=$('#cards'), cards=$$('.card'), pks=$$('.pk'), quoteSec=$('#quote'), basket=$('#basket'), badge=$('#badge'), chips=$('#chips');
 const secC=$('#components'), spotFront=$('#spotFront'), spotStage=$('#spotStage'), spotCard=$('#spotCard');
@@ -385,15 +385,15 @@ function centerCard(i){ const c=cards[i]; cardsEl.scrollTo({left:c.offsetLeft-(c
 /* ---------------- enquiry / basket ---------------- */
 const enquiry=[];
 function renderEnq(){
-  badge.textContent=enquiry.length; badge.classList.toggle('show',enquiry.length>0);
+  if(badge){ badge.textContent=enquiry.length; badge.classList.toggle('show',enquiry.length>0); }
   chips.innerHTML=enquiry.length?enquiry.map((l,i)=>`<span class="qc">${l}<button type="button" data-i="${i}" aria-label="Remove ${l}">×</button></span>`).join('<br>'):'<span class="qc empty">Nothing added yet — use the + buttons or the pack on the left.</span>';
 }
 chips.addEventListener('click',e=>{ const b=e.target.closest('button[data-i]'); if(!b) return; enquiry.splice(+b.dataset.i,1); renderEnq(); });
-function bump(){ if(RM) return; basket.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'}); }
-function land(label){ enquiry.push(label); renderEnq(); if(!RM) badge.animate([{transform:'scale(1.5)'},{transform:'scale(1)'}],{duration:350,easing:'cubic-bezier(.34,1.56,.64,1)'}); }
+function bump(){ if(RM||!basket) return; basket.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'}); }
+function land(label){ enquiry.push(label); renderEnq(); if(!RM&&badge) badge.animate([{transform:'scale(1.5)'},{transform:'scale(1)'}],{duration:350,easing:'cubic-bezier(.34,1.56,.64,1)'}); }
 function flyOne(rect,src,opts={}){
   return new Promise(res=>{
-    if(RM||!rect||rect.width<2||!src){ bump(); res(); return; }
+    if(RM||!basket||!rect||rect.width<2||!src){ bump(); res(); return; }
     const img=document.createElement('img'); img.src=src; img.className='flyer'+(opts.photo?' photo':''); Object.assign(img.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'}); host.appendChild(img);
     const b=basket.getBoundingClientRect(); const dx=(b.left+b.width/2)-(rect.left+rect.width/2), dy=(b.top+b.height/2)-(rect.top+rect.height/2);
     const k=Math.min(.2,30/rect.height), lift=Math.min(160,.35*Math.abs(dy)+60);
@@ -405,7 +405,7 @@ function flyOne(rect,src,opts={}){
     a.onfinish=()=>{ img.remove(); bump(); res(); };
   });
 }
-basket.addEventListener('click',()=>{ smooth.active=false; scrollTo({top:scrollY+quoteSec.getBoundingClientRect().top,behavior:RM?'auto':'smooth'}); });
+if(basket) basket.addEventListener('click',()=>{ smooth.active=false; scrollTo({top:scrollY+quoteSec.getBoundingClientRect().top,behavior:RM?'auto':'smooth'}); });
 const SPOT=[
   {flav:0,tag:'Rubber · Bonded seals',title:'Metal-to-Viton Bonded Seals',copy:'Metal retaining ring bonded to a Viton sealing lip for dependable high-pressure hydraulic, port and fastener sealing.',spec:'FKM · Stainless',add:'Metal-to-Viton bonded seals'},
   {flav:1,tag:'Steel · Flanges & fittings',title:'Stainless Valve Bodies, Blocks & Fluid Fittings',copy:'Machined fluid blocks, adapters, needle valves and fittings using stainless steel\'s chromium-oxide corrosion resistance.',spec:'SS304 · SS316',add:'Stainless valve bodies & fittings'},
@@ -473,7 +473,7 @@ io2.observe(quoteSec);
 /* ---------------- nav ---------------- */
 let curSec=null;
 function placeHL(){ const a=links.find(x=>x.classList.contains('on')); if(!a) return; hl.style.left=a.offsetLeft+'px'; hl.style.width=a.offsetWidth+'px'; }
-function tickNav(){ let act=null; for(const s of navSecs){ if(s.getBoundingClientRect().top<=vh*.35) act=s; } if(act&&act!==curSec){ curSec=act; const id='#'+act.id; links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')===id)); nav.classList.toggle('light',act.dataset.nav==='light'); railEl.classList.toggle('ink',act.dataset.nav==='light'); railBtns.forEach(b=>b.classList.toggle('on',b.dataset.h===id)); placeHL(); } }
+function tickNav(){ let act=null; for(const s of navSecs){ if(s.getBoundingClientRect().top<=vh*.35) act=s; } if(act&&act!==curSec){ curSec=act; const id='#'+act.id; links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')===id)); nav.classList.toggle('light',act.dataset.nav==='light'); railEl?.classList.toggle('ink',act.dataset.nav==='light'); railBtns.forEach(b=>b.classList.toggle('on',b.dataset.h===id)); placeHL(); } }
 railBtns.forEach(b=>b.addEventListener('click',()=>{ const el=$(b.dataset.h); if(!el) return; smooth.active=false; scrollTo({top:scrollY+el.getBoundingClientRect().top,behavior:RM?'auto':'smooth'}); }));
 $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{ const id=a.getAttribute('href'); if(id.length<2) return; const el=$(id); if(!el) return; e.preventDefault(); smooth.active=false; scrollTo({top:scrollY+el.getBoundingClientRect().top,behavior:RM?'auto':'smooth'}); }));
 

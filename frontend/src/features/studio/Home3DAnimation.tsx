@@ -10,11 +10,13 @@ import "./home-3d.css";
 /**
  * Next.js port of the supplied standalone 3D homepage HTML.
  *
- * The source page is a full document (its own header, sections, footer and
- * imperative Three.js/WebGL module). It is mounted here as scoped static
- * markup plus a cleanup-aware engine effect rather than rewritten into JSX,
- * so all of the original geometry, scroll anchors and interactions survive.
- * All CSS lives under `.home3d`, so the shared site styles are untouched.
+ * The source page is a full document (its own sections, footer, chapter rail
+ * and imperative Three.js/WebGL module). Its top header nav was removed in
+ * favour of the shared site Navbar rendered by app/page.tsx. It is mounted
+ * here as scoped static markup plus a cleanup-aware engine effect rather than
+ * rewritten into JSX, so all of the original geometry, scroll anchors and
+ * interactions survive. All CSS lives under `.home3d`, so the shared site
+ * styles are untouched.
  */
 const STATIC_CSS = `
   .home3d #intro, .home3d #gl, .home3d #gearsWorld, .home3d .hero-ghost,
@@ -52,7 +54,6 @@ export function Home3DAnimation() {
     const revealStatic = () => {
       body.classList.remove("locked");
       host.querySelector("#intro")?.remove();
-      host.querySelector(".nav")?.classList.add("in");
       host.querySelector("#home")?.classList.add("in");
       const title = host.querySelector("#title");
       if (title && !title.textContent?.trim()) title.textContent = "RUBBER";

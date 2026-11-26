@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@/features/studio/studio.css";
+import { Navbar } from "@/components/layout/Navbar";
 import { Home3DAnimation } from "@/features/studio/Home3DAnimation";
 
 export const metadata: Metadata = {
@@ -9,10 +11,20 @@ export const metadata: Metadata = {
 };
 
 /**
- * The full-screen 3D homepage ships its own header/footer, so it deliberately
- * lives outside the `(store)` route group (which supplies the shared Navbar and
- * Footer for every inner page). Removing this file restores the group's layout.
+ * The 3D homepage lives outside the `(store)` route group so it can use its own
+ * full-screen layout. Its own top navbar was removed: the shared Navbar from
+ * the original site (the same one every inner page uses) is rendered here, so
+ * the homepage keeps real links to /about, /products, /contact and the RFQ
+ * dialog. The page's own footer and scroll experience are unchanged.
  */
 export default function HomePage() {
-  return <Home3DAnimation />;
+  return (
+    <>
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
+      <Navbar />
+      <Home3DAnimation />
+    </>
+  );
 }
