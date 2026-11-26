@@ -4,6 +4,20 @@ An industrial **B2B manufacturing and enquiry website** for S Square Engineering
 
 This is **not an online shop**. There are no customer accounts, cart, checkout, online prices, payments or admin dashboards. Custom requirements are reviewed and quoted by the company.
 
+## Current homepage (3D experience)
+
+The `/` route now renders the supplied standalone 3D homepage, converted into a scoped Next.js client component:
+
+| File | Role |
+| --- | --- |
+| `frontend/src/app/page.tsx` | Root-level home route. It sits **outside** the `(store)` group so the page's own fixed navigation/footer are used; the shared Navbar/Footer still serve every inner page. |
+| `frontend/src/features/studio/Home3DAnimation.tsx` | Mounts the static markup, loads local Fontsource fonts, and starts/stops the engine with full teardown. |
+| `home-3d-markup.ts` | Original page markup as a string (no `<script>`), including a `<noscript>` static fallback. |
+| `home-3d.css` | All original CSS, scoped under `.home3d` so the shared site styles are unaffected. |
+| `home-3d-engine.ts` | The original imperative Three.js module, using the repo's local `three@0.187` (`addons` alias) instead of the CDN importmap, with reduced-motion and WebGL-unavailable fallbacks. Its quote form posts to the real `/api/quote` route rather than only showing a fake success message. |
+
+The earlier screenshot-based `IndustrialHome.tsx` and the four-slide `HeroShowcase` are **retained as source but no longer mounted**. The sections below describing the four-slide hero, reference homepage content and their QA results describe that previous homepage; the homepage-specific Playwright expectations (`canvas` count, section order/copy) have not been updated for this replacement. Remote Pexels video/imagery and `ssquareengg.com` photos remain external references; failed images fall back to local division photos.
+
 ## Run locally
 
 Use Node.js 22+ and npm.
