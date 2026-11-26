@@ -12,9 +12,6 @@ import {
   MapPin,
   Phone,
   Plus,
-  ShieldCheck,
-  Truck,
-  Wrench,
 } from "lucide-react";
 import { Reveal, useReducedMotion } from "@/components/shared/MotionPrimitives";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
@@ -22,11 +19,11 @@ import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
 import { ApertureHero } from "./immersive/ApertureHero";
 import { HomeAmbient } from "./immersive/HomeAmbient";
-import { IrisBench } from "./immersive/IrisBench";
 import { ServiceStory } from "./immersive/ServiceStory";
 import { STUDIO_MATERIALS } from "./materials";
 import "./home-content.css";
 import "./immersive/ar-home.css";
+import "./immersive/service-journey.css";
 
 const MACHINED_COMPONENTS = "/images/ssquare/machined-components.jpg";
 const ALUMINIUM_TOOLING = "/images/ssquare/aluminium-tooling.jpg";
@@ -47,30 +44,6 @@ const CAPABILITIES = [
   "Steel Fabricated Parts & Structures",
   "Aluminium Profiles, Sheets & Machined Components",
   "Industrial Assemblies & Special-Purpose Parts",
-];
-
-const SERVICES = [
-  {
-    title: "Customization",
-    description:
-      "Custom rubber, steel and aluminium products made around your drawings or samples, with material, geometry and finish selected for the application.",
-    icon: Wrench,
-    kind: "customization" as const,
-  },
-  {
-    title: "Quality Assurance",
-    description:
-      "Technical requirements are reviewed against your approved drawing or sample. Inspection scope and acceptance criteria are agreed during quotation.",
-    icon: ShieldCheck,
-    kind: "quality" as const,
-  },
-  {
-    title: "Door Delivery",
-    description:
-      "Delivery is coordinated through DHL and FedEx. Destination coverage, shipping charges and the project schedule are confirmed in your quotation.",
-    icon: Truck,
-    kind: "delivery" as const,
-  },
 ];
 
 const COMPANY_FACTS = [
@@ -115,8 +88,7 @@ export function IndustrialHome() {
         </div>
       </div>
 
-      <IrisBench paused={paused || reduced} reduced={reduced} />
-
+      {/* The Bench reference section was removed at the user's request. */}
       <section
         id="who-we-are"
         className="studio-section home-about"
@@ -280,27 +252,7 @@ export function IndustrialHome() {
         </div>
       </section>
 
-      <section
-        id="our-services"
-        className="studio-section home-services ssq-service-section"
-        aria-labelledby="services-heading"
-      >
-        <div className="studio-shell ssq-service-shell">
-          <Reveal paused={paused} className="home-services-intro">
-            <div>
-              <p className="studio-kicker light">Services</p>
-              <h2 id="services-heading" className="home-section-heading">
-                Our Services
-              </h2>
-            </div>
-            <p>
-              Practical support at every stage, from your first specification to
-              dispatch. Scroll to see each step come alive.
-            </p>
-          </Reveal>
-          <ServiceStory services={SERVICES} paused={paused} reduced={reduced} />
-        </div>
-      </section>
+      <ServiceStory paused={paused} reduced={reduced} />
 
       <section className="home-facts" aria-label="S Square at a glance">
         <dl className="studio-shell home-facts-grid">

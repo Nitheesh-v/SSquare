@@ -38,7 +38,7 @@ test("aperture hero keeps division selection, gear first impression and contextu
     name: "Explore manufacturing divisions",
   });
   const slides = [
-    ["RUBBER", "rubber", "industrial-gear-hero", "S SQUARE"],
+    ["RUBBER", "rubber", "industrial-gear-hero", "RUBBER"],
     ["STEEL", "steel", "division-steel", "STEEL"],
     ["ALUMINIUM", "aluminium", "division-aluminium", "ALUMINIUM"],
   ];

@@ -811,6 +811,12 @@ export function ApertureHero({
                   <span /><span /><span /><span />
                   <i />
                 </div>
+                {entry.id === "rubber" ? (
+                  <div className="ar-specimen" aria-hidden="true">
+                    <img src="/images/division-rubber.jpg" alt="" draggable={false} />
+                    <span>RUBBER / O-RINGS</span>
+                  </div>
+                ) : null}
               </div>
               <span className="ar-item-label" aria-hidden="true">
                 {entry.name}

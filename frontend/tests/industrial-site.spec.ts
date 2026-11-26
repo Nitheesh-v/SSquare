@@ -55,9 +55,16 @@ test("public pages, legacy redirects and enquiry-only routes", async ({
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
     await expect(page.locator("main h1")).toHaveCount(1);
-    await expect(page.locator("main")).not.toContainText(
-      /Free Door Delivery|100%\s*(?:QC|quality|conformity)/i,
-    );
+    if (path === "/") {
+      // The user explicitly selected the literal reference service copy.
+      await expect(page.locator("#our-services")).toContainText(
+        "100% CONFORMITY",
+      );
+    } else {
+      await expect(page.locator("main")).not.toContainText(
+        /Free Door Delivery|100%\s*(?:QC|quality|conformity)/i,
+      );
+    }
     await noHorizontalOverflow(page);
     await expect(
       page.locator(

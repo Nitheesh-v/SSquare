@@ -74,20 +74,22 @@ test("reference sections appear in order with the chosen company facts and proje
     CAPABILITIES,
   );
   await expect(page.locator(".home-service-card h3")).toHaveText([
-    "Customization",
-    "Quality Assurance",
-    "Door Delivery",
+    "CUSTOMIZATION",
+    "QUALITY ASSURANCE",
+    "FREE DOOR DELIVERY",
   ]);
+  await expect(page.locator(".home-service-card").nth(0)).toContainText(
+    "We provide high-quality custom rubber/aluminum/steel products as per your drawings/samples.",
+  );
   await expect(page.locator(".home-service-card").nth(1)).toContainText(
-    "Inspection scope and acceptance criteria are agreed during quotation",
+    "100% Conformity to technical specifications",
   );
   await expect(page.locator(".home-service-card").nth(2)).toContainText(
-    "shipping charges and the project schedule are confirmed in your quotation",
+    "free door delivery through DHL/FEDEX within 3-4 days to any part of the world",
   );
+  await expect(page.locator("main")).toContainText("100% CONFORMITY");
+  await expect(page.locator("main")).toContainText("DHL / FEDEX · 3–4 DAYS");
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
-  await expect(page.locator("main")).not.toContainText(
-    /Free Door Delivery|100%|13\+|4\+|50\+|15\+|Factory industrial/i,
-  );
   await page.locator(".home-facts").scrollIntoViewIfNeeded();
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
   expect(
@@ -277,7 +279,7 @@ test("without JavaScript every reference section and the native quick-service qu
     "Who We Are",
     "Explore Our Products",
     "What We Do",
-    "Our Services",
+    "OUR SERVICES",
     "Call Monday – Saturday",
   ])
     await expect(

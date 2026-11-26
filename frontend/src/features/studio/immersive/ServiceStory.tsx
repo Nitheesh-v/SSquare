@@ -1,308 +1,306 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 import {
-  useEffect,
-  useRef,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
-import type { LucideIcon } from "lucide-react";
+  Rotate3D,
+  ShieldCheck,
+  Truck,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+
+const ServiceJourneyCanvas = dynamic(() => import("./ServiceJourneyCanvas"), {
+  ssr: false,
+  loading: () => null,
+});
 
 /**
- * The three service cards become one scroll-driven 3D story:
- * a specification block is turned and dimensioned, an inspector checks a
- * part, then a container truck drives away. Progress is written to CSS custom
- * properties from one passive scroll callback; pointer movement adds a small
- * live parallax tilt. Reduced / paused motion holds a readable mid-scene.
+ * Services follows the user's Ssquare/animation video.mp4 reference from
+ * Google Drive and the pasted HTML: a 270vh section holds one sticky, full
+ * viewport stage; a Three.js truck drives with document scroll, the camera can
+ * be dragged to orbit, and the three cards switch with journey progress.
+ *
+ * The card wording is the literal HTML the user selected in the follow-up.
+ * It is user-supplied reference copy, not an independently verified guarantee.
  */
 
-export type ServiceKind = "customization" | "quality" | "delivery";
-
-export type ServiceItem = {
+type ServiceItem = {
   title: string;
+  tag: string;
   description: string;
   icon: LucideIcon;
-  kind: ServiceKind;
+  testId: string;
 };
+
+const SERVICES: ServiceItem[] = [
+  {
+    title: "CUSTOMIZATION",
+    tag: "DRAWINGS & SAMPLES",
+    description:
+      "We provide high-quality custom rubber/aluminum/steel products as per your drawings/samples.",
+    icon: Wrench,
+    testId: "service-card-customization",
+  },
+  {
+    title: "QUALITY ASSURANCE",
+    tag: "100% CONFORMITY",
+    description:
+      "We provide you an output with 100% Conformity to technical specifications, ensuring high quality and durability.",
+    icon: ShieldCheck,
+    testId: "service-card-quality",
+  },
+  {
+    title: "FREE DOOR DELIVERY",
+    tag: "DHL / FEDEX · 3–4 DAYS",
+    description:
+      "We provide free door delivery through DHL/FEDEX within 3-4 days to any part of the world.",
+    icon: Truck,
+    testId: "service-card-delivery",
+  },
+];
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
-function CustomizationScene() {
-  return (
-    <>
-      <div className="ssq-custom-grid" />
-      <svg className="ssq-blueprint" viewBox="0 0 260 150" aria-hidden="true">
-        <path
-          className="ssq-blueprint-path"
-          d="M28 112 H78 V52 H186 V112 H232 M78 52 L98 34 H206 L186 52 M186 112 L206 94 V34 M98 112 V130 H206"
-        />
-        <circle className="ssq-blueprint-node" cx="78" cy="52" r="4" />
-        <circle className="ssq-blueprint-node" cx="186" cy="112" r="4" />
-      </svg>
-      <div className="ssq-custom-part">
-        <span className="ssq-part-face ssq-part-front">
-          <i />
-          <i />
-          <i />
-        </span>
-        <span className="ssq-part-face ssq-part-back" />
-        <span className="ssq-part-face ssq-part-top" />
-        <span className="ssq-part-face ssq-part-bottom" />
-        <span className="ssq-part-face ssq-part-left" />
-        <span className="ssq-part-face ssq-part-right" />
-      </div>
-      <span className="ssq-dimension ssq-dimension-x">DRAWING / SAMPLE</span>
-      <span className="ssq-dimension ssq-dimension-y">SPEC</span>
-      <span className="ssq-custom-cursor" />
-    </>
-  );
-}
-
-function QualityScene() {
-  return (
-    <>
-      <div className="ssq-qa-bench">
-        <span className="ssq-qa-part" />
-        <span className="ssq-qa-part-shadow" />
-      </div>
-      <div className="ssq-qa-person">
-        <span className="ssq-person-helmet" />
-        <span className="ssq-person-head" />
-        <span className="ssq-person-body" />
-        <span className="ssq-person-arm" />
-        <span className="ssq-person-leg ssq-person-leg-left" />
-        <span className="ssq-person-leg ssq-person-leg-right" />
-      </div>
-      <div className="ssq-qa-caliper">
-        <span />
-        <span />
-        <i />
-      </div>
-      <div className="ssq-qa-meter">
-        <span />
-      </div>
-      <span className="ssq-qa-check">✓</span>
-    </>
-  );
-}
-
-function DeliveryScene() {
-  return (
-    <>
-      <div className="ssq-delivery-road" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="ssq-delivery-truck">
-        <div className="ssq-delivery-container">
-          <span className="ssq-container-face ssq-container-front" />
-          <span className="ssq-container-face ssq-container-side" />
-          <span className="ssq-container-face ssq-container-top" />
-          <b>SSQ</b>
-        </div>
-        <div className="ssq-delivery-cab">
-          <span className="ssq-cab-window" />
-        </div>
-        <span className="ssq-wheel ssq-wheel-front" />
-        <span className="ssq-wheel ssq-wheel-rear" />
-      </div>
-      <span className="ssq-delivery-route">COIMBATORE → YOUR SITE</span>
-    </>
-  );
-}
-
-function ServiceScene({
-  kind,
-  icon: Icon,
-}: {
-  kind: ServiceKind;
-  icon: LucideIcon;
-}) {
+function ServiceFallback() {
   return (
     <div
-      className={`ssq-service-scene ssq-scene-${kind}`}
-      data-testid={`service-scene-${kind}`}
+      className="ssq-service-fallback"
+      data-testid="service-journey-fallback"
       aria-hidden="true"
     >
-      <div className="ssq-scene-floor" />
-      {kind === "customization" ? <CustomizationScene /> : null}
-      {kind === "quality" ? <QualityScene /> : null}
-      {kind === "delivery" ? <DeliveryScene /> : null}
-      <span className="ssq-scene-badge">
-        <Icon size={16} strokeWidth={1.7} />
-      </span>
+      <div className="ssq-fallback-road">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="ssq-fallback-portal">
+        <span />
+        <span />
+        <b />
+      </div>
+      <div className="ssq-fallback-gear">⚙</div>
+      <div className="ssq-fallback-truck">
+        <div className="ssq-fallback-container">
+          <strong>S SQUARE</strong>
+          <small>CUSTOM METAL &amp; RUBBER EXPRESS</small>
+          <em>GLOBAL DOOR DELIVERY · 3-4 DAYS (DHL/FEDEX)</em>
+        </div>
+        <div className="ssq-fallback-cab" />
+        <div className="ssq-fallback-wheel w1" />
+        <div className="ssq-fallback-wheel w2" />
+        <div className="ssq-fallback-wheel w3" />
+      </div>
     </div>
   );
 }
 
 export function ServiceStory({
-  services,
   paused,
   reduced,
 }: {
-  services: ServiceItem[];
   paused: boolean;
   reduced: boolean;
 }) {
-  const rootRef = useRef<HTMLOListElement>(null);
-  const railRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLSpanElement>(null);
-  const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const sectionRef = useRef<HTMLElement>(null);
+  const percentRef = useRef<HTMLElement>(null);
+  const railRef = useRef<HTMLElement>(null);
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [webgl, setWebgl] = useState(false);
   const still = paused || reduced;
 
   useEffect(() => {
-    const root = rootRef.current;
-    const section = root?.closest("section");
-    if (!root || !section) return;
+    if (still) {
+      setWebgl(false);
+      return;
+    }
+    try {
+      const probe = document.createElement("canvas");
+      const gl =
+        probe.getContext("webgl2") ||
+        probe.getContext("webgl") ||
+        probe.getContext("experimental-webgl");
+      setWebgl(Boolean(gl));
+    } catch {
+      setWebgl(false);
+    }
+  }, [still]);
 
-    const cards = cardRefs.current;
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const header = document.querySelector<HTMLElement>(".site-header");
+
+    const setHeaderHeight = () => {
+      const height = header?.getBoundingClientRect().height || 112;
+      section.style.setProperty("--service-header-h", `${Math.round(height)}px`);
+    };
+    setHeaderHeight();
 
     if (still) {
-      section.dataset.sceneStage = "1";
-      section.style.setProperty("--service-progress", "0.62");
-      cards.forEach((card, i) => {
+      section.dataset.progress = "0.5";
+      section.dataset.serviceProgress = "0.5";
+      section.dataset.activeService = "2";
+      section.dataset.still = "true";
+      section.style.setProperty("--service-progress", "0.5");
+      if (percentRef.current) percentRef.current.textContent = "50%";
+      if (railRef.current) railRef.current.style.width = "50%";
+      cardRefs.current.forEach((card, i) => {
         if (!card) return;
-        card.style.setProperty("--scene-p", "0.62");
-        card.dataset.active = i === 0 ? "true" : "false";
+        card.dataset.active = i === 1 ? "true" : "false";
+        card.setAttribute("aria-pressed", i === 1 ? "true" : "false");
       });
-      railRef.current?.style.setProperty("--rail-p", "62%");
-      if (stageRef.current) stageRef.current.textContent = "01 / 03";
+      window.dispatchEvent(
+        new CustomEvent("ar:services", { detail: { progress: 0.5 } }),
+      );
       return;
     }
 
+    section.dataset.still = "false";
     let frame = 0;
+
     const update = () => {
       frame = 0;
       if (document.hidden) return;
+      const headerHeight =
+        Number.parseFloat(
+          getComputedStyle(section).getPropertyValue("--service-header-h"),
+        ) || 112;
       const rect = section.getBoundingClientRect();
-      const travel = section.offsetHeight - window.innerHeight;
-      // Desktop keeps the cards pinned; smaller screens stack them, so each
-      // scene follows its own viewport position instead of the sticky track.
-      const pinned = travel > window.innerHeight * 0.5;
-      const progress = pinned
-        ? clamp(-rect.top / Math.max(1, travel), 0, 1)
-        : clamp(
-            (window.innerHeight - rect.top) /
-              Math.max(1, window.innerHeight + rect.height),
-            0,
-            1,
-          );
-      const story = clamp((progress - 0.04) / 0.92, 0, 1);
-      let active = Math.min(
-        services.length - 1,
-        Math.floor(story * services.length),
-      );
+      const stageHeight = Math.max(1, window.innerHeight - headerHeight);
+      const travel = Math.max(1, section.offsetHeight - stageHeight);
+      const progress = clamp((headerHeight - rect.top) / travel, 0, 1);
+      const active = Math.min(SERVICES.length - 1, Math.floor(progress * SERVICES.length));
+      const percent = `${Math.round(progress * 100)}%`;
 
-      if (!pinned) {
-        let closest = Number.POSITIVE_INFINITY;
-        cards.forEach((card, i) => {
-          if (!card) return;
-          const cardRect = card.getBoundingClientRect();
-          const distance = Math.abs(
-            cardRect.top + cardRect.height / 2 - window.innerHeight * 0.52,
-          );
-          if (distance < closest) {
-            closest = distance;
-            active = i;
-          }
-        });
-      }
-
-      section.dataset.sceneStage = String(active + 1);
-      section.style.setProperty("--service-progress", story.toFixed(3));
-      railRef.current?.style.setProperty("--rail-p", `${(story * 100).toFixed(1)}%`);
-      if (stageRef.current)
-        stageRef.current.textContent = `0${active + 1} / 0${services.length}`;
-
-      cards.forEach((card, i) => {
+      section.dataset.progress = progress.toFixed(3);
+      section.dataset.serviceProgress = progress.toFixed(3);
+      section.dataset.activeService = String(active + 1);
+      section.style.setProperty("--service-progress", progress.toFixed(3));
+      if (percentRef.current) percentRef.current.textContent = percent;
+      if (railRef.current) railRef.current.style.width = percent;
+      cardRefs.current.forEach((card, i) => {
         if (!card) return;
-        const cardRect = card.getBoundingClientRect();
-        const viewportLocal = clamp(
-          (window.innerHeight * 0.86 - cardRect.top) /
-            Math.max(1, window.innerHeight * 0.6),
-          0,
-          1,
-        );
-        const local = pinned
-          ? clamp(story * services.length - i, 0, 1)
-          : viewportLocal;
-        card.style.setProperty("--scene-p", local.toFixed(3));
         card.dataset.active = i === active ? "true" : "false";
-        card.dataset.sceneDone = local > 0.96 ? "true" : "false";
+        card.setAttribute("aria-pressed", i === active ? "true" : "false");
       });
+      window.dispatchEvent(
+        new CustomEvent("ar:services", { detail: { progress } }),
+      );
     };
     const request = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      setHeaderHeight();
+      request();
+    };
 
     window.addEventListener("scroll", request, { passive: true });
-    window.addEventListener("resize", request);
+    window.addEventListener("resize", onResize);
     request();
     return () => {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener("scroll", request);
-      window.removeEventListener("resize", request);
+      window.removeEventListener("resize", onResize);
     };
-  }, [services.length, still]);
+  }, [still]);
 
-  const onPointerMove = (
-    event: ReactPointerEvent<HTMLLIElement>,
-    index: number,
-  ) => {
-    if (still || event.pointerType !== "mouse") return;
-    const card = cardRefs.current[index];
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    card.style.setProperty("--tilt-x", `${(-y * 9).toFixed(2)}deg`);
-    card.style.setProperty("--tilt-y", `${(x * 12).toFixed(2)}deg`);
-  };
-  const onPointerLeave = (index: number) => {
-    const card = cardRefs.current[index];
-    if (!card) return;
-    card.style.setProperty("--tilt-x", "0deg");
-    card.style.setProperty("--tilt-y", "0deg");
+  const jumpTo = (index: number) => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const headerHeight =
+      Number.parseFloat(
+        getComputedStyle(section).getPropertyValue("--service-header-h"),
+      ) || 112;
+    const stageHeight = Math.max(1, window.innerHeight - headerHeight);
+    const travel = Math.max(1, section.offsetHeight - stageHeight);
+    const top =
+      section.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight +
+      ((index + 0.5) / SERVICES.length) * travel;
+    window.scrollTo({
+      top,
+      behavior: still ? "auto" : "smooth",
+    });
   };
 
   return (
-    <>
-      <ol
-        ref={rootRef}
-        className="home-service-grid ssq-service-story"
-        data-testid="service-story"
-        data-still={still}
-      >
-        {services.map((service, index) => (
-          <li
-            key={service.title}
-            ref={(node) => {
-              cardRefs.current[index] = node;
-            }}
-            className="home-service-card"
-            data-kind={service.kind}
-            data-active={index === 0}
-            onPointerMove={(event) => onPointerMove(event, index)}
-            onPointerLeave={() => onPointerLeave(index)}
-          >
-            <span className="home-service-number" aria-hidden="true">
-              0{index + 1}.
-            </span>
-            <ServiceScene kind={service.kind} icon={service.icon} />
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-          </li>
-        ))}
-      </ol>
-      <div className="ssq-service-rail" ref={railRef} aria-hidden="true">
-        <span>SCROLL TO RUN THE PROCESS</span>
-        <div className="ssq-service-rail-track">
-          <i />
+    <section
+      ref={sectionRef}
+      id="our-services"
+      className="studio-section home-services ssq-service-section"
+      aria-labelledby="services-heading"
+      data-testid="service-journey"
+      data-webgl={webgl && !still}
+      data-progress="0"
+      data-service-progress="0"
+      data-active-service="1"
+      data-still={still}
+    >
+      <div className="ssq-service-stage">
+        <div className="ssq-service-blueprint" aria-hidden="true" />
+        {webgl && !still ? <ServiceJourneyCanvas /> : <ServiceFallback />}
+        <div className="ssq-service-gradient" aria-hidden="true" />
+
+        <div className="ssq-service-hud">
+          <div>
+            <p className="ssq-service-kicker">SERVICES</p>
+            <h2
+              id="services-heading"
+              className="home-section-heading ssq-service-title"
+            >
+              OUR SERVICES
+            </h2>
+            <span className="ssq-service-rule" aria-hidden="true" />
+          </div>
+          <div className="ssq-service-hud-chip">
+            <Rotate3D size={16} aria-hidden="true" />
+            <span>Scroll to drive truck · Drag to orbit</span>
+            <b ref={percentRef}>0%</b>
+          </div>
         </div>
-        <span ref={stageRef}>01 / 03</span>
+
+        <div className="ssq-service-bottom">
+          <div className="ssq-service-track" aria-hidden="true">
+            <i ref={railRef} />
+          </div>
+          <ol className="home-service-grid ssq-service-cards">
+            {SERVICES.map((service, index) => {
+              const Icon = service.icon;
+              return (
+                <li key={service.title}>
+                  <button
+                    type="button"
+                    ref={(node) => {
+                      cardRefs.current[index] = node;
+                    }}
+                    className="home-service-card"
+                    data-testid={service.testId}
+                    data-active={index === 0}
+                    aria-pressed={index === 0}
+                    onClick={() => jumpTo(index)}
+                  >
+                    <span className="ssq-card-top">
+                      <b>0{index + 1}.</b>
+                      <em>{service.tag}</em>
+                    </span>
+                    <span className="ssq-card-head">
+                      <span className="ssq-card-icon" aria-hidden="true">
+                        <Icon size={18} strokeWidth={2} />
+                      </span>
+                      <h3>{service.title}</h3>
+                    </span>
+                    <p>{service.description}</p>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
-    </>
+    </section>
   );
 }

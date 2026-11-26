@@ -41,7 +41,7 @@ test("the three-station aperture hero stays first with a live canvas field", asy
       .getByRole("group", { name: "Explore manufacturing divisions" })
       .getByRole("button"),
   ).toHaveCount(3);
-  await expect(hero.locator("img")).toHaveCount(3);
+  await expect(hero.locator("img")).toHaveCount(4);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await expect(hero.locator("img").first()).toHaveAttribute(
     "src",
@@ -50,12 +50,19 @@ test("the three-station aperture hero stays first with a live canvas field", asy
   await expect(hero.locator(".ar-gear-backdrop")).toHaveCount(1);
   await expect(page.locator(".ar-disc")).toHaveCount(1);
   await expect(page.getByTestId("ar-ambient")).toHaveCount(1);
-  await expect(page.locator(".ar-bench")).toHaveCount(1);
+  await expect(page.locator(".ar-bench")).toHaveCount(0);
   await expect(page.locator(".ar-footer-wordmark")).toHaveCount(0);
-  await expect(page.getByTestId("service-story")).toHaveCount(1);
-  await expect(page.getByTestId("service-scene-customization")).toHaveCount(1);
-  await expect(page.getByTestId("service-scene-quality")).toHaveCount(1);
-  await expect(page.getByTestId("service-scene-delivery")).toHaveCount(1);
+  await expect(page.getByTestId("service-journey")).toHaveCount(1);
+  await expect(
+    page.locator(
+      '[data-testid="service-journey-canvas"], [data-testid="service-journey-fallback"]',
+    ),
+  ).toHaveCount(1);
+  await expect(page.locator(".ssq-service-cards .home-service-card")).toHaveCount(3);
+  await expect(hero.locator(".ar-specimen img")).toHaveAttribute(
+    "src",
+    "/images/division-rubber.jpg",
+  );
   await expect(
     page.locator(
       ".material-carousel-hero,.journey-intro,.journey-inside,.journey-rail,.journey-builder",
@@ -324,7 +331,7 @@ test("all three stations and controls stay within the five target layouts", asyn
   }
 });
 
-test("background chapters and the three service scenes change with scroll", async ({
+test("background chapters and the sticky service truck journey change with scroll", async ({
   page,
 }) => {
   await page.goto("/");
@@ -341,6 +348,7 @@ test("background chapters and the three service scenes change with scroll", asyn
   await expect
     .poll(() => ambient.getAttribute("data-scroll-phase"))
     .toBe("services");
+  await expect(page.getByTestId("service-journey")).toHaveCount(1);
 
   await page.evaluate(() =>
     window.scrollTo(0, document.documentElement.scrollHeight),
@@ -355,13 +363,15 @@ test("background chapters and the three service scenes change with scroll", asyn
   expect(
     Number(await ambient.getAttribute("data-scroll-progress")),
   ).toBeGreaterThan(0.5);
-  await expect(page.locator("#our-services")).not.toHaveAttribute(
-    "data-scene-stage",
-    "1",
+  const section = page.locator("#our-services");
+  await expect
+    .poll(() => section.getAttribute("data-active-service"))
+    .toBe("3");
+  expect(
+    Number(await section.getAttribute("data-service-progress")),
+  ).toBeGreaterThan(0.5);
+  await expect(page.getByTestId("service-card-delivery")).toHaveAttribute(
+    "data-active",
+    "true",
   );
-  const lastSceneProgress = await page
-    .locator(".home-service-card")
-    .last()
-    .evaluate((node) => getComputedStyle(node).getPropertyValue("--scene-p"));
-  expect(Number(lastSceneProgress.trim())).toBeGreaterThan(0.3);
 });
