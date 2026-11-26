@@ -125,7 +125,7 @@ test("the reference's machining and tooling photos load locally with honest illu
   }
   await page.locator("#quick-service").scrollIntoViewIfNeeded();
   await expect(page.getByTestId("component-inspector")).toHaveCount(0);
-  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator(".ar-disc")).toHaveCount(1);
   await noOverflow(page);
 });
 
@@ -257,7 +257,7 @@ test("unavailable official photos retain labelled local fallbacks and all homepa
       .getByTestId("illustrative-visual-label"),
   ).toHaveCount(2);
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
-  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator(".ar-disc")).toHaveCount(1);
   await noOverflow(page);
 });
 

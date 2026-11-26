@@ -18,11 +18,14 @@ import {
 } from "lucide-react";
 import { Reveal, useReducedMotion } from "@/components/shared/MotionPrimitives";
 import { SmartProductImage } from "@/components/shared/SmartProductImage";
-import { HeroShowcase } from "@/features/products/HeroShowcase";
 import { useQuoteModal } from "@/hooks";
 import { COMPANY_INFO } from "@/lib/company-data";
+import { ApertureHero } from "./immersive/ApertureHero";
+import { HomeAmbient } from "./immersive/HomeAmbient";
+import { IrisBench } from "./immersive/IrisBench";
 import { STUDIO_MATERIALS } from "./materials";
 import "./home-content.css";
+import "./immersive/ar-home.css";
 
 const MACHINED_COMPONENTS = "/images/ssquare/machined-components.jpg";
 const ALUMINIUM_TOOLING = "/images/ssquare/aluminium-tooling.jpg";
@@ -85,11 +88,11 @@ export function IndustrialHome() {
 
   return (
     <div
-      className="studio-home"
+      className="studio-home ar-home"
       data-testid="industrial-home"
       data-motion-paused={paused || reduced}
     >
-      <HeroShowcase paused={paused} onPause={() => setPaused((p) => !p)} />
+      <ApertureHero paused={paused} onPause={() => setPaused((p) => !p)} />
       <div className="studio-trust-strip">
         <div className="studio-shell">
           <span>
@@ -108,13 +111,15 @@ export function IndustrialHome() {
         </div>
       </div>
 
+      <IrisBench paused={paused || reduced} reduced={reduced} />
+
       <section
         id="who-we-are"
         className="studio-section home-about"
         aria-labelledby="about-heading"
       >
         <div className="studio-shell home-editorial-grid">
-          <div className="home-editorial-copy">
+          <Reveal paused={paused} className="home-editorial-copy">
             <p className="studio-kicker">About Us</p>
             <h2 id="about-heading" className="home-section-heading">
               Who We Are
@@ -142,8 +147,8 @@ export function IndustrialHome() {
             <Link href="/about" className="studio-text-link home-about-link">
               More About Us <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
-          </div>
-          <figure className="home-editorial-figure">
+          </Reveal>
+          <Reveal paused={paused} delay={90} className="home-editorial-figure">
             <div className="home-editorial-photo">
               <SmartProductImage
                 src={MACHINED_COMPONENTS}
@@ -156,7 +161,7 @@ export function IndustrialHome() {
               <span>PRECISION IN EVERY COMPONENT</span>
               <span>STEEL / STAINLESS</span>
             </figcaption>
-          </figure>
+          </Reveal>
         </div>
       </section>
 
@@ -166,14 +171,14 @@ export function IndustrialHome() {
         aria-labelledby="materials-heading"
       >
         <div className="studio-shell">
-          <div className="home-products-intro">
+          <Reveal paused={paused} className="home-products-intro">
             <p className="studio-kicker">Rubber / Steel / Aluminium</p>
             <h2 id="materials-heading">Explore Our Products</h2>
             <p>
               Three material disciplines. Custom components built around your
               requirement.
             </p>
-          </div>
+          </Reveal>
           <div className="studio-material-grid">
             {HOME_PRODUCTS.map((item, i) => (
               <Reveal
@@ -226,7 +231,7 @@ export function IndustrialHome() {
         aria-labelledby="capabilities-heading"
       >
         <div className="studio-shell home-editorial-grid">
-          <div className="home-editorial-copy">
+          <Reveal paused={paused} className="home-editorial-copy">
             <p className="studio-kicker">From your drawing to your component</p>
             <h2 id="capabilities-heading" className="home-section-heading">
               What We Do
@@ -253,8 +258,8 @@ export function IndustrialHome() {
             <Link href="/about" className="studio-text-link home-about-link">
               More About Us <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
-          </div>
-          <figure className="home-editorial-figure">
+          </Reveal>
+          <Reveal paused={paused} delay={90} className="home-editorial-figure">
             <div className="home-editorial-photo">
               <SmartProductImage
                 src={ALUMINIUM_TOOLING}
@@ -267,7 +272,7 @@ export function IndustrialHome() {
               <span>BUILT TO DRAWING OR SAMPLE</span>
               <span>ALUMINIUM / TOOLING</span>
             </figcaption>
-          </figure>
+          </Reveal>
         </div>
       </section>
 
@@ -277,7 +282,7 @@ export function IndustrialHome() {
         aria-labelledby="services-heading"
       >
         <div className="studio-shell">
-          <div className="home-services-intro">
+          <Reveal paused={paused} className="home-services-intro">
             <div>
               <p className="studio-kicker light">Services</p>
               <h2 id="services-heading" className="home-section-heading">
@@ -288,7 +293,7 @@ export function IndustrialHome() {
               Practical support at every stage, from your first specification to
               dispatch.
             </p>
-          </div>
+          </Reveal>
           <ol className="home-service-grid">
             {SERVICES.map((service, index) => (
               <li key={service.title} className="home-service-card">
@@ -340,7 +345,7 @@ export function IndustrialHome() {
           </div>
           <p>RUBBER / STEEL / ALUMINIUM</p>
         </div>
-        <div className="home-quick-copy">
+        <Reveal paused={paused} className="home-quick-copy">
           <p className="studio-kicker">Quick Service on Your Needs</p>
           <h2 id="quick-service-heading">Call {COMPANY_INFO.hours}</h2>
           <p>
@@ -385,8 +390,21 @@ export function IndustrialHome() {
             {COMPANY_INFO.address.locality}, {COMPANY_INFO.address.city},{" "}
             {COMPANY_INFO.address.country}
           </p>
-        </div>
+        </Reveal>
       </section>
+
+      <div className="ar-footer-wordmark" aria-label="S Square Engineering Services">
+        <span aria-hidden="true">S SQUARE</span>
+        <div className="studio-shell ar-footer-row">
+          <span>CUSTOM RUBBER / STEEL / ALUMINIUM · COIMBATORE, INDIA</span>
+          <span>
+            <Link href="/material-experience">3D material experience</Link> ·{" "}
+            <Link href="/contact">Request a quote</Link>
+          </span>
+        </div>
+      </div>
+
+      <HomeAmbient paused={paused || reduced} reduced={reduced} />
     </div>
   );
 }

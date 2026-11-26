@@ -117,16 +117,16 @@ test("navigation, hero controls, and quote dialog keyboard access", async ({
     await page.keyboard.press("Escape");
     await expect(toggle).toBeFocused();
   }
-  await page.getByRole("button", { name: /04 Aluminium/ }).click();
+  await page.getByRole("button", { name: /03 ALUMINIUM/ }).click();
   await expect(page.getByTestId("original-slideshow-hero")).toHaveAttribute(
     "data-active-slide",
     "aluminium",
   );
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Precision 6061 Aluminium",
+    "ALUMINIUM",
   );
   await expect(
-    page.getByRole("button", { name: /04 Aluminium/ }),
+    page.getByRole("button", { name: /03 ALUMINIUM/ }),
   ).toHaveAttribute("aria-pressed", "true");
   const quote = page
     .locator("main")

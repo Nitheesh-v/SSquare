@@ -1,5 +1,8 @@
 # S Square — reference homepage content QA
 
+> **Update 2026-11-26 (current branch `arena/3f84f276-ssquare`):** the homepage hero has been replaced with an animated three-station “aperture ring” (Rubber / Steel / Aluminium), an optional WebGL backdrop, a canvas ring, a scroll-reactive 9-blade bench iris, count-up stats and fixed animated atmosphere. The four-slide `HeroShowcase` is retained as unmounted source. The historical review below describes the *previous* static homepage build; its content/fact decisions still apply, but its “no canvas / no animation / four-slide hero” statements and the old test filename are superseded. Current suites are `homepage-content.spec.ts`, `aperture-hero.spec.ts`, `studio-pages.spec.ts` and `industrial-site.spec.ts`. `npm run typecheck` and `npm run build` pass on the current branch; browser regression numbers below were recorded before this animation change and have not been re-run in this sandbox because Chromium downloads are blocked.
+
+
 Review date: **2026-11-23**
 
 Branch: `arena/8987795b-ssquare`
@@ -55,7 +58,7 @@ Fonts remain locally served through Fontsource. Poppins remains scoped to the he
 The final run of all **four affected suites** completed **107 passes, 17 intentional skips and zero failures**, one worker, approximately **5.9 minutes**:
 
 - [`homepage-content.spec.ts`](../frontend/tests/homepage-content.spec.ts)
-- [`original-slideshow.spec.ts`](../frontend/tests/original-slideshow.spec.ts)
+- [`aperture-hero.spec.ts`](../frontend/tests/aperture-hero.spec.ts)
 - [`studio-pages.spec.ts`](../frontend/tests/studio-pages.spec.ts)
 - [`industrial-site.spec.ts`](../frontend/tests/industrial-site.spec.ts)
 
@@ -111,7 +114,7 @@ npx playwright install chromium
 npm run typecheck
 npm run build
 # Start the production site separately, then run this change's regression suites:
-QA_ALLOW_RFQ_WRITES=0 npx playwright test tests/homepage-content.spec.ts tests/original-slideshow.spec.ts tests/studio-pages.spec.ts tests/industrial-site.spec.ts
+QA_ALLOW_RFQ_WRITES=0 npx playwright test tests/homepage-content.spec.ts tests/aperture-hero.spec.ts tests/studio-pages.spec.ts tests/industrial-site.spec.ts
 # The complete repository suite, including the dedicated full journey:
 npm run test:e2e
 ```

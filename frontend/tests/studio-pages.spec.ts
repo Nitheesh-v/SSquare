@@ -26,7 +26,7 @@ async function noOverflow(page: Page) {
   expect(layout.viewport).toBe(page.viewportSize()!.width);
 }
 
-test("original slideshow keeps division selection, provenance and contextual RFQs", async ({
+test("aperture hero keeps division selection, provenance and contextual RFQs", async ({
   page,
 }) => {
   await page.goto("/");
@@ -38,32 +38,11 @@ test("original slideshow keeps division selection, provenance and contextual RFQ
     name: "Explore manufacturing divisions",
   });
   const slides = [
-    [
-      "Multi-Material OEM",
-      "overview",
-      "Your Trusted Partner",
-      "hero-manufacturing",
-    ],
-    [
-      "Rubber & Bonded Seals",
-      "rubber",
-      "Custom Molded Rubber",
-      "division-rubber",
-    ],
-    [
-      "Stainless & Alloy Steel",
-      "steel",
-      "High-Strength Stainless",
-      "division-steel",
-    ],
-    [
-      "Aluminium & Die Molds",
-      "aluminium",
-      "Precision 6061 Aluminium",
-      "division-aluminium",
-    ],
+    ["RUBBER", "rubber", "division-rubber"],
+    ["STEEL", "steel", "division-steel"],
+    ["ALUMINIUM", "aluminium", "division-aluminium"],
   ];
-  for (const [index, [label, id, heading, image]] of slides.entries()) {
+  for (const [index, [label, id, image]] of slides.entries()) {
     const button = choices.getByRole("button", {
       name: `0${index + 1} ${label}`,
       exact: true,
@@ -72,16 +51,14 @@ test("original slideshow keeps division selection, provenance and contextual RFQ
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(hero).toHaveAttribute("data-active-slide", id);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      heading,
+      label,
     );
     await expect(hero.locator('img[aria-hidden="false"]')).toHaveAttribute(
       "src",
       `/images/${image}.jpg`,
     );
   }
-  await expect(hero.locator(".original-slideshow-provenance")).toContainText(
-    "ILLUSTRATIVE",
-  );
+  await expect(hero.locator(".ar-provenance")).toContainText("ILLUSTRATIVE");
   await expect(page.locator(".studio-material-card")).toHaveCount(3);
   await expect(
     page
@@ -108,9 +85,7 @@ test("original slideshow keeps division selection, provenance and contextual RFQ
   await noOverflow(page);
 });
 
-test("slideshow pause also keeps the material photo planes still", async ({
-  page,
-}) => {
+test("pause also keeps the material photo planes still", async ({ page }) => {
   await page.goto("/");
   const hero = page.getByTestId("original-slideshow-hero");
   await hero
@@ -127,7 +102,7 @@ test("slideshow pause also keeps the material photo planes still", async ({
     "0s",
   );
   await hero.getByRole("button", { name: "Next slide", exact: true }).click();
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await page.locator("#material-divisions").scrollIntoViewIfNeeded();
   const plane = page
     .locator(".studio-material-card [data-depth-image] > div")
@@ -141,7 +116,7 @@ test("slideshow pause also keeps the material photo planes still", async ({
   await expect(hero).toHaveAttribute("data-reduced", "true");
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Custom Molded Rubber",
+    "STEEL",
   );
 });
 

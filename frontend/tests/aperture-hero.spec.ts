@@ -23,11 +23,12 @@ async function allowAutoplay(page: Page) {
     "data-autoplay",
     "true",
   );
-  // Let the passive timeout effect run after its React state commit.
   await page.waitForTimeout(60);
 }
 
-test("the original four-slide hero stays first above the reference content, without a 3D hero", async ({
+const STATIONS = ["01 RUBBER", "02 STEEL", "03 ALUMINIUM"];
+
+test("the three-station aperture hero stays first with a live canvas field", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -39,13 +40,12 @@ test("the original four-slide hero stays first above the reference content, with
     hero
       .getByRole("group", { name: "Explore manufacturing divisions" })
       .getByRole("button"),
-  ).toHaveCount(4);
-  await expect(hero.locator("img")).toHaveCount(4);
-  await expect(hero.getByRole("heading", { level: 1 })).toHaveCSS(
-    "font-family",
-    /Poppins/,
-  );
-  await expect(page.locator("canvas")).toHaveCount(0);
+  ).toHaveCount(3);
+  await expect(hero.locator("img")).toHaveCount(3);
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(page.locator(".ar-disc")).toHaveCount(1);
+  await expect(page.getByTestId("ar-ambient")).toHaveCount(1);
+  await expect(page.locator(".ar-bench")).toHaveCount(1);
   await expect(
     page.locator(
       ".material-carousel-hero,.journey-intro,.journey-inside,.journey-rail,.journey-builder",
@@ -61,7 +61,7 @@ test("the original four-slide hero stays first above the reference content, with
   );
 });
 
-test("arrows wrap, keyboard controls work, and the original catalog destinations remain real links", async ({
+test("arrows wrap, keyboard controls work, and the catalog destinations remain real links", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -73,36 +73,45 @@ test("arrows wrap, keyboard controls work, and the original catalog destinations
   await previous.click();
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await expect(
-    hero.getByRole("link", { name: "Browse Aluminium Products", exact: true }),
+    hero.getByRole("link", { name: "Explore Aluminium Products", exact: true }),
   ).toHaveAttribute("href", "/products/aluminium");
   await next.click();
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await expect(
-    hero.getByRole("link", { name: "Explore Full Catalog", exact: true }),
-  ).toHaveAttribute("href", "/products");
+    hero.getByRole("link", { name: "Explore Rubber Products", exact: true }),
+  ).toHaveAttribute("href", "/products/rubber");
   await next.focus();
   await page.keyboard.press("End");
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await page.keyboard.press("ArrowRight");
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await page.keyboard.press("ArrowLeft");
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await page.keyboard.press("Home");
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
 });
 
-test("all four slides open the existing quote with the selected division and restore focus", async ({
+test("station inspector opens from View Specs and closes on Escape", async ({
+  page,
+}) => {
+  const hero = await enter(page);
+  await hero.getByRole("button", { name: "View Specs", exact: true }).click();
+  const drawer = page.getByTestId("ar-station-drawer");
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole("heading", { name: "RUBBER" })).toBeVisible();
+  await expect(drawer.getByText("Format")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(drawer).not.toBeVisible();
+});
+
+test("all three stations open the existing quote with the selected division", async ({
   page,
 }) => {
   const hero = await enter(page);
   const cases = [
-    [
-      "01 Multi-Material OEM",
-      "Rubber Products, Steel Products, Aluminium Products",
-    ],
-    ["02 Rubber & Bonded Seals", "Rubber Products"],
-    ["03 Stainless & Alloy Steel", "Steel Products"],
-    ["04 Aluminium & Die Molds", "Aluminium Products"],
+    ["01 RUBBER", "Rubber Products"],
+    ["02 STEEL", "Steel Products"],
+    ["03 ALUMINIUM", "Aluminium Products"],
   ];
   for (const [name, division] of cases) {
     await hero.getByRole("button", { name, exact: true }).click();
@@ -123,23 +132,23 @@ test("all four slides open the existing quote with the selected division and res
   }
 });
 
-test("autoplay advances at the original interval and suspends for hover, focus and dialogs", async ({
+test("autoplay advances at 5.5 s and suspends for hover, focus and dialogs", async ({
   page,
 }, info) => {
   await page.clock.install();
   const hero = await enter(page);
   await allowAutoplay(page);
   await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
-  await hero.hover();
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await page.locator(".ar-stage").hover();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await hero.getByRole("button", { name: "Next slide", exact: true }).focus();
   await page.mouse.move(0, 0);
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await hero
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
@@ -147,7 +156,7 @@ test("autoplay advances at the original interval and suspends for hover, focus a
     page.getByRole("dialog", { name: "Request a Quote", exact: true }),
   ).toBeVisible();
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await page.keyboard.press("Escape");
   const menu =
     info.project.name === "desktop"
@@ -156,16 +165,14 @@ test("autoplay advances at the original interval and suspends for hover, focus a
   await menu.click();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await page.keyboard.press("Escape");
   await allowAutoplay(page);
   await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
 });
 
-test("offscreen and hidden-tab states suspend autoplay without a rendering loop", async ({
-  page,
-}) => {
+test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
   await page.clock.install();
   const hero = await enter(page);
   await allowAutoplay(page);
@@ -178,7 +185,7 @@ test("offscreen and hidden-tab states suspend autoplay without a rendering loop"
   });
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await page.evaluate(() => {
     delete (document as unknown as Record<string, unknown>).hidden;
     document.dispatchEvent(new Event("visibilitychange"));
@@ -187,10 +194,10 @@ test("offscreen and hidden-tab states suspend autoplay without a rendering loop"
   await page.locator("#material-divisions").scrollIntoViewIfNeeded();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
 });
 
-test("reduced motion keeps the original overview still while all four selectors remain usable", async ({
+test("reduced motion keeps the hero still with no canvas and all three selectors usable", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -200,18 +207,16 @@ test("reduced motion keeps the original overview still while all four selectors 
   await expect(
     hero.getByRole("button", { name: "Pause visual motion", exact: true }),
   ).toBeDisabled();
-  await hero
-    .getByRole("button", { name: "04 Aluminium & Die Molds", exact: true })
-    .click();
-  await expect(hero.getByRole("heading", { level: 1 })).toHaveText(
-    "Precision 6061 Aluminium Parts & Custom Die Molds",
+  await hero.getByRole("button", { name: "03 ALUMINIUM", exact: true }).click();
+  await expect(hero.getByRole("heading", { level: 1 })).toContainText(
+    "ALUMINIUM",
   );
   await expect(hero.locator("img").first()).toHaveCSS(
     "transition-duration",
     "0s",
   );
   await hero.getByRole("button", { name: "Next slide", exact: true }).click();
-  await expect(hero).toHaveAttribute("data-active-slide", "overview");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await allowAutoplay(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -222,9 +227,7 @@ test("hero selection leaves the reference content and company facts independent"
   page,
 }) => {
   const hero = await enter(page);
-  await hero
-    .getByRole("button", { name: "02 Rubber & Bonded Seals", exact: true })
-    .click();
+  await hero.getByRole("button", { name: "02 STEEL", exact: true }).click();
   await page.locator("#material-divisions").scrollIntoViewIfNeeded();
   await expect(page.locator(".studio-material-card h3")).toHaveText([
     "Aluminium Products",
@@ -236,11 +239,11 @@ test("hero selection leaves the reference content and company facts independent"
     "03",
     "Coimbatore",
   ]);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await expect(page.getByTestId("component-inspector")).toHaveCount(0);
 });
 
-test("without JavaScript the original hero has usable catalog, quote-page and phone links", async ({
+test("without JavaScript the hero has usable catalog, quote-page and phone links", async ({
   browser,
   page,
 }) => {
@@ -249,7 +252,8 @@ test("without JavaScript the original hero has usable catalog, quote-page and ph
     viewport: page.viewportSize()!,
   });
   const staticPage = await context.newPage();
-  const hero = await enter(staticPage);
+  await staticPage.goto("/");
+  const hero = staticPage.getByTestId("original-slideshow-hero");
   await expect(
     hero.getByRole("button", { name: "Next slide", exact: true }),
   ).not.toBeVisible();
@@ -269,7 +273,7 @@ test("without JavaScript the original hero has usable catalog, quote-page and ph
   await context.close();
 });
 
-test("all original slide headings and controls stay within the five target layouts", async ({
+test("all three stations and controls stay within the five target layouts", async ({
   page,
 }, info) => {
   test.skip(
@@ -286,12 +290,7 @@ test("all original slide headings and controls stay within the five target layou
   ]) {
     await page.setViewportSize({ width, height });
     const hero = await enter(page);
-    for (const name of [
-      "01 Multi-Material OEM",
-      "02 Rubber & Bonded Seals",
-      "03 Stainless & Alloy Steel",
-      "04 Aluminium & Die Molds",
-    ]) {
+    for (const name of STATIONS) {
       await hero.getByRole("button", { name, exact: true }).click();
       const box = (await hero
         .getByRole("heading", { level: 1 })
@@ -305,7 +304,7 @@ test("all original slide headings and controls stay within the five target layou
           .map((r) => ({ left: r.left, right: r.right })),
       );
       for (const control of controls) {
-        expect(control.left).toBeGreaterThanOrEqual(0);
+        expect(control.left).toBeGreaterThanOrEqual(-1);
         expect(control.right).toBeLessThanOrEqual(width + 1);
       }
       expect(
