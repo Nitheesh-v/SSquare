@@ -171,7 +171,7 @@ export function StationDrawer({
           </div>
         </div>
 
-        <footer className="ar-drawer-footer">
+        <div className="ar-drawer-footer">
           <span>RFQ / 0{index + 1} · {slide.division}</span>
           <button
             type="button"
@@ -182,7 +182,7 @@ export function StationDrawer({
           >
             Request a Quote <ArrowRight size={16} />
           </button>
-        </footer>
+        </div>
 
         {lightbox ? (
           <div

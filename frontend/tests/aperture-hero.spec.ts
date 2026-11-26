@@ -41,9 +41,10 @@ test("the three-station aperture hero stays first, branded as S SQUARE, with a l
       .getByRole("group", { name: "Explore manufacturing divisions" })
       .getByRole("button"),
   ).toHaveCount(3);
-  await expect(hero.locator("img")).toHaveCount(3);
+  // Three station plates plus the plates inside the (closed) inspector drawer.
+  await expect(hero.locator(".ar-plate img")).toHaveCount(3);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
-  await expect(hero.locator("img").first()).toHaveAttribute(
+  await expect(hero.locator(".ar-plate img").first()).toHaveAttribute(
     "src",
     "/images/industrial-gear-hero.jpg",
   );
@@ -148,38 +149,70 @@ test("autoplay advances at 5.5 s and suspends for hover, focus and dialogs", asy
   await page.clock.install();
   const hero = await enter(page);
   await allowAutoplay(page);
+  const settle = async () => {
+    // Freeze the running autoplay before reading the current station.
+    await page.locator(".ar-stage").hover();
+    await expect(hero).toHaveAttribute("data-autoplay", "false");
+    await page.mouse.move(0, 0);
+    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+    return (await hero.getAttribute("data-active-slide")) ?? "";
+  };
+
   await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  const first = await settle();
+  expect(first).not.toBe("rubber");
+
   await page.locator(".ar-stage").hover();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", first);
+
   await hero.getByRole("button", { name: "Next slide", exact: true }).focus();
   await page.mouse.move(0, 0);
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", first);
+
   await hero
     .getByRole("button", { name: "Request a Quote", exact: true })
     .click();
   await expect(
     page.getByRole("dialog", { name: "Request a Quote", exact: true }),
   ).toBeVisible();
+  const beforeDialog = await hero.getAttribute("data-active-slide");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", beforeDialog ?? "");
   await page.keyboard.press("Escape");
+
   const menu =
     info.project.name === "desktop"
       ? page.getByRole("button", { name: "Products", exact: true })
       : page.getByRole("button", { name: "Open navigation", exact: true });
   await menu.click();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
+  const beforeMenu = await hero.getAttribute("data-active-slide");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", beforeMenu ?? "");
   await page.keyboard.press("Escape");
+
   await allowAutoplay(page);
+  const beforeResume = await hero.getAttribute("data-active-slide");
+  await page.clock.fastForward(5600);
+  await expect(hero).not.toHaveAttribute("data-active-slide", beforeResume ?? "");
+});
+
+test("autoplay turns the ring without hijacking the page scroll", async ({
+  page,
+}) => {
+  await page.clock.install();
+  const hero = await enter(page);
+  await allowAutoplay(page);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.clock.fastForward(5600);
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   await page.clock.fastForward(5600);
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
 
 test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
@@ -201,7 +234,15 @@ test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await expect(hero).toHaveAttribute("data-autoplay", "true");
-  await page.locator("#material-divisions").scrollIntoViewIfNeeded();
+  // The hero is a tall pinned section: leave it completely before autoplay stops.
+  await page.evaluate(() =>
+    window.scrollTo(
+      0,
+      document.getElementById("material-divisions")!.offsetTop +
+        window.innerHeight,
+    ),
+  );
+  await expect(hero).not.toBeInViewport();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
@@ -221,7 +262,7 @@ test("reduced motion keeps the hero still with no canvas and all three selectors
   await expect(hero.getByRole("heading", { level: 1 })).toContainText(
     "ALUMINIUM",
   );
-  await expect(hero.locator("img").first()).toHaveCSS(
+  await expect(hero.locator(".ar-plate img").first()).toHaveCSS(
     "transition-duration",
     "0s",
   );
@@ -367,4 +408,45 @@ test("background chapters and the sticky service film change with scroll", async
     "data-active",
     "true",
   );
+});
+
+test("the shared main-branch footer stays visible above the fixed atmosphere", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const footer = page.locator("footer.site-footer");
+  await expect(footer).toHaveCount(1);
+  await expect(
+    footer.getByRole("link", { name: "Rubber products", exact: true }),
+  ).toHaveAttribute("href", "/products/rubber");
+  await expect(
+    footer.getByRole("link", { name: "3D material experience", exact: true }),
+  ).toHaveAttribute("href", "/material-experience");
+  await page.evaluate(() =>
+    window.scrollTo(0, document.documentElement.scrollHeight),
+  );
+  await expect(footer).toBeInViewport();
+  // The footer must paint above the fixed ambient field, not behind it.
+  await expect(footer).toHaveCSS("z-index", "2");
+  await expect(footer).toHaveCSS("background-color", "rgb(16, 27, 44)");
+  // Every sampled row must resolve to the footer or one of its own children,
+  // i.e. the fixed atmosphere must not paint over it.
+  const paints = await footer.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    const x = Math.max(1, Math.min(rect.left + rect.width / 2, window.innerWidth - 1));
+    const header =
+      document.querySelector(".site-header")?.getBoundingClientRect().bottom ??
+      0;
+    const rows: boolean[] = [];
+    for (let step = 1; step <= 6; step += 1) {
+      const y = Math.min(rect.bottom - 12, rect.top + (rect.height * step) / 6);
+      // Skip rows clipped by the viewport or by the sticky header above them.
+      if (y <= header + 4 || y >= window.innerHeight - 1) continue;
+      const top = document.elementsFromPoint(x, y)[0];
+      rows.push(Boolean(top) && (top === node || node.contains(top)));
+    }
+    return rows;
+  });
+  expect(paints.length).toBeGreaterThan(0);
+  expect(paints.every(Boolean)).toBe(true);
 });

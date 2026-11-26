@@ -80,7 +80,7 @@ test("aperture hero keeps division selection, gear first impression and contextu
   await expect(quote).not.toBeVisible();
   await expect(
     page
-      .locator("footer")
+      .locator("footer.site-footer")
       .getByRole("link", { name: "3D material experience" }),
   ).toHaveAttribute("href", "/material-experience");
   await noOverflow(page);
@@ -89,6 +89,9 @@ test("aperture hero keeps division selection, gear first impression and contextu
 test("pause also keeps the material photo planes still", async ({ page }) => {
   await page.goto("/");
   const hero = page.getByTestId("original-slideshow-hero");
+  // Autoplay may already have moved the ring; start from a known station.
+  await hero.getByRole("button", { name: "01 RUBBER", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await hero
     .getByRole("button", { name: "Pause visual motion", exact: true })
     .click();
@@ -98,7 +101,7 @@ test("pause also keeps the material photo planes still", async ({ page }) => {
   );
   await expect(hero).toHaveAttribute("data-paused", "true");
   await expect(hero).toHaveAttribute("data-autoplay", "false");
-  await expect(hero.locator("img").first()).toHaveCSS(
+  await expect(hero.locator(".ar-plate img").first()).toHaveCSS(
     "transition-duration",
     "0s",
   );

@@ -255,7 +255,7 @@ export function ApertureHero({
       v: slide.accessories.map(() => 0),
     })),
   );
-  const goToRef = useRef<(index: number) => void>(() => {});
+  const goToRef = useRef<(index: number, follow?: boolean) => void>(() => {});
   const suppressClickRef = useRef(false);
 
   const [active, setActive] = useState(0);
@@ -285,25 +285,29 @@ export function ApertureHero({
     !dragging &&
     visible;
 
-  /** Move the ring to a station and keep the pinned scroll position in sync. */
-  const goTo = useCallback(
-    (index: number) => {
-      const next = clamp(Math.round(index), 0, RING_COUNT - 1);
-      targetRef.current = next;
-      posRef.current = motionRef.current ? posRef.current : next;
-      manualUntilRef.current = performance.now() + 1600;
-      setActive((current) => (current === next ? current : next));
-      setInteracted(true);
-      const top = heroTopRef.current + next * segRef.current;
-      if (Number.isFinite(top)) {
-        window.scrollTo({
-          top,
-          behavior: motionRef.current ? "smooth" : "auto",
-        });
-      }
-    },
-    [],
-  );
+  /**
+   * Move the ring to a station.
+   *
+   * Only explicit user input (`scroll`, the arrows/tabs, wheel or drag) may
+   * reposition the document. Autoplay turns the ring in place: hijacking the
+   * page scroll from a timer dragged readers away from the hero on load and
+   * hid the footer.
+   */
+  const goTo = useCallback((index: number, follow = true) => {
+    const next = clamp(Math.round(index), 0, RING_COUNT - 1);
+    targetRef.current = next;
+    posRef.current = motionRef.current ? posRef.current : next;
+    manualUntilRef.current = performance.now() + 1600;
+    setActive((current) => (current === next ? current : next));
+    setInteracted(true);
+    if (!follow) return;
+    const top = heroTopRef.current + next * segRef.current;
+    if (!Number.isFinite(top)) return;
+    window.scrollTo({
+      top,
+      behavior: motionRef.current ? "smooth" : "auto",
+    });
+  }, []);
   goToRef.current = goTo;
 
   /** Static layout for reduced motion / paused motion / no canvas. */
@@ -636,7 +640,7 @@ export function ApertureHero({
   useEffect(() => {
     if (!autoplay) return;
     const timer = setTimeout(() => {
-      goToRef.current((activeRef.current + 1) % RING_COUNT);
+      goToRef.current((activeRef.current + 1) % RING_COUNT, false);
     }, 5500);
     return () => clearTimeout(timer);
   }, [autoplay, active]);

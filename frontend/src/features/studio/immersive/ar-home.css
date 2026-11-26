@@ -1509,6 +1509,18 @@ dialog.ar-station-drawer[open] {
   }
   .ar-bottom-bar { left: var(--ar-shell-x); right: var(--ar-shell-x); }
 }
+/* ── Keep the fixed atmosphere behind the homepage and its shared footer ─── */
+/* The ambient field is `position: fixed; z-index: 0`, and `.ar-home` is an
+   isolated stacking context, so a root-level footer has to sit above both. */
+.studio-home.ar-home {
+  z-index: 0;
+}
+body > .min-h-screen > .site-footer,
+body > .min-h-screen > main ~ .site-footer {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+}
 @media (max-width: 560px) {
   .ar-tabs { right: var(--ar-shell-x); }
   .ar-buy .ar-view,

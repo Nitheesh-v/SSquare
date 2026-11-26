@@ -214,12 +214,12 @@ test("quick service retains genuine contacts and opens the real editable RFQ wit
   await expect(page.locator("footer address")).toContainText(
     "58, Jeganathapuram, Avarampalayam Road",
   );
-  await expect(page.locator("footer")).toContainText(
+  await expect(page.locator("footer.site-footer")).toContainText(
     "Peelamedu, Coimbatore 641004",
   );
   await expect(
     page
-      .locator("footer")
+      .locator("footer.site-footer")
       .getByRole("link", { name: "3D material experience", exact: true }),
   ).toHaveAttribute("href", "/material-experience");
   await noOverflow(page);
