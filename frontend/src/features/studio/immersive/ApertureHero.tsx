@@ -742,6 +742,15 @@ export function ApertureHero({
       onKeyDown={onKeyDown}
     >
       <div ref={stageRef} className="ar-stage">
+        {/* First impression: the original site's industrial gear language. */}
+        <div
+          className="ar-gear-backdrop"
+          data-active={display === 0}
+          aria-hidden="true"
+          style={{
+            backgroundImage: `url(${RING_SLIDES[0].heroImage ?? RING_SLIDES[0].image})`,
+          }}
+        />
         {/* Static machined disc + rotating knurl / engraving */}
         <div className="ar-css-ring" aria-hidden="true" />
         {motionEnabled ? (
@@ -849,7 +858,7 @@ export function ApertureHero({
             </span>
             <span className="ar-title-mask">
               <span key={shown.id} className="ar-title">
-                {shown.name}
+                {shown.displayName ?? shown.name}
               </span>
             </span>
           </h1>
@@ -895,9 +904,6 @@ export function ApertureHero({
               Request a Quote <ArrowRight size={15} aria-hidden="true" />
             </a>
           </noscript>
-          <p className="ar-provenance">
-            ILLUSTRATIVE VISUAL · REPLACEABLE WITH COMPANY PHOTOGRAPHY
-          </p>
         </div>
 
         {/* Controls */}

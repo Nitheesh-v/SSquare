@@ -26,7 +26,7 @@ async function noOverflow(page: Page) {
   expect(layout.viewport).toBe(page.viewportSize()!.width);
 }
 
-test("aperture hero keeps division selection, provenance and contextual RFQs", async ({
+test("aperture hero keeps division selection, gear first impression and contextual RFQs", async ({
   page,
 }) => {
   await page.goto("/");
@@ -38,11 +38,11 @@ test("aperture hero keeps division selection, provenance and contextual RFQs", a
     name: "Explore manufacturing divisions",
   });
   const slides = [
-    ["RUBBER", "rubber", "division-rubber"],
-    ["STEEL", "steel", "division-steel"],
-    ["ALUMINIUM", "aluminium", "division-aluminium"],
+    ["RUBBER", "rubber", "industrial-gear-hero", "S SQUARE"],
+    ["STEEL", "steel", "division-steel", "STEEL"],
+    ["ALUMINIUM", "aluminium", "division-aluminium", "ALUMINIUM"],
   ];
-  for (const [index, [label, id, image]] of slides.entries()) {
+  for (const [index, [label, id, image, title]] of slides.entries()) {
     const button = choices.getByRole("button", {
       name: `0${index + 1} ${label}`,
       exact: true,
@@ -51,14 +51,15 @@ test("aperture hero keeps division selection, provenance and contextual RFQs", a
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(hero).toHaveAttribute("data-active-slide", id);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      label,
+      title,
     );
     await expect(hero.locator('img[aria-hidden="false"]')).toHaveAttribute(
       "src",
       `/images/${image}.jpg`,
     );
   }
-  await expect(hero.locator(".ar-provenance")).toContainText("ILLUSTRATIVE");
+  await expect(hero.locator(".ar-gear-backdrop")).toHaveCount(1);
+  await expect(page.locator(".ar-footer-wordmark")).toHaveCount(0);
   await expect(page.locator(".studio-material-card")).toHaveCount(3);
   await expect(
     page

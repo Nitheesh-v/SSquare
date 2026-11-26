@@ -14,6 +14,10 @@ import * as THREE from "three";
  */
 
 type AccentEvent = CustomEvent<{ color?: string }>;
+type ScrollEvent = CustomEvent<{ progress?: number; phase?: string }>;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 function makeGear(
   radius: number,
@@ -179,6 +183,8 @@ export default function ThreeBackdrop() {
     const white = new THREE.Color(0xffffff);
     const mouse = new THREE.Vector2(0, 0);
     const mouseTarget = new THREE.Vector2(0, 0);
+    let scrollTarget = 0;
+    let scrollCurrent = 0;
 
     const onPointer = (event: PointerEvent) => {
       mouseTarget.set(
@@ -187,6 +193,21 @@ export default function ThreeBackdrop() {
       );
     };
     const onAccent = (event: Event) => {
+      const detail = (event as AccentEvent).detail;
+      if (detail?.color) {
+        try {
+          accentTarget.set(detail.color);
+        } catch {
+          /* ignore invalid colours */
+        }
+      }
+    };
+    const onScroll = (event: Event) => {
+      const detail = (event as ScrollEvent).detail;
+      if (typeof detail?.progress === "number")
+        scrollTarget = clamp(detail.progress, 0, 1);
+    };
+    const onScene = (event: Event) => {
       const detail = (event as AccentEvent).detail;
       if (detail?.color) {
         try {
@@ -207,6 +228,8 @@ export default function ThreeBackdrop() {
     window.addEventListener("pointermove", onPointer, { passive: true });
     window.addEventListener("resize", resize);
     window.addEventListener("ar:accent", onAccent);
+    window.addEventListener("ar:scroll", onScroll);
+    window.addEventListener("ar:scene", onScene);
     resize();
     canvas.dataset.ready = "true";
 
@@ -223,25 +246,36 @@ export default function ThreeBackdrop() {
       last = now;
       elapsed += dt;
 
+      scrollCurrent += (scrollTarget - scrollCurrent) * 0.055;
+      const speed = 1 + scrollCurrent * 1.55;
+      const scrollWave = Math.sin(scrollCurrent * Math.PI * 1.4);
+
       accentCurrent.lerp(accentTarget, 0.045);
       accentLight.color.copy(accentCurrent);
       alloyMat.emissive.copy(accentCurrent).multiplyScalar(0.28);
       particleMaterial.color.copy(accentCurrent).lerp(white, 0.35);
 
-      gearA.rotation.z += dt * 0.13;
-      gearB.rotation.z -= dt * 0.2;
-      gearC.rotation.z += dt * 0.29;
-      orbitA.rotation.z += dt * 0.035;
-      orbitB.rotation.z -= dt * 0.026;
-      core.rotation.x += dt * 0.21;
-      core.rotation.y += dt * 0.34;
-      particles.rotation.y += dt * 0.012;
-      rig.rotation.y = Math.sin(elapsed * 0.13) * 0.16;
-      rig.rotation.x = Math.cos(elapsed * 0.1) * 0.07;
+      gearA.rotation.z += dt * 0.13 * speed;
+      gearB.rotation.z -= dt * 0.2 * speed;
+      gearC.rotation.z += dt * 0.29 * speed;
+      orbitA.rotation.z += dt * 0.035 * speed;
+      orbitB.rotation.z -= dt * 0.026 * speed;
+      core.rotation.x += dt * 0.21 * speed;
+      core.rotation.y += dt * 0.34 * speed;
+      particles.rotation.y += dt * (0.012 + scrollCurrent * 0.03);
+      gearA.position.x = -2.35 + scrollWave * 0.55;
+      gearB.position.x = 2.55 - scrollWave * 0.65;
+      gearC.position.y = -2.05 + scrollCurrent * 0.85;
+      orbitA.rotation.x = 0.42 + scrollCurrent * 0.7;
+      orbitB.rotation.y = 0.35 - scrollCurrent * 0.9;
+      particles.position.y = scrollCurrent * 0.35;
+      rig.rotation.y = Math.sin(elapsed * 0.13 + scrollCurrent * 3) * 0.16;
+      rig.rotation.x = Math.cos(elapsed * 0.1 + scrollCurrent * 2) * 0.07;
 
       mouse.lerp(mouseTarget, 0.035);
       camera.position.x += (mouse.x * 0.55 - camera.position.x) * 0.045;
       camera.position.y += (0.15 - mouse.y * 0.38 - camera.position.y) * 0.045;
+      camera.position.z += (9 - scrollCurrent * 1.15 - camera.position.z) * 0.045;
       camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
@@ -261,6 +295,8 @@ export default function ThreeBackdrop() {
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("resize", resize);
       window.removeEventListener("ar:accent", onAccent);
+      window.removeEventListener("ar:scroll", onScroll);
+      window.removeEventListener("ar:scene", onScene);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Points) {

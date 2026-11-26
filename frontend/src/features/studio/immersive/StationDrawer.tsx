@@ -19,9 +19,9 @@ import { RING_COUNT, type RingSlide } from "./slides";
 
 const PRINTS: Record<string, { src: string; caption: string }[]> = {
   rubber: [
+    { src: "/images/industrial-gear-hero.jpg", caption: "INDUSTRIAL GEAR STUDY" },
     { src: "/images/division-rubber.jpg", caption: "MOLDED SEALS / O-RINGS" },
     { src: "/images/ssquare/machined-components.jpg", caption: "BONDED ASSEMBLIES" },
-    { src: "/images/quality-metrology.jpg", caption: "INSPECTION BENCH" },
   ],
   steel: [
     { src: "/images/division-steel.jpg", caption: "MACHINED FLANGES" },

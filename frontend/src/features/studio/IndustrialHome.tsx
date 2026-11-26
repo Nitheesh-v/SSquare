@@ -23,6 +23,7 @@ import { COMPANY_INFO } from "@/lib/company-data";
 import { ApertureHero } from "./immersive/ApertureHero";
 import { HomeAmbient } from "./immersive/HomeAmbient";
 import { IrisBench } from "./immersive/IrisBench";
+import { ServiceStory } from "./immersive/ServiceStory";
 import { STUDIO_MATERIALS } from "./materials";
 import "./home-content.css";
 import "./immersive/ar-home.css";
@@ -54,18 +55,21 @@ const SERVICES = [
     description:
       "Custom rubber, steel and aluminium products made around your drawings or samples, with material, geometry and finish selected for the application.",
     icon: Wrench,
+    kind: "customization" as const,
   },
   {
     title: "Quality Assurance",
     description:
       "Technical requirements are reviewed against your approved drawing or sample. Inspection scope and acceptance criteria are agreed during quotation.",
     icon: ShieldCheck,
+    kind: "quality" as const,
   },
   {
     title: "Door Delivery",
     description:
       "Delivery is coordinated through DHL and FedEx. Destination coverage, shipping charges and the project schedule are confirmed in your quotation.",
     icon: Truck,
+    kind: "delivery" as const,
   },
 ];
 
@@ -278,10 +282,10 @@ export function IndustrialHome() {
 
       <section
         id="our-services"
-        className="studio-section home-services"
+        className="studio-section home-services ssq-service-section"
         aria-labelledby="services-heading"
       >
-        <div className="studio-shell">
+        <div className="studio-shell ssq-service-shell">
           <Reveal paused={paused} className="home-services-intro">
             <div>
               <p className="studio-kicker light">Services</p>
@@ -291,21 +295,10 @@ export function IndustrialHome() {
             </div>
             <p>
               Practical support at every stage, from your first specification to
-              dispatch.
+              dispatch. Scroll to see each step come alive.
             </p>
           </Reveal>
-          <ol className="home-service-grid">
-            {SERVICES.map((service, index) => (
-              <li key={service.title} className="home-service-card">
-                <span className="home-service-number" aria-hidden="true">
-                  0{index + 1}.
-                </span>
-                <service.icon size={42} strokeWidth={1.3} aria-hidden="true" />
-                <h3>{service.title}</h3>
-                <p>{service.description}</p>
-              </li>
-            ))}
-          </ol>
+          <ServiceStory services={SERVICES} paused={paused} reduced={reduced} />
         </div>
       </section>
 
@@ -393,17 +386,7 @@ export function IndustrialHome() {
         </Reveal>
       </section>
 
-      <div className="ar-footer-wordmark" aria-label="S Square Engineering Services">
-        <span aria-hidden="true">S SQUARE</span>
-        <div className="studio-shell ar-footer-row">
-          <span>CUSTOM RUBBER / STEEL / ALUMINIUM · COIMBATORE, INDIA</span>
-          <span>
-            <Link href="/material-experience">3D material experience</Link> ·{" "}
-            <Link href="/contact">Request a quote</Link>
-          </span>
-        </div>
-      </div>
-
+      {/* The shared dark footer from (store)/layout.tsx remains the only footer. */}
       <HomeAmbient paused={paused || reduced} reduced={reduced} />
     </div>
   );

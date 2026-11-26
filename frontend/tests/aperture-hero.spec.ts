@@ -43,9 +43,19 @@ test("the three-station aperture hero stays first with a live canvas field", asy
   ).toHaveCount(3);
   await expect(hero.locator("img")).toHaveCount(3);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero.locator("img").first()).toHaveAttribute(
+    "src",
+    "/images/industrial-gear-hero.jpg",
+  );
+  await expect(hero.locator(".ar-gear-backdrop")).toHaveCount(1);
   await expect(page.locator(".ar-disc")).toHaveCount(1);
   await expect(page.getByTestId("ar-ambient")).toHaveCount(1);
   await expect(page.locator(".ar-bench")).toHaveCount(1);
+  await expect(page.locator(".ar-footer-wordmark")).toHaveCount(0);
+  await expect(page.getByTestId("service-story")).toHaveCount(1);
+  await expect(page.getByTestId("service-scene-customization")).toHaveCount(1);
+  await expect(page.getByTestId("service-scene-quality")).toHaveCount(1);
+  await expect(page.getByTestId("service-scene-delivery")).toHaveCount(1);
   await expect(
     page.locator(
       ".material-carousel-hero,.journey-intro,.journey-inside,.journey-rail,.journey-builder",
@@ -312,4 +322,46 @@ test("all three stations and controls stay within the five target layouts", asyn
       ).toBeLessThanOrEqual(width + 1);
     }
   }
+});
+
+test("background chapters and the three service scenes change with scroll", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const ambient = page.getByTestId("ar-ambient");
+  await expect(ambient).toHaveAttribute("data-scroll-phase", "aperture");
+  const grid = ambient.locator(".ar-ambient-grid");
+  const initialGrid = await grid.evaluate(
+    (node) => getComputedStyle(node).backgroundSize,
+  );
+
+  await page.evaluate(() =>
+    document.getElementById("our-services")?.scrollIntoView({ block: "start" }),
+  );
+  await expect
+    .poll(() => ambient.getAttribute("data-scroll-phase"))
+    .toBe("services");
+
+  await page.evaluate(() =>
+    window.scrollTo(0, document.documentElement.scrollHeight),
+  );
+  await expect
+    .poll(() => ambient.getAttribute("data-scroll-phase"))
+    .toBe("dispatch");
+  const finalGrid = await grid.evaluate(
+    (node) => getComputedStyle(node).backgroundSize,
+  );
+  expect(finalGrid).not.toBe(initialGrid);
+  expect(
+    Number(await ambient.getAttribute("data-scroll-progress")),
+  ).toBeGreaterThan(0.5);
+  await expect(page.locator("#our-services")).not.toHaveAttribute(
+    "data-scene-stage",
+    "1",
+  );
+  const lastSceneProgress = await page
+    .locator(".home-service-card")
+    .last()
+    .evaluate((node) => getComputedStyle(node).getPropertyValue("--scene-p"));
+  expect(Number(lastSceneProgress.trim())).toBeGreaterThan(0.3);
 });

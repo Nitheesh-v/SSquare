@@ -6,6 +6,10 @@
  * mark, scattered accessories, exploding copy) but maps it onto the real
  * S Square material divisions and the reviewed, source-backed company copy.
  * No shop, cart, prices or checkout are introduced: this is an RFQ site.
+ *
+ * The first station now opens on an industrial gear study, matching the
+ * original website's hero impression instead of leading with a product
+ * close-up. The RFQ destinations and division identities remain unchanged.
  */
 
 export type RingAccessory = {
@@ -21,6 +25,10 @@ export type RingSlide = {
   id: "rubber" | "steel" | "aluminium";
   number: string;
   name: string;
+  /** Optional large hero wording; tabs and inspector keep the division name. */
+  displayName?: string;
+  /** Optional full-bleed first-impression photograph. */
+  heroImage?: string;
   kicker: string;
   type: string;
   aperture: string;
@@ -43,37 +51,39 @@ export const RING_SLIDES: RingSlide[] = [
     id: "rubber",
     number: "01",
     name: "RUBBER",
-    kicker: "ELASTOMER DIVISION",
-    type: "MOLDED SEALS · GASKETS · BONDED PARTS",
+    displayName: "S SQUARE",
+    heroImage: "/images/industrial-gear-hero.jpg",
+    kicker: "CUSTOM MANUFACTURING",
+    type: "RUBBER · STEEL · ALUMINIUM",
     aperture: "Ø 01",
     description:
-      "Bespoke rubber seals, gaskets, washers, O-rings, cords, sheets and rubber-to-metal bonded components, tailored to your sealing and vibration requirements.",
-    chips: ["Viton · Silicone · NBR", "Compression molded", "Bonded parts"],
-    image: "/images/division-rubber.jpg",
-    alt: "Custom molded rubber gaskets, O-rings, bellows and seals",
-    caption: "Rubber gaskets, O-rings, bellows & molded components",
+      "High-quality metal and rubber components manufactured to meet industrial standards and heavy-duty applications. Your trusted partner in custom metal & rubber solutions.",
+    chips: ["20+ years", "Three disciplines", "Drawing or sample"],
+    image: "/images/industrial-gear-hero.jpg",
+    alt: "Monochrome industrial gear train representing custom precision manufacturing",
+    caption: "Industrial gear study · S Square Engineering Services",
     ctaHref: "/products/rubber",
     ctaLabel: "Explore Rubber Products",
     division: "Rubber Products",
-    accent: "#ff8a4c",
+    accent: "#3d7bff",
     specs: [
       ["Format", "Made to drawing or sample"],
-      ["Compounds", "Viton · Silicone · NBR · EPDM"],
-      ["Process", "Compression / transfer molding"],
-      ["Bonding", "Rubber-to-metal components"],
+      ["Materials", "Rubber · Steel · Aluminium"],
+      ["Process", "Molding · machining · fabrication"],
+      ["Finish", "Agreed with your specification"],
       ["Inspection", "Scope agreed during quotation"],
       ["Made", "Coimbatore, India"],
     ],
     condition: [
-      "Drawing reviewed",
-      "Sample matched",
+      "Requirement reviewed",
+      "Material confirmed",
       "Inspection scope agreed",
     ],
     accessories: [
-      { label: "FKM 75", x: -0.64, y: -0.2, rotate: -18, size: 0.2 },
-      { label: "ISO 3302", x: 0.64, y: 0.14, rotate: 8, size: 0.21 },
-      { label: "O-RING", x: -0.52, y: 0.44, rotate: 22, size: 0.18 },
-      { label: "SHORE A", x: 0.58, y: -0.42, rotate: -12, size: 0.19 },
+      { label: "20+ YRS", x: -0.64, y: -0.2, rotate: -18, size: 0.2 },
+      { label: "COIMBATORE", x: 0.64, y: 0.14, rotate: 8, size: 0.21 },
+      { label: "03 MATERIALS", x: -0.52, y: 0.44, rotate: 22, size: 0.18 },
+      { label: "CUSTOM", x: 0.58, y: -0.42, rotate: -12, size: 0.19 },
     ],
   },
   {
