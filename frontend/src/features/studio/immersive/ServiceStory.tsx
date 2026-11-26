@@ -1,27 +1,17 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import {
-  Rotate3D,
-  ShieldCheck,
-  Truck,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
-
-const ServiceJourneyCanvas = dynamic(() => import("./ServiceJourneyCanvas"), {
-  ssr: false,
-  loading: () => null,
-});
+import { Rotate3D, ShieldCheck, Truck, Wrench, type LucideIcon } from "lucide-react";
 
 /**
- * Services follows the user's Ssquare/animation video.mp4 reference from
- * Google Drive and the pasted HTML: a 270vh section holds one sticky, full
- * viewport stage; a Three.js truck drives with document scroll, the camera can
- * be dragged to orbit, and the three cards switch with journey progress.
+ * Services — sticky cinematic journey.
  *
- * The card wording is the literal HTML the user selected in the follow-up.
+ * Realistic photographic stills replace the earlier low-poly WebGL truck. The
+ * four frames (drawing & machining → inspection → loading → truck on the road)
+ * are cross-faded and slowly pushed in with document scroll, so the section
+ * behaves like the scrubbed film the user asked for without shipping a video.
+ *
+ * The card wording is the literal HTML the user selected in an earlier review.
  * It is user-supplied reference copy, not an independently verified guarantee.
  */
 
@@ -60,41 +50,16 @@ const SERVICES: ServiceItem[] = [
   },
 ];
 
+/** Scroll frames. The last two read as the truck leaving the bay. */
+const FRAMES = [
+  { src: "/images/service-sequence/01-customization.jpg", label: "DRAWING & MACHINING" },
+  { src: "/images/service-sequence/02-quality.jpg", label: "INSPECTION" },
+  { src: "/images/service-sequence/03-dispatch.jpg", label: "LOADING" },
+  { src: "/images/service-sequence/04-delivery.jpg", label: "ON THE ROAD" },
+];
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
-
-function ServiceFallback() {
-  return (
-    <div
-      className="ssq-service-fallback"
-      data-testid="service-journey-fallback"
-      aria-hidden="true"
-    >
-      <div className="ssq-fallback-road">
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className="ssq-fallback-portal">
-        <span />
-        <span />
-        <b />
-      </div>
-      <div className="ssq-fallback-gear">⚙</div>
-      <div className="ssq-fallback-truck">
-        <div className="ssq-fallback-container">
-          <strong>S SQUARE</strong>
-          <small>CUSTOM METAL &amp; RUBBER EXPRESS</small>
-          <em>GLOBAL DOOR DELIVERY · 3-4 DAYS (DHL/FEDEX)</em>
-        </div>
-        <div className="ssq-fallback-cab" />
-        <div className="ssq-fallback-wheel w1" />
-        <div className="ssq-fallback-wheel w2" />
-        <div className="ssq-fallback-wheel w3" />
-      </div>
-    </div>
-  );
-}
 
 export function ServiceStory({
   paused,
@@ -107,25 +72,8 @@ export function ServiceStory({
   const percentRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLElement>(null);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [webgl, setWebgl] = useState(false);
+  const [progress, setProgress] = useState(0);
   const still = paused || reduced;
-
-  useEffect(() => {
-    if (still) {
-      setWebgl(false);
-      return;
-    }
-    try {
-      const probe = document.createElement("canvas");
-      const gl =
-        probe.getContext("webgl2") ||
-        probe.getContext("webgl") ||
-        probe.getContext("experimental-webgl");
-      setWebgl(Boolean(gl));
-    } catch {
-      setWebgl(false);
-    }
-  }, [still]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -138,19 +86,28 @@ export function ServiceStory({
     };
     setHeaderHeight();
 
-    if (still) {
-      section.dataset.progress = "0.5";
-      section.dataset.serviceProgress = "0.5";
-      section.dataset.activeService = "2";
-      section.dataset.still = "true";
-      section.style.setProperty("--service-progress", "0.5");
-      if (percentRef.current) percentRef.current.textContent = "50%";
-      if (railRef.current) railRef.current.style.width = "50%";
+    const apply = (value: number) => {
+      const active = Math.min(
+        SERVICES.length - 1,
+        Math.floor(value * SERVICES.length),
+      );
+      section.style.setProperty("--service-progress", value.toFixed(3));
+      section.style.setProperty("--frame-p", value.toFixed(3));
+      section.dataset.progress = value.toFixed(3);
+      section.dataset.serviceProgress = value.toFixed(3);
+      section.dataset.activeService = String(active + 1);
+      if (percentRef.current) percentRef.current.textContent = `${Math.round(value * 100)}%`;
+      if (railRef.current) railRef.current.style.width = `${value * 100}%`;
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
-        card.dataset.active = i === 1 ? "true" : "false";
-        card.setAttribute("aria-pressed", i === 1 ? "true" : "false");
+        card.dataset.active = i === active ? "true" : "false";
+        card.setAttribute("aria-pressed", i === active ? "true" : "false");
       });
+    };
+
+    if (still) {
+      section.dataset.still = "true";
+      apply(0.5);
       window.dispatchEvent(
         new CustomEvent("ar:services", { detail: { progress: 0.5 } }),
       );
@@ -159,7 +116,6 @@ export function ServiceStory({
 
     section.dataset.still = "false";
     let frame = 0;
-
     const update = () => {
       frame = 0;
       if (document.hidden) return;
@@ -170,23 +126,11 @@ export function ServiceStory({
       const rect = section.getBoundingClientRect();
       const stageHeight = Math.max(1, window.innerHeight - headerHeight);
       const travel = Math.max(1, section.offsetHeight - stageHeight);
-      const progress = clamp((headerHeight - rect.top) / travel, 0, 1);
-      const active = Math.min(SERVICES.length - 1, Math.floor(progress * SERVICES.length));
-      const percent = `${Math.round(progress * 100)}%`;
-
-      section.dataset.progress = progress.toFixed(3);
-      section.dataset.serviceProgress = progress.toFixed(3);
-      section.dataset.activeService = String(active + 1);
-      section.style.setProperty("--service-progress", progress.toFixed(3));
-      if (percentRef.current) percentRef.current.textContent = percent;
-      if (railRef.current) railRef.current.style.width = percent;
-      cardRefs.current.forEach((card, i) => {
-        if (!card) return;
-        card.dataset.active = i === active ? "true" : "false";
-        card.setAttribute("aria-pressed", i === active ? "true" : "false");
-      });
+      const value = clamp((headerHeight - rect.top) / travel, 0, 1);
+      apply(value);
+      setProgress(value);
       window.dispatchEvent(
-        new CustomEvent("ar:services", { detail: { progress } }),
+        new CustomEvent("ar:services", { detail: { progress: value } }),
       );
     };
     const request = () => {
@@ -221,11 +165,16 @@ export function ServiceStory({
       window.scrollY -
       headerHeight +
       ((index + 0.5) / SERVICES.length) * travel;
-    window.scrollTo({
-      top,
-      behavior: still ? "auto" : "smooth",
-    });
+    window.scrollTo({ top, behavior: still ? "auto" : "smooth" });
   };
+
+  // Each frame owns a quarter of the journey; neighbours overlap for a soft dissolve.
+  const scaled = progress * FRAMES.length;
+  const frameOpacities = FRAMES.map((_, i) => {
+    if (still) return i === 1 ? 1 : 0;
+    const distance = Math.abs(scaled - (i + 0.5));
+    return clamp(1.35 - distance * 1.6, 0, 1);
+  });
 
   return (
     <section
@@ -234,15 +183,30 @@ export function ServiceStory({
       className="studio-section home-services ssq-service-section"
       aria-labelledby="services-heading"
       data-testid="service-journey"
-      data-webgl={webgl && !still}
       data-progress="0"
       data-service-progress="0"
       data-active-service="1"
       data-still={still}
     >
       <div className="ssq-service-stage">
+        <div className="ssq-service-frames" data-testid="service-film">
+          {FRAMES.map((frame, i) => (
+            <img
+              key={frame.src}
+              src={frame.src}
+              alt=""
+              aria-hidden="true"
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              draggable={false}
+              style={{
+                opacity: frameOpacities[i],
+                transform: `scale(${1.04 + progress * 0.1}) translate3d(${(i % 2 === 0 ? -1 : 1) * progress * 1.4}%, 0, 0)`,
+              }}
+            />
+          ))}
+        </div>
         <div className="ssq-service-blueprint" aria-hidden="true" />
-        {webgl && !still ? <ServiceJourneyCanvas /> : <ServiceFallback />}
         <div className="ssq-service-gradient" aria-hidden="true" />
 
         <div className="ssq-service-hud">
@@ -258,7 +222,7 @@ export function ServiceStory({
           </div>
           <div className="ssq-service-hud-chip">
             <Rotate3D size={16} aria-hidden="true" />
-            <span>Scroll to drive truck · Drag to orbit</span>
+            <span>Scroll to follow the order</span>
             <b ref={percentRef}>0%</b>
           </div>
         </div>

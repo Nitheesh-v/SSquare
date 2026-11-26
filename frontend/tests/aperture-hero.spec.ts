@@ -28,7 +28,7 @@ async function allowAutoplay(page: Page) {
 
 const STATIONS = ["01 RUBBER", "02 STEEL", "03 ALUMINIUM"];
 
-test("the three-station aperture hero stays first with a live canvas field", async ({
+test("the three-station aperture hero stays first, branded as S SQUARE, with a live canvas field", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -41,7 +41,7 @@ test("the three-station aperture hero stays first with a live canvas field", asy
       .getByRole("group", { name: "Explore manufacturing divisions" })
       .getByRole("button"),
   ).toHaveCount(3);
-  await expect(hero.locator("img")).toHaveCount(4);
+  await expect(hero.locator("img")).toHaveCount(3);
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await expect(hero.locator("img").first()).toHaveAttribute(
     "src",
@@ -53,16 +53,8 @@ test("the three-station aperture hero stays first with a live canvas field", asy
   await expect(page.locator(".ar-bench")).toHaveCount(0);
   await expect(page.locator(".ar-footer-wordmark")).toHaveCount(0);
   await expect(page.getByTestId("service-journey")).toHaveCount(1);
-  await expect(
-    page.locator(
-      '[data-testid="service-journey-canvas"], [data-testid="service-journey-fallback"]',
-    ),
-  ).toHaveCount(1);
+  await expect(page.getByTestId("service-film").locator("img")).toHaveCount(4);
   await expect(page.locator(".ssq-service-cards .home-service-card")).toHaveCount(3);
-  await expect(hero.locator(".ar-specimen img")).toHaveAttribute(
-    "src",
-    "/images/division-rubber.jpg",
-  );
   await expect(
     page.locator(
       ".material-carousel-hero,.journey-intro,.journey-inside,.journey-rail,.journey-builder",
@@ -73,6 +65,7 @@ test("the three-station aperture hero stays first with a live canvas field", asy
   await expect(page.locator("#what-we-do")).toHaveCount(1);
   await expect(page.locator("#our-services")).toHaveCount(1);
   await expect(page.locator("#quick-service")).toHaveCount(1);
+  await expect(hero).toContainText("S SQUARE");
   await expect(hero).not.toContainText(
     /100%|Free Global|Free Door Delivery|3–4 Day Door/,
   );
@@ -95,8 +88,8 @@ test("arrows wrap, keyboard controls work, and the catalog destinations remain r
   await next.click();
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await expect(
-    hero.getByRole("link", { name: "Explore Rubber Products", exact: true }),
-  ).toHaveAttribute("href", "/products/rubber");
+    hero.getByRole("link", { name: "Explore All Products", exact: true }),
+  ).toHaveAttribute("href", "/products");
   await next.focus();
   await page.keyboard.press("End");
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
@@ -331,7 +324,7 @@ test("all three stations and controls stay within the five target layouts", asyn
   }
 });
 
-test("background chapters and the sticky service truck journey change with scroll", async ({
+test("background chapters and the sticky service film change with scroll", async ({
   page,
 }) => {
   await page.goto("/");

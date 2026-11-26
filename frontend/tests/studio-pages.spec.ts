@@ -38,7 +38,7 @@ test("aperture hero keeps division selection, gear first impression and contextu
     name: "Explore manufacturing divisions",
   });
   const slides = [
-    ["RUBBER", "rubber", "industrial-gear-hero", "RUBBER"],
+    ["RUBBER", "rubber", "industrial-gear-hero", "S SQUARE"],
     ["STEEL", "steel", "division-steel", "STEEL"],
     ["ALUMINIUM", "aluminium", "division-aluminium", "ALUMINIUM"],
   ];
@@ -143,7 +143,7 @@ test("without JavaScript the home exposes products and direct contact links", as
   ).toBeAttached();
   await noOverflow(staticPage);
   await staticPage
-    .getByRole("link", { name: "Explore Rubber Products", exact: true })
+    .getByRole("link", { name: "View Rubber Products", exact: true })
     .click();
   await expect(staticPage).toHaveURL(/\/products\/rubber$/);
   await expect(staticPage.getByRole("heading", { level: 1 })).toContainText(

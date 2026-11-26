@@ -88,59 +88,7 @@ export function IndustrialHome() {
         </div>
       </div>
 
-      {/* The Bench reference section was removed at the user's request. */}
-      <section
-        id="who-we-are"
-        className="studio-section home-about"
-        aria-labelledby="about-heading"
-      >
-        <div className="studio-shell home-editorial-grid">
-          <Reveal paused={paused} className="home-editorial-copy">
-            <p className="studio-kicker">About Us</p>
-            <h2 id="about-heading" className="home-section-heading">
-              Who We Are
-            </h2>
-            <p>
-              We are a{" "}
-              <strong>
-                custom manufacturer and supplier specializing in Rubber, Steel,
-                and Aluminium products
-              </strong>
-              , serving industrial, commercial, and OEM clients. Our
-              manufacturing capabilities, combined with technical expertise,
-              enable us to deliver <strong>tailor-made solutions</strong> that
-              meet complex operational requirements.
-            </p>
-            <p>
-              With {COMPANY_INFO.experienceYears} years of engineering
-              experience, our focus is on{" "}
-              <strong>
-                reliability, precision, and long-term partnerships
-              </strong>
-              . Based in Coimbatore, we work with you from the first requirement
-              to the finished component.
-            </p>
-            <Link href="/about" className="studio-text-link home-about-link">
-              More About Us <ArrowUpRight size={17} aria-hidden="true" />
-            </Link>
-          </Reveal>
-          <Reveal paused={paused} delay={90} className="home-editorial-figure">
-            <div className="home-editorial-photo">
-              <SmartProductImage
-                src={MACHINED_COMPONENTS}
-                fallbackSrc="/images/division-steel.jpg"
-                alt="Machined steel and stainless components from S Square’s published range"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <figcaption>
-              <span>PRECISION IN EVERY COMPONENT</span>
-              <span>STEEL / STAINLESS</span>
-            </figcaption>
-          </Reveal>
-        </div>
-      </section>
-
+      {/* Hero intro (S SQUARE) is followed immediately by the three product cards. */}
       <section
         id="material-divisions"
         className="studio-section studio-materials home-products"
@@ -198,6 +146,58 @@ export function IndustrialHome() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section
+        id="who-we-are"
+        className="studio-section home-about"
+        aria-labelledby="about-heading"
+      >
+        <div className="studio-shell home-editorial-grid">
+          <Reveal paused={paused} className="home-editorial-copy">
+            <p className="studio-kicker">About Us</p>
+            <h2 id="about-heading" className="home-section-heading">
+              Who We Are
+            </h2>
+            <p>
+              We are a{" "}
+              <strong>
+                custom manufacturer and supplier specializing in Rubber, Steel,
+                and Aluminium products
+              </strong>
+              , serving industrial, commercial, and OEM clients. Our
+              manufacturing capabilities, combined with technical expertise,
+              enable us to deliver <strong>tailor-made solutions</strong> that
+              meet complex operational requirements.
+            </p>
+            <p>
+              With {COMPANY_INFO.experienceYears} years of engineering
+              experience, our focus is on{" "}
+              <strong>
+                reliability, precision, and long-term partnerships
+              </strong>
+              . Based in Coimbatore, we work with you from the first requirement
+              to the finished component.
+            </p>
+            <Link href="/about" className="studio-text-link home-about-link">
+              More About Us <ArrowUpRight size={17} aria-hidden="true" />
+            </Link>
+          </Reveal>
+          <Reveal paused={paused} delay={90} className="home-editorial-figure">
+            <div className="home-editorial-photo">
+              <SmartProductImage
+                src={MACHINED_COMPONENTS}
+                fallbackSrc="/images/division-steel.jpg"
+                alt="Machined steel and stainless components from S Square’s published range"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <figcaption>
+              <span>PRECISION IN EVERY COMPONENT</span>
+              <span>STEEL / STAINLESS</span>
+            </figcaption>
+          </Reveal>
         </div>
       </section>
 

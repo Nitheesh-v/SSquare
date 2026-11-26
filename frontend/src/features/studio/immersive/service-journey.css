@@ -46,16 +46,6 @@
   opacity: 0.55;
   mask-image: linear-gradient(180deg, #000 0%, transparent 82%);
 }
-.ssq-service-canvas {
-  position: absolute !important;
-  inset: 0;
-  z-index: 1;
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-  cursor: grab;
-  touch-action: pan-y;
-}
 .ssq-service-gradient {
   position: absolute;
   inset: 0;
@@ -63,10 +53,11 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(10, 19, 36, 0.94) 0%,
-    rgba(10, 19, 36, 0.3) 26%,
-    rgba(10, 19, 36, 0.18) 60%,
-    rgba(10, 19, 36, 0.96) 100%
+    rgba(8, 15, 28, 0.93) 0%,
+    rgba(8, 15, 28, 0.42) 22%,
+    rgba(8, 15, 28, 0.14) 48%,
+    rgba(8, 15, 28, 0.72) 74%,
+    rgba(8, 15, 28, 0.97) 100%
   );
 }
 
@@ -277,143 +268,25 @@
   color: #475467;
 }
 
-/* ── Static / reduced-motion fallback poster ───────────────────────────── */
-.ssq-service-fallback {
+/* ── Cinematic frame stack ─────────────────────────────────────────────── */
+.ssq-service-frames {
   position: absolute;
   inset: 0;
   z-index: 1;
   overflow: hidden;
-  pointer-events: none;
+  background: #0a1324;
 }
-.ssq-fallback-road {
+.ssq-service-frames img {
   position: absolute;
-  left: -5%;
-  right: -5%;
-  bottom: 16%;
-  height: 34%;
-  border-top: 2px solid #43d6e5;
-  background: linear-gradient(180deg, rgba(25, 48, 76, 0.7), rgba(10, 19, 36, 0.98));
-  transform: perspective(420px) rotateX(50deg);
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  object-fit: cover;
+  transform-origin: 50% 45%;
+  filter: saturate(1.02) contrast(1.04);
+  will-change: opacity, transform;
+  transition: opacity 0.28s linear;
 }
-.ssq-fallback-road i {
-  position: absolute;
-  top: 45%;
-  width: 42px;
-  height: 3px;
-  background: #f0b45a;
-}
-.ssq-fallback-road i:nth-child(1) { left: 18%; }
-.ssq-fallback-road i:nth-child(2) { left: 48%; }
-.ssq-fallback-road i:nth-child(3) { left: 78%; }
-.ssq-fallback-portal {
-  position: absolute;
-  left: 58%;
-  bottom: 28%;
-  width: 180px;
-  height: 190px;
-}
-.ssq-fallback-portal span {
-  position: absolute;
-  bottom: 0;
-  width: 10px;
-  height: 100%;
-  background: #253243;
-}
-.ssq-fallback-portal span:first-child { left: 0; }
-.ssq-fallback-portal span:nth-child(2) { right: 0; }
-.ssq-fallback-portal b {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 12px;
-  background: #d9483b;
-}
-.ssq-fallback-gear {
-  position: absolute;
-  left: 46%;
-  bottom: 28%;
-  color: #8b98a6;
-  font-size: 88px;
-  line-height: 1;
-  opacity: 0.85;
-}
-.ssq-fallback-truck {
-  position: absolute;
-  left: 8%;
-  bottom: 24%;
-  width: 330px;
-  height: 130px;
-  transform: translateX(calc(var(--service-progress, 0) * 55vw));
-}
-.ssq-fallback-container {
-  position: absolute;
-  left: 0;
-  bottom: 20px;
-  width: 230px;
-  height: 105px;
-  padding: 16px 18px;
-  background: #e9edf0;
-  color: #1b2734;
-}
-.ssq-fallback-container strong {
-  display: block;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 28px;
-  line-height: 1;
-}
-.ssq-fallback-container small {
-  display: block;
-  margin-top: 4px;
-  color: #5b6672;
-  font-size: 9px;
-  letter-spacing: 0.08em;
-}
-.ssq-fallback-container em {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 6px 10px;
-  background: #d9483b;
-  color: #fff;
-  font-size: 8px;
-  font-style: normal;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-.ssq-fallback-cab {
-  position: absolute;
-  left: 230px;
-  bottom: 20px;
-  width: 86px;
-  height: 76px;
-  border-radius: 8px 14px 2px 2px;
-  background: #d9483b;
-}
-.ssq-fallback-cab::before {
-  content: "";
-  position: absolute;
-  left: 14px;
-  top: 10px;
-  width: 50px;
-  height: 28px;
-  border-radius: 4px 8px 1px 1px;
-  background: #9ec9e8;
-}
-.ssq-fallback-wheel {
-  position: absolute;
-  bottom: 0;
-  width: 34px;
-  height: 34px;
-  border: 8px solid #12161d;
-  border-radius: 50%;
-  background: #8b98a6;
-}
-.ssq-fallback-wheel.w1 { left: 28px; }
-.ssq-fallback-wheel.w2 { left: 156px; }
-.ssq-fallback-wheel.w3 { left: 260px; }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
@@ -447,13 +320,12 @@
     line-height: 1.05;
     letter-spacing: 0.01em;
   }
-  .ssq-fallback-truck { transform: scale(0.72) translateX(calc(var(--service-progress, 0) * 30vw)); transform-origin: left bottom; }
 }
 
-/* Paused / reduced motion: no WebGL canvas is mounted, and the fallback holds. */
-.ar-home[data-motion-paused="true"] .ssq-service-fallback,
-.ar-home[data-motion-paused="true"] .ssq-service-stage,
-.ar-home[data-motion-paused="true"] .ssq-service-stage * {
-  animation: none !important;
-  transition: none !important;
+/* Paused / reduced motion: the inspection frame holds still. */
+.ar-home[data-motion-paused="true"] .ssq-service-frames img {
+  transform: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ssq-service-frames img { transition: none; }
 }

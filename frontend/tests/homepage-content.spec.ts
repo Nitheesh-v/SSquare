@@ -53,8 +53,8 @@ test("reference sections appear in order with the chosen company facts and proje
     );
   expect(sections).toEqual([
     "hero",
-    "who-we-are",
     "material-divisions",
+    "who-we-are",
     "what-we-do",
     "our-services",
     "S Square at a glance",
