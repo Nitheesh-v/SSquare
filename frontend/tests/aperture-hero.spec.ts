@@ -54,7 +54,12 @@ test("the three-station aperture hero stays first, branded as S SQUARE, with a l
   await expect(page.locator(".ar-bench")).toHaveCount(0);
   await expect(page.locator(".ar-footer-wordmark")).toHaveCount(0);
   await expect(page.getByTestId("service-journey")).toHaveCount(1);
-  await expect(page.getByTestId("service-film").locator("img")).toHaveCount(4);
+  // The stage is one continuous 3D scene; the photo stack only appears when
+  // WebGL is unavailable.
+  await expect(page.getByTestId("service-journey")).toHaveAttribute(
+    "data-stage-mode",
+    /3d|fallback/,
+  );
   await expect(page.locator(".ssq-service-cards .home-service-card")).toHaveCount(3);
   await expect(
     page.locator(

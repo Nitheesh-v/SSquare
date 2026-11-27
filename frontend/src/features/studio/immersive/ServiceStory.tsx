@@ -1,18 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { Rotate3D, ShieldCheck, Truck, Wrench, type LucideIcon } from "lucide-react";
+import { Orbit, ShieldCheck, Truck, Wrench, type LucideIcon } from "lucide-react";
+
+const ServiceChoreography = dynamic(() => import("./ServiceChoreography"), {
+  ssr: false,
+  loading: () => null,
+});
 
 /**
- * Services — sticky cinematic journey.
+ * Services — one continuous scroll-linked 3D choreography.
  *
- * Realistic photographic stills replace the earlier low-poly WebGL truck. The
- * four frames (drawing & machining → inspection → loading → truck on the road)
- * are cross-faded and slowly pushed in with document scroll, so the section
- * behaves like the scrubbed film the user asked for without shipping a video.
+ * The sticky stage holds a single Three.js scene that moves with document
+ * scroll: raw billet / seal / drawing form into a machined part (01), caliper
+ * rings and a tolerance sweep verify it (02), then the container truck carries
+ * the verified load through the dispatch gate (03). OrbitControls is drag-only,
+ * so wheel scrolling is never captured.
  *
- * The card wording is the literal HTML the user selected in an earlier review.
- * It is user-supplied reference copy, not an independently verified guarantee.
+ * Card wording is the literal HTML the user selected in an earlier review. It
+ * is user-supplied reference copy, not an independently verified guarantee.
  */
 
 type ServiceItem = {
@@ -50,12 +57,14 @@ const SERVICES: ServiceItem[] = [
   },
 ];
 
-/** Scroll frames. The last two read as the truck leaving the bay. */
+const STAGE_LABELS = ["MATERIAL", "VERIFICATION", "DISPATCH"];
+
+/** Static fallback frames, used only when WebGL or motion is unavailable. */
 const FRAMES = [
-  { src: "/images/service-sequence/01-customization.jpg", label: "DRAWING & MACHINING" },
-  { src: "/images/service-sequence/02-quality.jpg", label: "INSPECTION" },
-  { src: "/images/service-sequence/03-dispatch.jpg", label: "LOADING" },
-  { src: "/images/service-sequence/04-delivery.jpg", label: "ON THE ROAD" },
+  "/images/service-sequence/01-customization.jpg",
+  "/images/service-sequence/02-quality.jpg",
+  "/images/service-sequence/03-dispatch.jpg",
+  "/images/service-sequence/04-delivery.jpg",
 ];
 
 const clamp = (value: number, min: number, max: number) =>
@@ -73,7 +82,34 @@ export function ServiceStory({
   const railRef = useRef<HTMLElement>(null);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [progress, setProgress] = useState(0);
+  const [webgl, setWebgl] = useState(false);
+  const [probed, setProbed] = useState(false);
+  const [coarse, setCoarse] = useState(false);
+  const [stageReady, setStageReady] = useState(false);
   const still = paused || reduced;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const sync = () => setCoarse(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const probe = document.createElement("canvas");
+      const gl =
+        probe.getContext("webgl2") ||
+        probe.getContext("webgl") ||
+        probe.getContext("experimental-webgl");
+      setWebgl(Boolean(gl));
+    } catch {
+      setWebgl(false);
+    } finally {
+      setProbed(true);
+    }
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -168,13 +204,33 @@ export function ServiceStory({
     window.scrollTo({ top, behavior: still ? "auto" : "smooth" });
   };
 
-  // Each frame owns a quarter of the journey; neighbours overlap for a soft dissolve.
-  const scaled = progress * FRAMES.length;
-  const frameOpacities = FRAMES.map((_, i) => {
-    if (still) return i === 1 ? 1 : 0;
-    const distance = Math.abs(scaled - (i + 0.5));
-    return clamp(1.35 - distance * 1.6, 0, 1);
-  });
+  // Both reduced motion and the site-wide pause freeze the 3D stage on a single
+  // frame; the photo stack is only the no-WebGL fallback.
+  const frozen = reduced || paused;
+  const threeD = webgl;
+  const stageMode = !probed ? "pending" : threeD ? "3d" : "fallback";
+
+  // Mount the renderer only when the section is about to enter the viewport.
+  // Compiling the scene up front delays first interaction on the whole page.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || !threeD || stageReady) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setStageReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [threeD, stageReady]);
+  const stage = Math.min(
+    STAGE_LABELS.length - 1,
+    Math.floor(progress * STAGE_LABELS.length),
+  );
 
   return (
     <section
@@ -187,24 +243,31 @@ export function ServiceStory({
       data-service-progress="0"
       data-active-service="1"
       data-still={still}
+      data-stage-mode={stageMode}
     >
       <div className="ssq-service-stage">
-        <div className="ssq-service-frames" data-testid="service-film">
-          {FRAMES.map((frame, i) => (
-            <img
-              key={frame.src}
-              src={frame.src}
-              alt=""
-              aria-hidden="true"
-              loading={i === 0 ? "eager" : "lazy"}
-              decoding="async"
-              draggable={false}
-              style={{
-                opacity: frameOpacities[i],
-                transform: `scale(${1.04 + progress * 0.1}) translate3d(${(i % 2 === 0 ? -1 : 1) * progress * 1.4}%, 0, 0)`,
-              }}
-            />
-          ))}
+        <div
+          className="ssq-service-media"
+          data-webgl={threeD ? "available" : "unavailable"}
+        >
+          {threeD && stageReady ? (
+            <ServiceChoreography reduced={frozen} />
+          ) : null}
+          {threeD ? null : (
+            <div className="ssq-service-frames" data-testid="service-film">
+              {FRAMES.map((frame, i) => (
+                <img
+                  key={frame}
+                  src={frame}
+                  alt=""
+                  aria-hidden="true"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  draggable={false}
+                />
+              ))}
+            </div>
+          )}
         </div>
         <div className="ssq-service-blueprint" aria-hidden="true" />
         <div className="ssq-service-gradient" aria-hidden="true" />
@@ -220,10 +283,27 @@ export function ServiceStory({
             </h2>
             <span className="ssq-service-rule" aria-hidden="true" />
           </div>
-          <div className="ssq-service-hud-chip">
-            <Rotate3D size={16} aria-hidden="true" />
-            <span>Scroll to follow the order</span>
-            <b ref={percentRef}>0%</b>
+          <div className="ssq-service-hud-right">
+            <div className="ssq-service-hud-chip">
+              <Orbit size={16} aria-hidden="true" />
+              <span className="ssq-hint-full">
+                {threeD
+                  ? `Scroll to animate · ${coarse ? "Swipe" : "Drag"} to inspect · Tap products for specs`
+                  : "Scroll to follow the order"}
+              </span>
+              <span className="ssq-hint-short">
+                {threeD ? "Scroll · Drag · Tap" : "Scroll"}
+              </span>
+              <b ref={percentRef}>0%</b>
+            </div>
+            <ol className="ssq-stage-rail" data-testid="service-stage-rail">
+              {STAGE_LABELS.map((label, i) => (
+                <li key={label} data-on={i <= stage ? "true" : "false"}>
+                  <i aria-hidden="true" />
+                  {label}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
 

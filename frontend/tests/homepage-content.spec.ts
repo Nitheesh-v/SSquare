@@ -360,6 +360,20 @@ test("all new content, static facts and contact actions fit the five target layo
         ),
       ).toBe(0);
     }
-    await expect(page.locator("canvas")).toHaveCount(0);
+    // Reduced motion may keep the services 3D stage, but only frozen: it has to
+    // report the still state and must not be the vehicle for any CSS animation.
+    const servicesCanvas = page.locator("#our-services canvas");
+    if ((await servicesCanvas.count()) > 0) {
+      await expect(page.locator("#our-services")).toHaveAttribute(
+        "data-still",
+        "true",
+      );
+    }
+    const strayCanvases = await page.locator("canvas").evaluateAll((nodes) =>
+      nodes
+        .filter((node) => !node.closest("#our-services"))
+        .map((node) => node.parentElement?.className ?? "unknown"),
+    );
+    expect(strayCanvases, "reduced motion keeps only the frozen services stage").toEqual([]);
   }
 });

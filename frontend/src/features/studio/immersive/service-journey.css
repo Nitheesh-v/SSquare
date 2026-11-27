@@ -268,6 +268,92 @@
   color: #475467;
 }
 
+/* ── Continuous 3D stage ──────────────────────────────────────────────── */
+.ssq-service-media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+.ssq-stage-3d {
+  position: absolute;
+  inset: 0;
+  /* Drag inspects the scene; vertical panning still belongs to the page. */
+  touch-action: pan-y;
+  cursor: grab;
+}
+.ssq-stage-3d:active {
+  cursor: grabbing;
+}
+.ssq-stage-3d canvas,
+.ssq-stage-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: pan-y;
+  outline: none;
+}
+/* The 3D scene already carries its own depth; soften the photo-frame scrim. */
+.ssq-service-section[data-stage-mode="3d"] .ssq-service-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(8, 15, 28, 0.88) 0%,
+    rgba(8, 15, 28, 0.2) 24%,
+    rgba(8, 15, 28, 0.06) 52%,
+    rgba(8, 15, 28, 0.62) 76%,
+    rgba(8, 15, 28, 0.96) 100%
+  );
+}
+.ssq-service-section[data-stage-mode="3d"] .ssq-service-blueprint {
+  opacity: 0.34;
+}
+
+/* ── HUD right rail ───────────────────────────────────────────────────── */
+.ssq-service-hud-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.ssq-stage-rail {
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ssq-stage-rail li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(203, 213, 225, 0.55);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  transition: color 0.35s ease;
+}
+.ssq-stage-rail li i {
+  width: 6px;
+  height: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  transition:
+    background 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+.ssq-stage-rail li[data-on="true"] {
+  color: #fff;
+}
+.ssq-stage-rail li[data-on="true"] i {
+  background: var(--ssq-brand);
+  border-color: var(--ssq-brand);
+  box-shadow: 0 0 0 3px rgba(232, 80, 58, 0.22);
+  transform: scale(1.15);
+}
+.ssq-hint-short { display: none; }
+
 /* ── Cinematic frame stack ─────────────────────────────────────────────── */
 .ssq-service-frames {
   position: absolute;
@@ -291,7 +377,11 @@
 /* ── Responsive ────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .ar-home .home-services.ssq-service-section { height: 240vh; }
-  .ssq-service-hud-chip span { display: none; }
+  .ssq-hint-full { display: none; }
+  .ssq-hint-short { display: inline; }
+  .ssq-stage-rail { gap: 9px; }
+  .ssq-stage-rail li { font-size: 8.5px; letter-spacing: 0.1em; }
+  .ssq-stage-rail li span { display: none; }
   .ar-home .ssq-service-title { font-size: clamp(30px, 6vw, 46px); }
   .ar-home .ssq-service-cards { gap: 8px; }
   .ar-home .ssq-service-cards .home-service-card { padding: 12px 10px 14px; }
@@ -302,6 +392,10 @@
 }
 @media (max-width: 600px) {
   .ssq-service-hud { padding-top: 14px; gap: 10px; }
+  .ssq-service-hud-right { gap: 7px; }
+  .ssq-stage-rail { gap: 7px; }
+  .ssq-stage-rail li { font-size: 7.5px; letter-spacing: 0.06em; }
+  .ssq-stage-rail li i { width: 5px; height: 5px; }
   .ssq-service-hud-chip { padding: 6px 8px; }
   .ar-home .ssq-service-title { font-size: 27px; }
   .ssq-service-rule { width: 38px; height: 3px; margin-top: 8px; }
@@ -327,5 +421,7 @@
   transform: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .ssq-service-frames img { transition: none; }
+  .ssq-service-frames img,
+  .ssq-stage-rail li,
+  .ssq-stage-rail li i { transition: none; }
 }
