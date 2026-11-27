@@ -22,9 +22,9 @@ const PHASE_SETTINGS: Record<
   ScrollPhase,
   { color: string; grid: number; orbit: number; sweep: number }
 > = {
-  aperture: { color: "#3d7bff", grid: 28, orbit: 60, sweep: 11 },
-  materials: { color: "#ff8a4c", grid: 21, orbit: 42, sweep: 8 },
-  blueprint: { color: "#7aa4ff", grid: 15, orbit: 30, sweep: 6 },
+  aperture: { color: "#c9803f", grid: 28, orbit: 60, sweep: 11 },
+  materials: { color: "#d1724f", grid: 21, orbit: 42, sweep: 8 },
+  blueprint: { color: "#e9a463", grid: 15, orbit: 30, sweep: 6 },
   services: { color: "#9be8d8", grid: 11, orbit: 22, sweep: 4.5 },
   dispatch: { color: "#f0b45a", grid: 8, orbit: 16, sweep: 3.2 },
 };

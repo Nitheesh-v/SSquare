@@ -1,5 +1,6 @@
 /**
- * Three stations on the S Square "aperture ring".
+ * Four stations on the S Square "aperture ring": the company introduction is
+ * its own slide, followed by the three material divisions.
  *
  * The supplied APERTURE ROW brief is a vintage-camera shop concept. This file
  * keeps its interaction language (a top-down rotating machined ring, index
@@ -7,9 +8,10 @@
  * S Square material divisions and the reviewed, source-backed company copy.
  * No shop, cart, prices or checkout are introduced: this is an RFQ site.
  *
- * The first station now opens on an industrial gear study, matching the
- * original website's hero impression instead of leading with a product
- * close-up. The RFQ destinations and division identities remain unchanged.
+ * The first station is the introduction and opens on an industrial gear study,
+ * matching the original website's hero impression. It is followed by one
+ * station per division (Rubber / Steel / Aluminium), each with its own plate,
+ * spec sheet and RFQ destination.
  */
 
 export type RingAccessory = {
@@ -22,9 +24,11 @@ export type RingAccessory = {
 };
 
 export type RingSlide = {
-  id: "rubber" | "steel" | "aluminium";
+  id: "intro" | "rubber" | "steel" | "aluminium";
   number: string;
   name: string;
+  /** True for the company introduction, which has no division to inspect. */
+  intro?: boolean;
   /** Optional large hero wording; tabs and inspector keep the division name. */
   displayName?: string;
   /** Optional full-bleed first-impression photograph. */
@@ -39,7 +43,8 @@ export type RingSlide = {
   caption: string;
   ctaHref: string;
   ctaLabel: string;
-  division: string;
+  /** Division label used for RFQs; absent on the introduction slide. */
+  division?: string;
   accent: string;
   specs: [string, string][];
   condition: string[];
@@ -48,14 +53,15 @@ export type RingSlide = {
 
 export const RING_SLIDES: RingSlide[] = [
   {
-    id: "rubber",
-    number: "01",
-    name: "RUBBER",
+    id: "intro",
+    number: "00",
+    name: "INTRO",
+    intro: true,
     displayName: "S SQUARE",
     heroImage: "/images/industrial-gear-hero.jpg",
     kicker: "CUSTOM MANUFACTURING",
     type: "RUBBER · STEEL · ALUMINIUM",
-    aperture: "Ø 01",
+    aperture: "Ø 00",
     description:
       "High-quality custom metal and rubber components manufactured for industrial and heavy-duty applications. Your trusted partner in custom metal and rubber solutions, from the first drawing to dispatch.",
     chips: ["20+ years", "Three disciplines", "Drawing or sample"],
@@ -64,26 +70,62 @@ export const RING_SLIDES: RingSlide[] = [
     caption: "Industrial gear study · S Square Engineering Services",
     ctaHref: "/products",
     ctaLabel: "Explore All Products",
-    division: "Rubber Products",
-    accent: "#3d7bff",
+    accent: "#e08a63",
     specs: [
+      ["Company", "S Square Engineering Services"],
+      ["Disciplines", "Rubber · Steel · Aluminium"],
+      ["Established", "20+ years in Coimbatore"],
       ["Format", "Made to drawing or sample"],
-      ["Materials", "Rubber · Steel · Aluminium"],
-      ["Process", "Molding · machining · fabrication"],
-      ["Finish", "Agreed with your specification"],
-      ["Inspection", "Scope agreed during quotation"],
+      ["Scope", "RFQ reviewed during quotation"],
       ["Made", "Coimbatore, India"],
     ],
     condition: [
-      "Requirement reviewed",
+      "Drawing or sample received",
       "Material confirmed",
-      "Inspection scope agreed",
+      "Division selected",
     ],
     accessories: [
       { label: "20+ YRS", x: -0.64, y: -0.2, rotate: -18, size: 0.2 },
       { label: "COIMBATORE", x: 0.64, y: 0.14, rotate: 8, size: 0.21 },
       { label: "03 MATERIALS", x: -0.52, y: 0.44, rotate: 22, size: 0.18 },
       { label: "CUSTOM", x: 0.58, y: -0.42, rotate: -12, size: 0.19 },
+    ],
+  },
+  {
+    id: "rubber",
+    number: "01",
+    name: "RUBBER",
+    kicker: "RUBBER COMPONENTS DIVISION",
+    type: "SEALS · GASKETS · MOULDED PARTS",
+    aperture: "Ø 01",
+    description:
+      "Moulded rubber components — seals, gaskets, bushes and bonded parts — produced to your drawing or sample for industrial and heavy-duty equipment.",
+    chips: ["Seals & gaskets", "Moulded to sample", "Custom compounds"],
+    image: "/images/division-rubber.jpg",
+    alt: "Moulded rubber seals and gaskets manufactured to drawing or sample",
+    caption: "Moulded seals, gaskets and custom rubber components",
+    ctaHref: "/products/rubber",
+    ctaLabel: "Explore Rubber Products",
+    division: "Rubber Products",
+    accent: "#d1724f",
+    specs: [
+      ["Format", "Made to drawing or sample"],
+      ["Range", "Seals · gaskets · bushes"],
+      ["Process", "Moulding · bonding · finishing"],
+      ["Finish", "Agreed with your specification"],
+      ["Inspection", "Scope agreed during quotation"],
+      ["Made", "Coimbatore, India"],
+    ],
+    condition: [
+      "Requirement reviewed",
+      "Compound confirmed",
+      "Inspection scope agreed",
+    ],
+    accessories: [
+      { label: "NBR", x: -0.62, y: -0.22, rotate: -14, size: 0.19 },
+      { label: "O-RINGS", x: 0.62, y: 0.2, rotate: 9, size: 0.2 },
+      { label: "MOULDED", x: 0.54, y: -0.44, rotate: -24, size: 0.18 },
+      { label: "SHORE A", x: -0.53, y: 0.44, rotate: 26, size: 0.2 },
     ],
   },
   {
@@ -102,7 +144,7 @@ export const RING_SLIDES: RingSlide[] = [
     ctaHref: "/products/steel",
     ctaLabel: "Explore Steel Products",
     division: "Steel Products",
-    accent: "#7aa4ff",
+    accent: "#b9c7d6",
     specs: [
       ["Format", "Made to drawing or sample"],
       ["Grades", "Application-based selection"],
@@ -139,7 +181,7 @@ export const RING_SLIDES: RingSlide[] = [
     ctaHref: "/products/aluminium",
     ctaLabel: "Explore Aluminium Products",
     division: "Aluminium Products",
-    accent: "#9be8d8",
+    accent: "#e3b25c",
     specs: [
       ["Format", "Made to drawing or sample"],
       ["Material", "Aluminium, incl. Grade 6061"],

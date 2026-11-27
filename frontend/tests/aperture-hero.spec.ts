@@ -26,9 +26,9 @@ async function allowAutoplay(page: Page) {
   await page.waitForTimeout(60);
 }
 
-const STATIONS = ["01 RUBBER", "02 STEEL", "03 ALUMINIUM"];
+const STATIONS = ["00 INTRO", "01 RUBBER", "02 STEEL", "03 ALUMINIUM"];
 
-test("the three-station aperture hero stays first, branded as S SQUARE, with a live canvas field", async ({
+test("the four-station aperture hero stays first, branded as S SQUARE, with a live canvas field", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -40,10 +40,11 @@ test("the three-station aperture hero stays first, branded as S SQUARE, with a l
     hero
       .getByRole("group", { name: "Explore manufacturing divisions" })
       .getByRole("button"),
-  ).toHaveCount(3);
-  // Three station plates plus the plates inside the (closed) inspector drawer.
-  await expect(hero.locator(".ar-plate img")).toHaveCount(3);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  ).toHaveCount(4);
+  // Four station plates plus the plates inside the (closed) inspector drawer.
+  await expect(hero.locator(".ar-plate img")).toHaveCount(4);
+  // The company introduction is its own station now, ahead of Rubber.
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await expect(hero.locator(".ar-plate img").first()).toHaveAttribute(
     "src",
     "/images/industrial-gear-hero.jpg",
@@ -86,13 +87,14 @@ test("arrows wrap, keyboard controls work, and the catalog destinations remain r
     exact: true,
   });
   const next = hero.getByRole("button", { name: "Next slide", exact: true });
+  // Wrapping backwards from the intro lands on the last station.
   await previous.click();
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await expect(
     hero.getByRole("link", { name: "Explore Aluminium Products", exact: true }),
   ).toHaveAttribute("href", "/products/aluminium");
   await next.click();
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await expect(
     hero.getByRole("link", { name: "Explore All Products", exact: true }),
   ).toHaveAttribute("href", "/products");
@@ -100,17 +102,25 @@ test("arrows wrap, keyboard controls work, and the catalog destinations remain r
   await page.keyboard.press("End");
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await page.keyboard.press("ArrowRight");
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await page.keyboard.press("ArrowLeft");
   await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
   await page.keyboard.press("Home");
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
 });
 
 test("station inspector opens from View Specs and closes on Escape", async ({
   page,
 }) => {
   const hero = await enter(page);
+  // The intro station has its own spec sheet; open a division one too.
+  await hero.getByRole("button", { name: "View Specs", exact: true }).click();
+  const introDrawer = page.getByTestId("ar-station-drawer");
+  await expect(introDrawer.getByText("INDUSTRIAL GEAR STUDY")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(introDrawer).not.toBeVisible();
+  await hero.getByRole("button", { name: "01 RUBBER", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await hero.getByRole("button", { name: "View Specs", exact: true }).click();
   const drawer = page.getByTestId("ar-station-drawer");
   await expect(drawer).toBeVisible();
@@ -120,7 +130,7 @@ test("station inspector opens from View Specs and closes on Escape", async ({
   await expect(drawer).not.toBeVisible();
 });
 
-test("all three stations open the existing quote with the selected division", async ({
+test("all four stations open the existing quote with the matching division", async ({
   page,
 }) => {
   const hero = await enter(page);
@@ -128,6 +138,8 @@ test("all three stations open the existing quote with the selected division", as
     ["01 RUBBER", "Rubber Products"],
     ["02 STEEL", "Steel Products"],
     ["03 ALUMINIUM", "Aluminium Products"],
+    // The intro has no division, so its RFQ opens unselected.
+    ["00 INTRO", ""],
   ];
   for (const [name, division] of cases) {
     await hero.getByRole("button", { name, exact: true }).click();
@@ -163,9 +175,12 @@ test("autoplay advances at 5.5 s and suspends for hover, focus and dialogs", asy
     return (await hero.getAttribute("data-active-slide")) ?? "";
   };
 
+  // The ring now starts on the intro station and advances in order.
+  const before = (await hero.getAttribute("data-active-slide")) ?? "";
+  expect(before).toBe("intro");
   await page.clock.fastForward(5600);
   const first = await settle();
-  expect(first).not.toBe("rubber");
+  expect(first).not.toBe(before);
 
   await page.locator(".ar-stage").hover();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
@@ -214,9 +229,9 @@ test("autoplay turns the ring without hijacking the page scroll", async ({
   await allowAutoplay(page);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
   await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "aluminium");
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
 
@@ -233,7 +248,7 @@ test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
   });
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await page.evaluate(() => {
     delete (document as unknown as Record<string, unknown>).hidden;
     document.dispatchEvent(new Event("visibilitychange"));
@@ -250,10 +265,10 @@ test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
   await expect(hero).not.toBeInViewport();
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
 });
 
-test("reduced motion keeps the hero still with no canvas and all three selectors usable", async ({
+test("reduced motion keeps the hero still with no canvas and all four selectors usable", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -272,7 +287,7 @@ test("reduced motion keeps the hero still with no canvas and all three selectors
     "0s",
   );
   await hero.getByRole("button", { name: "Next slide", exact: true }).click();
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await allowAutoplay(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -329,7 +344,7 @@ test("without JavaScript the hero has usable catalog, quote-page and phone links
   await context.close();
 });
 
-test("all three stations and controls stay within the five target layouts", async ({
+test("all four stations and controls stay within the five target layouts", async ({
   page,
 }, info) => {
   test.skip(

@@ -83,7 +83,7 @@ function drawDisc(ctx: CanvasRenderingContext2D, g: Geom) {
   ctx.save();
 
   // Blue glow above the machined disc.
-  ctx.shadowColor = "rgba(61,123,255,.28)";
+  ctx.shadowColor = "rgba(201,128,63,.3)";
   ctx.shadowBlur = 120;
   ctx.shadowOffsetY = -30;
   const fill = ctx.createRadialGradient(CX, CY - R * 0.22, R * 0.05, CX, CY, R);
@@ -243,6 +243,8 @@ export function ApertureHero({
   const posRef = useRef(0);
   const heroTopRef = useRef(0);
   const segRef = useRef(0);
+  /** Station the hero is currently scrolling itself to, and until when. */
+  const progScrollRef = useRef<{ target: number; until: number } | null>(null);
   const manualUntilRef = useRef(0);
   const draggingRef = useRef(false);
   const visibleRef = useRef(false);
@@ -293,6 +295,24 @@ export function ApertureHero({
    * page scroll from a timer dragged readers away from the hero on load and
    * hid the footer.
    */
+  /**
+   * Scroll to a station and remember that the hero owns the scroll until it
+   * lands. A long smooth scroll outlives the short "manual" guard, and without
+   * this flag the snap timer used to interrupt it and dump the reader on a
+   * segment boundary instead of the requested station.
+   */
+  const scrollToStation = useCallback((top: number) => {
+    if (!Number.isFinite(top)) return;
+    if (!motionRef.current) {
+      progScrollRef.current = null;
+      window.scrollTo({ top, behavior: "auto" });
+      return;
+    }
+    const distance = Math.abs(top - window.scrollY);
+    const duration = Math.min(1400, 260 + distance * 0.45);
+    progScrollRef.current = { target: top, until: performance.now() + duration };
+    window.scrollTo({ top, behavior: "smooth" });
+  }, []);
   const goTo = useCallback((index: number, follow = true) => {
     const next = clamp(Math.round(index), 0, RING_COUNT - 1);
     targetRef.current = next;
@@ -301,12 +321,7 @@ export function ApertureHero({
     setActive((current) => (current === next ? current : next));
     setInteracted(true);
     if (!follow) return;
-    const top = heroTopRef.current + next * segRef.current;
-    if (!Number.isFinite(top)) return;
-    window.scrollTo({
-      top,
-      behavior: motionRef.current ? "smooth" : "auto",
-    });
+    scrollToStation(heroTopRef.current + next * segRef.current);
   }, []);
   goToRef.current = goTo;
 
@@ -369,7 +384,13 @@ export function ApertureHero({
       const g = computeGeom();
       geomRef.current = g;
       heroTopRef.current = section.offsetTop;
-      segRef.current = g.H * 0.8;
+      // The pinned travel is whatever distance the section keeps the stage
+      // stuck for: total height minus one stage. Deriving the segment from the
+      // viewport instead over-runs the section once there are four stations,
+      // and clicking a later tab scrolled the hero clean out of view.
+      const travel = section.offsetHeight - stage.offsetHeight;
+      segRef.current =
+        RING_COUNT > 1 ? Math.max(120, travel / (RING_COUNT - 1)) : travel;
       stage.style.setProperty("--ar-cx", `${g.CX}px`);
       stage.style.setProperty("--ar-r", `${g.R}px`);
       stage.style.setProperty("--ar-rim-top", `${g.CY - g.R}px`);
@@ -396,6 +417,15 @@ export function ApertureHero({
     const onScroll = () => {
       if (!inRange()) return;
       const now = performance.now();
+      const prog = progScrollRef.current;
+      if (prog) {
+        if (Math.abs(window.scrollY - prog.target) < 2 || now > prog.until + 500) {
+          progScrollRef.current = null;
+        } else {
+          // Let the hero's own scroll animation land before reading position.
+          return;
+        }
+      }
       const g = geomRef.current;
       if (!g) return;
       const pos = clamp(
@@ -416,10 +446,7 @@ export function ApertureHero({
         targetRef.current = idx;
         setActive((current) => (current === idx ? current : idx));
         manualUntilRef.current = performance.now() + 1600;
-        window.scrollTo({
-          top: heroTopRef.current + idx * segRef.current,
-          behavior: "smooth",
-        });
+        scrollToStation(heroTopRef.current + idx * segRef.current);
       }, 170);
     };
 
@@ -598,6 +625,20 @@ export function ApertureHero({
       stage.removeEventListener("pointercancel", endDrag);
     };
   }, [motionEnabled, layoutStatic]);
+
+  /* ── Keep the pinned stage inside the viewport ─────────────────────────── */
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const write = () => {
+      const header = document.querySelector<HTMLElement>(".site-header");
+      const height = header?.getBoundingClientRect().height ?? 0;
+      section.style.setProperty("--ar-hdr", `${Math.round(height)}px`);
+    };
+    write();
+    window.addEventListener("resize", write);
+    return () => window.removeEventListener("resize", write);
+  }, []);
 
   /* ── Visibility / blockers / hidden tab ────────────────────────────────── */
   useEffect(() => {
@@ -878,11 +919,17 @@ export function ApertureHero({
             ))}
           </div>
           <div className="ar-buy ar-fade" style={{ "--i": 5 } as CSSProperties}>
-            <span className="ar-buy-tag">RFQ / {shown.number}</span>
+            <span className="ar-buy-tag">
+              {slide.intro ? "RFQ / ALL DIVISIONS" : `RFQ / ${shown.number}`}
+            </span>
             <button
               type="button"
               className="ar-quote ar-quote-btn"
-              onClick={() => openQuoteModal({ division: slide.division })}
+              onClick={() =>
+                openQuoteModal(
+                  slide.division ? { division: slide.division } : undefined,
+                )
+              }
             >
               Request a Quote <ArrowRight size={16} />
             </button>
@@ -939,10 +986,10 @@ export function ApertureHero({
               key={entry.id}
               type="button"
               aria-pressed={i === active}
-              aria-label={`0${i + 1} ${entry.name}`}
+              aria-label={`${entry.number} ${entry.name}`}
               onClick={() => goTo(i)}
             >
-              <span>0{i + 1}</span>
+              <span>{entry.number}</span>
               {entry.name}
               <i />
             </button>
@@ -994,7 +1041,11 @@ export function ApertureHero({
         slide={slide}
         index={active}
         onClose={() => setDrawerOpen(false)}
-        onQuote={() => openQuoteModal({ division: slide.division })}
+        onQuote={() =>
+          openQuoteModal(
+            slide.division ? { division: slide.division } : undefined,
+          )
+        }
       />
 
       <noscript>

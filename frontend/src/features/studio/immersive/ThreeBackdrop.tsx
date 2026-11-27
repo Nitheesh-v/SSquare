@@ -81,15 +81,15 @@ export default function ThreeBackdrop() {
     scene.add(rig);
 
     const steelMat = new THREE.MeshStandardMaterial({
-      color: 0x8d99a8,
+      color: 0xa49a8c,
       metalness: 0.9,
       roughness: 0.31,
     });
     const alloyMat = new THREE.MeshStandardMaterial({
-      color: 0x3d7bff,
+      color: 0xc9803f,
       metalness: 0.72,
       roughness: 0.26,
-      emissive: 0x102a63,
+      emissive: 0x5a3416,
       emissiveIntensity: 0.6,
     });
     const rubberMat = new THREE.MeshStandardMaterial({
@@ -114,7 +114,7 @@ export default function ThreeBackdrop() {
     rig.add(gearC);
 
     const orbitMat = new THREE.MeshBasicMaterial({
-      color: 0x7aa4ff,
+      color: 0xe9a463,
       transparent: true,
       opacity: 0.24,
     });
@@ -159,7 +159,7 @@ export default function ThreeBackdrop() {
       new THREE.BufferAttribute(positions, 3),
     );
     const particleMaterial = new THREE.PointsMaterial({
-      color: 0x7aa4ff,
+      color: 0xe9a463,
       size: 0.028,
       transparent: true,
       opacity: 0.55,
@@ -174,11 +174,11 @@ export default function ThreeBackdrop() {
     const key = new THREE.DirectionalLight(0xffffff, 2.1);
     key.position.set(4, 5, 6);
     scene.add(key);
-    const accentLight = new THREE.PointLight(0x3d7bff, 18, 22);
+    const accentLight = new THREE.PointLight(0xc9803f, 18, 22);
     accentLight.position.set(-4, -2, 4);
     scene.add(accentLight);
 
-    const accentTarget = new THREE.Color(0x3d7bff);
+    const accentTarget = new THREE.Color(0xc9803f);
     const accentCurrent = accentTarget.clone();
     const white = new THREE.Color(0xffffff);
     const mouse = new THREE.Vector2(0, 0);

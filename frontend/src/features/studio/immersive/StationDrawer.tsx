@@ -18,6 +18,11 @@ import { RING_COUNT, type RingSlide } from "./slides";
  */
 
 const PRINTS: Record<string, { src: string; caption: string }[]> = {
+  intro: [
+    { src: "/images/industrial-gear-hero.jpg", caption: "INDUSTRIAL GEAR STUDY" },
+    { src: "/images/infrastructure-facility.jpg", caption: "SHOP FLOOR" },
+    { src: "/images/quality-metrology.jpg", caption: "DIMENSIONAL CHECK" },
+  ],
   rubber: [
     { src: "/images/industrial-gear-hero.jpg", caption: "INDUSTRIAL GEAR STUDY" },
     { src: "/images/division-rubber.jpg", caption: "MOLDED SEALS / O-RINGS" },

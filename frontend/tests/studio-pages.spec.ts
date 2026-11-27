@@ -37,14 +37,16 @@ test("aperture hero keeps division selection, gear first impression and contextu
   const choices = hero.getByRole("group", {
     name: "Explore manufacturing divisions",
   });
+  // The intro is its own station; the three divisions follow it.
   const slides = [
-    ["RUBBER", "rubber", "industrial-gear-hero", "S SQUARE"],
-    ["STEEL", "steel", "division-steel", "STEEL"],
-    ["ALUMINIUM", "aluminium", "division-aluminium", "ALUMINIUM"],
+    ["00", "INTRO", "intro", "industrial-gear-hero", "S SQUARE"],
+    ["01", "RUBBER", "rubber", "division-rubber", "RUBBER"],
+    ["02", "STEEL", "steel", "division-steel", "STEEL"],
+    ["03", "ALUMINIUM", "aluminium", "division-aluminium", "ALUMINIUM"],
   ];
-  for (const [index, [label, id, image, title]] of slides.entries()) {
+  for (const [number, label, id, image, title] of slides) {
     const button = choices.getByRole("button", {
-      name: `0${index + 1} ${label}`,
+      name: `${number} ${label}`,
       exact: true,
     });
     await button.click();
