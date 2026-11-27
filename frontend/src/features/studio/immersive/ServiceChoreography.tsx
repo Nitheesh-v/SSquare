@@ -125,10 +125,20 @@ export default function ServiceChoreography({
       DoubleSide,
     } = THREE;
 
+    // Device class drives the expensive switches: DPR, shadow filtering, AA.
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const lightDevice =
+      coarsePointer ||
+      (navigator.hardwareConcurrency || 8) <= 4 ||
+      Math.min(window.innerWidth, window.innerHeight) < 500;
+    const dprCap = lightDevice ? 1.5 : 2;
+    const shadowMapSize = lightDevice ? 512 : 1024;
+
     let renderer: InstanceType<ThreeNS["WebGLRenderer"]>;
     try {
       renderer = new THREE.WebGLRenderer({
-        antialias: true,
+        // Software-rendered framebuffers dominate cost on low-end hardware.
+        antialias: !lightDevice,
         alpha: true,
         powerPreference: "high-performance",
       });
@@ -136,10 +146,10 @@ export default function ServiceChoreography({
       holder.dataset.state = "unavailable";
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = lightDevice ? THREE.PCFShadowMap : PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
     renderer.setClearColor(0x0a1324, 0);
@@ -162,7 +172,7 @@ export default function ServiceChoreography({
     const key = new THREE.DirectionalLight(0xffffff, 2.3);
     key.position.set(-5.5, 9.5, 6.5);
     key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.mapSize.set(shadowMapSize, shadowMapSize);
     key.shadow.camera.near = 1;
     key.shadow.camera.far = 36;
     key.shadow.camera.left = -11;
@@ -875,7 +885,14 @@ export default function ServiceChoreography({
     let onScreen = true;
     // Nothing needs drawing while the section is off screen; stopping the loop
     // there keeps the rest of the page (hero autoplay, scroll work) responsive.
-    const render = () => renderer.render(scene, camera);
+    const render = () => {
+      // The hero orrery is hidden here; supersampling a canvas that another
+      // WebGL context is also competing for is what makes scrolling stutter.
+      renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio || 1, onScreen ? dprCap : 1),
+      );
+      renderer.render(scene, camera);
+    };
     const tick = () => {
       if (!alive) return;
       raf = requestAnimationFrame(tick);
@@ -897,6 +914,9 @@ export default function ServiceChoreography({
     const visibility = new IntersectionObserver(
       (entries) => {
         onScreen = entries.some((entry) => entry.isIntersecting);
+        window.dispatchEvent(
+          new CustomEvent("ar:stage-visible", { detail: { visible: onScreen } }),
+        );
         if (onScreen) render();
       },
       { rootMargin: "120px" },
@@ -932,6 +952,9 @@ export default function ServiceChoreography({
       renderer.domElement.removeEventListener("webglcontextlost", onLost);
       observer.disconnect();
       visibility.disconnect();
+      window.dispatchEvent(
+        new CustomEvent("ar:stage-visible", { detail: { visible: false } }),
+      );
       controls.dispose();
       labelTex?.dispose();
       envRT.dispose();

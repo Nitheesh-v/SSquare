@@ -268,6 +268,20 @@
   color: #475467;
 }
 
+/* Over a live WebGL canvas, backdrop-filter means the browser re-blurs the
+   scene on every rendered frame. The cards get an opaque-enough fill instead. */
+/* Only the inactive cards: the active card keeps its white treatment. */
+.ssq-service-section[data-stage-mode="3d"]
+  .ssq-service-cards
+  .home-service-card:not([data-active="true"]) {
+  backdrop-filter: none;
+  background: rgba(10, 19, 36, 0.94);
+}
+.ssq-service-section[data-stage-mode="3d"] .ssq-service-hud-chip {
+  backdrop-filter: none;
+  background: rgba(7, 14, 27, 0.92);
+}
+
 /* ── Continuous 3D stage ──────────────────────────────────────────────── */
 .ssq-service-media {
   position: absolute;

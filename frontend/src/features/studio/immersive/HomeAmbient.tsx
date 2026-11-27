@@ -79,6 +79,7 @@ export function HomeAmbient({
 
     let frame = 0;
     let lastPhase = "";
+    let lastHeroActive: boolean | null = null;
 
     const update = () => {
       frame = 0;
@@ -115,6 +116,16 @@ export function HomeAmbient({
           new CustomEvent("ar:scene", {
             detail: { phase, color: settings.color },
           }),
+        );
+      }
+      // The orrery belongs to the hero. Past the first chapters it is hidden
+      // behind the content, so it stops rendering instead of burning a whole
+      // WebGL frame every scroll tick.
+      const heroActive = progress < 0.18;
+      if (heroActive !== lastHeroActive) {
+        lastHeroActive = heroActive;
+        window.dispatchEvent(
+          new CustomEvent("ar:hero-active", { detail: { active: heroActive } }),
         );
       }
       window.dispatchEvent(

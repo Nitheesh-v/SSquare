@@ -69,7 +69,7 @@ export default function ThreeBackdrop() {
       // CSS ambient layers remain as the graceful fallback.
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setClearColor(0x000000, 0);
 
@@ -230,6 +230,23 @@ export default function ThreeBackdrop() {
     window.addEventListener("ar:accent", onAccent);
     window.addEventListener("ar:scroll", onScroll);
     window.addEventListener("ar:scene", onScene);
+
+    // Pause rendering whenever the orrery is not the visible chapter, and
+    // whenever the services 3D stage owns the viewport — two live WebGL
+    // contexts at once is what makes scrolling stutter on modest laptops.
+    let heroActive = true;
+    let stageVisible = false;
+    const onHeroActive = (event: Event) => {
+      const detail = (event as CustomEvent<{ active?: boolean }>).detail;
+      heroActive = detail?.active !== false;
+    };
+    const onStageVisible = (event: Event) => {
+      const detail = (event as CustomEvent<{ visible?: boolean }>).detail;
+      stageVisible = detail?.visible === true;
+      if (!stageVisible) last = performance.now();
+    };
+    window.addEventListener("ar:hero-active", onHeroActive);
+    window.addEventListener("ar:stage-visible", onStageVisible);
     resize();
     canvas.dataset.ready = "true";
 
@@ -241,7 +258,14 @@ export default function ThreeBackdrop() {
     const tick = (now: number) => {
       if (!alive) return;
       frame = requestAnimationFrame(tick);
-      if (document.hidden) return;
+      if (document.hidden || !heroActive || stageVisible) {
+        // Paused: shrink the backing store so the hidden canvas stops costing
+        // GPU memory and compositor work while another stage is on screen.
+        if (renderer.getPixelRatio() > 1) renderer.setPixelRatio(1);
+        return;
+      }
+      const wanted = Math.min(window.devicePixelRatio || 1, 1.25);
+      if (renderer.getPixelRatio() !== wanted) renderer.setPixelRatio(wanted);
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       elapsed += dt;
@@ -297,6 +321,8 @@ export default function ThreeBackdrop() {
       window.removeEventListener("ar:accent", onAccent);
       window.removeEventListener("ar:scroll", onScroll);
       window.removeEventListener("ar:scene", onScene);
+      window.removeEventListener("ar:hero-active", onHeroActive);
+      window.removeEventListener("ar:stage-visible", onStageVisible);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Points) {

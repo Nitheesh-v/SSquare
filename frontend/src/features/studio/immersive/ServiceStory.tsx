@@ -78,10 +78,16 @@ export function ServiceStory({
   reduced: boolean;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef(0);
+  const cardActiveRef = useRef(-1);
+  const percentShownRef = useRef(-1);
   const percentRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLElement>(null);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [progress, setProgress] = useState(0);
+  // `progress` is only kept in state to re-render the stage rail (three dots).
+  // Quantising it stops a full React re-render on every scroll frame; the
+  // continuous value goes to the DOM and the 3D stage through CSS/data.
+  const [activeStage, setActiveStage] = useState(0);
   const [webgl, setWebgl] = useState(false);
   const [probed, setProbed] = useState(false);
   const [coarse, setCoarse] = useState(false);
@@ -127,18 +133,35 @@ export function ServiceStory({
         SERVICES.length - 1,
         Math.floor(value * SERVICES.length),
       );
-      section.style.setProperty("--service-progress", value.toFixed(3));
-      section.style.setProperty("--frame-p", value.toFixed(3));
+      // No CSS custom properties here: nothing consumes them any more, and
+      // writing them every frame forces a style recalculation of the section.
       section.dataset.progress = value.toFixed(3);
       section.dataset.serviceProgress = value.toFixed(3);
       section.dataset.activeService = String(active + 1);
-      if (percentRef.current) percentRef.current.textContent = `${Math.round(value * 100)}%`;
+      const percent = Math.round(value * 100);
+      if (percent !== percentShownRef.current) {
+        percentShownRef.current = percent;
+        if (percentRef.current) percentRef.current.textContent = `${percent}%`;
+      }
+      const stage = Math.min(
+        STAGE_LABELS.length - 1,
+        Math.floor(value * STAGE_LABELS.length),
+      );
+      if (stage !== stageRef.current) {
+        stageRef.current = stage;
+        setActiveStage(stage);
+      }
       if (railRef.current) railRef.current.style.width = `${value * 100}%`;
-      cardRefs.current.forEach((card, i) => {
-        if (!card) return;
-        card.dataset.active = i === active ? "true" : "false";
-        card.setAttribute("aria-pressed", i === active ? "true" : "false");
-      });
+      // Cards only change three times per journey; touching their attributes
+      // on every scroll frame would relayout the overlay for nothing.
+      if (active !== cardActiveRef.current) {
+        cardActiveRef.current = active;
+        cardRefs.current.forEach((card, i) => {
+          if (!card) return;
+          card.dataset.active = i === active ? "true" : "false";
+          card.setAttribute("aria-pressed", i === active ? "true" : "false");
+        });
+      }
     };
 
     if (still) {
@@ -164,7 +187,6 @@ export function ServiceStory({
       const travel = Math.max(1, section.offsetHeight - stageHeight);
       const value = clamp((headerHeight - rect.top) / travel, 0, 1);
       apply(value);
-      setProgress(value);
       window.dispatchEvent(
         new CustomEvent("ar:services", { detail: { progress: value } }),
       );
@@ -227,10 +249,7 @@ export function ServiceStory({
     observer.observe(section);
     return () => observer.disconnect();
   }, [threeD, stageReady]);
-  const stage = Math.min(
-    STAGE_LABELS.length - 1,
-    Math.floor(progress * STAGE_LABELS.length),
-  );
+  const stage = activeStage;
 
   return (
     <section
