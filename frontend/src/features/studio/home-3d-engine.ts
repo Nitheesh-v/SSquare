@@ -7,12 +7,22 @@
  * client-side navigation. three is the repo's local npm dependency.
  */
 export async function createHome3DEngine(host: HTMLElement): Promise<() => void> {
+  const ac = new AbortController();
+  const signal = ac.signal;
+  const on = (target, type, fn, opts) =>
+    target.addEventListener(type, fn, { ...(opts || {}), signal });
+
+  // The old full-screen WebGL background (gears/particles/traveller) is gone.
+  // Keep the non-WebGL behaviour: static reveal, quote form, image fallbacks,
+  // chapter links and cleanup. Services3DSection owns the only canvas now.
+  if (host.dataset.home3dStatic === "true") {
+    return staticFallback(host, on, () => [], ac);
+  }
+
   const THREE = await import("three");
   const { RoomEnvironment } = await import(
     "three/addons/environments/RoomEnvironment.js"
   );
-  const ac = new AbortController();
-  const signal = ac.signal;
   let cancelled = false;
   let raf = 0;
   const timers = new Set();
@@ -29,8 +39,6 @@ export async function createHome3DEngine(host: HTMLElement): Promise<() => void>
     window.clearTimeout(id);
     timers.delete(id);
   };
-  const on = (target, type, fn, opts) =>
-    target.addEventListener(type, fn, { ...(opts || {}), signal });
 
 /* ---------------- helpers ---------------- */
 const $=(s,r=host)=>r.querySelector(s), $$=(s,r=host)=>[...r.querySelectorAll(s)];
@@ -809,16 +817,7 @@ function staticFallback(host, on, getLabels, ac) {
     .home3d .hero { min-height:72svh }
     .home3d .proc, .home3d .quote { background:#0b1220!important }
     .home3d .cat { background:var(--cream)!important }
-    .home3d .services3d { height:auto!important; min-height:0!important }
-    .home3d .services3d-pin { position:relative!important; height:auto!important; min-height:0!important; padding:72px 16px 80px!important }
-    .home3d .services3d-canvas, .home3d .services3d-veil, .home3d .services3d-track,
-    .home3d .services3d-control, .home3d .services3d-spec { display:none!important }
-    .home3d .services3d-overlay { position:relative!important; inset:auto!important; display:block!important; padding:0!important; transform:none!important }
-    .home3d .services3d-head { position:relative!important; left:auto!important; top:auto!important; margin-bottom:28px!important }
-    .home3d .services3d-cards { position:relative!important; left:auto!important; right:auto!important; bottom:auto!important; display:grid!important; grid-template-columns:1fr!important; gap:14px!important; overflow:visible!important }
-    .home3d .services3d-card { opacity:1!important; transform:none!important; pointer-events:auto!important; background:#0d1626!important; color:#f6f3ee!important; box-shadow:none!important }
-    .home3d .services3d-card p { color:rgba(246,243,238,.7)!important }
-    .home3d .services3d-tag { pointer-events:none!important }
+    /* Services3DSection keeps its own scroll-linked canvas and cards. */
   `;
   host.appendChild(style);
   qa('a[href^="#"]').forEach((a) => on(a, "click", (e) => {

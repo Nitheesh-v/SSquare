@@ -4,15 +4,7 @@
  * the page is driven by imperative DOM code (see home-3d-engine.ts).
  * The <script> block is deliberately NOT included here.
  */
-export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
-<div id="scrollProgress" aria-hidden="true"></div>
-<div id="gearsWorld" aria-hidden="true">
-  <video class="g1" id="gearVid" muted loop playsinline preload="auto" poster="https://images.pexels.com/photos/7568428/pexels-photo-7568428.jpeg?auto=compress&cs=tinysrgb&w=1600">
-    <source src="https://videos.pexels.com/video-files/4824781/4824781-uhd_3840_2160_30fps.mp4" type="video/mp4">
-  </video>
-  <img class="g2" src="https://images.pexels.com/photos/29807086/pexels-photo-29807086.jpeg?auto=compress&cs=tinysrgb&w=2000" alt="">
-</div>
-
+export const HOME_3D_MARKUP_BEFORE = String.raw`<div id="scrollProgress" aria-hidden="true"></div>
 <!-- ============ INTRO ============ -->
 <div id="intro">
   <video id="ivid" muted playsinline preload="auto" src="https://videos.pexels.com/video-files/18883365/18883365-hd_1920_1080_50fps.mp4"></video>
@@ -34,7 +26,6 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
 <!-- ============ 1. HERO ============ -->
 <section id="home" class="hero" data-nav="dark">
   <div class="reveal"></div>
-  <div class="hero-ghost"><video id="heroVid" muted loop playsinline preload="auto" src="https://videos.pexels.com/video-files/4824784/4824784-uhd_3840_2160_30fps.mp4"></video></div>
   <div class="rings"></div>
   <div class="bits" id="bits"></div>
   <div class="arc" id="arc" aria-label="Material carousel. Drag or use the arrow keys."></div>

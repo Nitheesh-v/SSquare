@@ -51,7 +51,7 @@ const SPECS = [
   {
     kicker: "01 / Customization",
     title: "Drawing & sample fabrication",
-    copy: "A gear, seal and machined bolt form inside the fabrication stage from the supplied drawing or physical sample before loading into production.",
+    copy: "A raw billet, seal and machined profile form inside the fabrication stage from the supplied drawing or physical sample before loading into production.",
   },
   {
     kicker: "02 / Quality Assurance",

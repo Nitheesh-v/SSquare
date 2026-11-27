@@ -134,52 +134,24 @@ export async function createServices3DEngine(options) {
     return mesh;
   }
 
-  function makeGearGeometry(teeth, r0, r1, hole, depth) {
-    const sh = new THREE.Shape();
-    for (let i = 0; i < teeth; i++) {
-      const t = (i / teeth) * Math.PI * 2;
-      const dt = (Math.PI * 2) / teeth;
-      const p = (r, a) => [Math.cos(a) * r, Math.sin(a) * r];
-      const a = p(r0, t);
-      const b = p(r1, t + dt * 0.2);
-      const c = p(r1, t + dt * 0.42);
-      const d = p(r0, t + dt * 0.62);
-      if (i) sh.lineTo(a[0], a[1]);
-      else sh.moveTo(a[0], a[1]);
-      sh.lineTo(b[0], b[1]);
-      sh.lineTo(c[0], c[1]);
-      sh.lineTo(d[0], d[1]);
-    }
-    sh.closePath();
-    const h = new THREE.Path();
-    h.absarc(0, 0, hole, 0, Math.PI * 2, true);
-    sh.holes.push(h);
-    const geo = new THREE.ExtrudeGeometry(sh, {
-      depth,
-      bevelEnabled: true,
-      bevelThickness: depth * 0.1,
-      bevelSize: depth * 0.06,
-      bevelSegments: 1,
-      curveSegments: 2,
-    });
-    geo.center();
-    return geo;
+  function makeHousingGeometry() {
+    const pts = [
+      [0.18, -0.5], [0.45, -0.5], [0.45, -0.4], [0.32, -0.4],
+      [0.32, -0.12], [0.285, -0.1], [0.285, -0.02], [0.32, 0],
+      [0.32, 0.28], [0.37, 0.3], [0.37, 0.43], [0.34, 0.47], [0.18, 0.47],
+    ].map((p) => new THREE.Vector2(p[0], p[1]));
+    return new THREE.LatheGeometry(pts, 48);
   }
 
-  function makeBolt(spec) {
+  function makeBillet(spec) {
     const g = new THREE.Group();
-    const shaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 1.15, 20),
+    const billet = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.28, 0.28, 1.1, 32),
       mat.steel.clone(),
     );
-    shaft.position.y = 0.58;
-    const head = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.28, 0.28, 0.28, 6),
-      mat.steel.clone(),
-    );
-    head.position.y = 1.22;
-    head.rotation.y = Math.PI / 6;
-    g.add(tag(shaft, spec), tag(head, spec));
+    billet.position.y = 0.6;
+    billet.rotation.z = Math.PI / 2;
+    g.add(tag(billet, spec));
     return g;
   }
 
@@ -277,22 +249,23 @@ export async function createServices3DEngine(options) {
   }
   scene.add(dashGroup);
 
-  /* ---------------- 01 customization: gear + bolt + wireframe stage ---------------- */
+  /* ---------------- 01 customization: billet + seal + machined profile ---------------- */
   const custom = new THREE.Group();
   custom.position.set(-5.4, 0, 1.7);
   scene.add(custom);
 
-  const customGear = new THREE.Mesh(
-    makeGearGeometry(14, 0.34, 0.52, 0.12, 0.16),
+  const customBillet = makeBillet(0);
+  customBillet.position.set(-0.7, 0.55, 0);
+  custom.add(customBillet);
+
+  const customHousing = new THREE.Mesh(
+    makeHousingGeometry(),
     mat.steel.clone(),
   );
-  customGear.position.set(-0.55, 1.05, 0);
-  customGear.rotation.x = Math.PI / 2;
-  custom.add(tag(customGear, 0));
-
-  const customBolt = makeBolt(0);
-  customBolt.position.set(0.72, 0.02, 0.05);
-  custom.add(customBolt);
+  customHousing.position.set(0.55, 0.9, 0);
+  customHousing.scale.setScalar(0.85);
+  customHousing.rotation.set(-0.35, 0, 0.2);
+  custom.add(tag(customHousing, 0));
 
   const customSeal = new THREE.Mesh(
     new THREE.TorusGeometry(0.38, 0.1, 14, 40),
@@ -331,17 +304,15 @@ export async function createServices3DEngine(options) {
     qa.add(leg);
   });
 
-  const qaGear = new THREE.Mesh(
-    makeGearGeometry(14, 0.34, 0.52, 0.12, 0.16),
-    mat.steel.clone(),
-  );
-  qaGear.position.set(-0.5, 1.0, 0);
-  qaGear.rotation.x = Math.PI / 2;
-  qa.add(tag(qaGear, 1));
+  const qaHousing = new THREE.Mesh(makeHousingGeometry(), mat.steel.clone());
+  qaHousing.position.set(-0.5, 1.0, 0);
+  qaHousing.scale.setScalar(0.85);
+  qaHousing.rotation.set(-0.35, 0, 0.2);
+  qa.add(tag(qaHousing, 1));
 
-  const qaBolt = makeBolt(1);
-  qaBolt.position.set(0.7, 0.02, 0.05);
-  qa.add(qaBolt);
+  const qaBillet = makeBillet(1);
+  qaBillet.position.set(0.7, 0.02, 0.05);
+  qa.add(qaBillet);
 
   const qaRings = [];
   for (let i = 0; i < 3; i++) {
@@ -441,17 +412,15 @@ export async function createServices3DEngine(options) {
   const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.4), mat.dark);
   pallet.castShadow = true;
   load.add(pallet);
-  const loadGear = new THREE.Mesh(
-    makeGearGeometry(12, 0.28, 0.42, 0.1, 0.12),
-    mat.steel.clone(),
-  );
-  loadGear.position.set(-0.65, 0.42, 0);
-  loadGear.rotation.x = Math.PI / 2;
-  load.add(tag(loadGear, 2));
-  const loadBolt = makeBolt(2);
-  loadBolt.position.set(0.45, 0.02, 0);
-  loadBolt.scale.setScalar(0.7);
-  load.add(loadBolt);
+  const loadHousing = new THREE.Mesh(makeHousingGeometry(), mat.steel.clone());
+  loadHousing.position.set(-0.65, 0.42, 0);
+  loadHousing.scale.setScalar(0.6);
+  loadHousing.rotation.set(-0.35, 0, 0.2);
+  load.add(tag(loadHousing, 2));
+  const loadBillet = makeBillet(2);
+  loadBillet.position.set(0.45, 0.02, 0);
+  loadBillet.scale.setScalar(0.7);
+  load.add(loadBillet);
 
   /* tall dispatch gate behind the truck, as in the reference */
   const gate = new THREE.Group();
@@ -487,8 +456,8 @@ export async function createServices3DEngine(options) {
       m.opacity = customFade;
     });
     wire.material.opacity = 0.45 * customFade;
-    customGear.rotation.z = t * 0.0002;
-    customBolt.rotation.y = t * 0.0005;
+    customHousing.rotation.y = t * 0.0003;
+    customBillet.rotation.y = t * 0.0004;
 
     const qaOn = clamp((p - 0.24) / 0.12) * (1 - clamp((p - 0.62) / 0.16));
     qa.visible = qaOn > 0.01;
@@ -496,7 +465,7 @@ export async function createServices3DEngine(options) {
     qaMats.forEach((m, i) => {
       m.opacity = (i < 4 ? 0.95 : 0.6) * qaOn;
     });
-    qaGear.rotation.z = -t * 0.00025;
+    qaHousing.rotation.y = -t * 0.00025;
     qaRings.forEach((r, i) => {
       r.scale.setScalar(1 + 0.12 * Math.sin(t * 0.002 + i));
       r.material.opacity = 0.25 + 0.5 * qaOn;
