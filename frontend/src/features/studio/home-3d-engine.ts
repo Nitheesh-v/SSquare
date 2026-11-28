@@ -51,9 +51,9 @@ function rng(seed){ let a=seed*9301+49297; return ()=>{ a=(a*1664525+1013904223)
 
 /* ---------------- data ---------------- */
 const MATS=[
-  {name:'Rubber',color:'#111a2b',glow:'rgba(232,113,42,.55)',kind:'ring',tag:'Seals, gaskets, O-rings, cords, sheets & rubber-to-metal bonded components.',explore:'Explore rubber'},
-  {name:'Steel',color:'#22364d',glow:'rgba(126,166,208,.55)',kind:'hex',tag:'Stainless & alloy valve bodies, blocks, flanges, bushings & fluid fittings.',explore:'Explore steel'},
-  {name:'Aluminium',color:'#4b5968',glow:'rgba(205,214,224,.5)',kind:'chip',tag:'Grade 6061 die moulds, housings, plates & precision machined tooling.',explore:'Explore aluminium'}
+  {name:'Rubber',color:'#112a32',glow:'rgba(105,207,185,.42)',kind:'ring',tag:'Seals, gaskets, O-rings, cords, sheets & rubber-to-metal bonded components.',explore:'Explore rubber'},
+  {name:'Steel',color:'#1b3949',glow:'rgba(124,199,207,.42)',kind:'hex',tag:'Stainless & alloy valve bodies, blocks, flanges, bushings & fluid fittings.',explore:'Explore steel'},
+  {name:'Aluminium',color:'#344a50',glow:'rgba(177,210,201,.4)',kind:'chip',tag:'Grade 6061 die moulds, housings, plates & precision machined tooling.',explore:'Explore aluminium'}
 ];
 const SHAPES={
   ring:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="33" fill="none" stroke="#3a3c44" stroke-width="22"/><circle cx="50" cy="50" r="33" fill="none" stroke="#9a9ea8" stroke-width="3" opacity=".55"/><circle cx="50" cy="50" r="44" fill="none" stroke="#d2d5db" stroke-width="2" opacity=".7"/></svg>',
@@ -77,7 +77,7 @@ const scTag=$('#scTag'), scTitle=$('#scTitle'), scCopy=$('#scCopy'), scSpec=$('#
 const procSec=$('#process'), cmpSec=$('#compare'), procStage=$('#procStage'), cmpStage=$('#cmpStage'), railBtns=$$('#rail button'), railEl=$('#rail');
 const procSteps=$$('.step'), catSec=$('#catalog'), catCards=$$('.cat-card');
 const progress=$('#scrollProgress'), heroVid=$('#heroVid'), heroGhost=$('.hero-ghost');
-{ const items=['Custom rubber','Steel fittings','Aluminium tooling','Pressed & machined in Coimbatore','Drawn to your spec','20+ years on the floor']; const line=items.map(t=>`<span>${t} <b>◦</b></span>`).join('<br>'); $('#mqTrack').innerHTML=line+line; }
+{ const items=['Custom rubber','Steel fittings','Aluminium tooling','Pressed & machined in Coimbatore','Drawn to your spec','20+ years on the floor']; const line=items.map(t=>`<span>${t} <b>◦</b></span>`).join(''); $('#mqTrack').innerHTML=line+line; }
 if(FINE&&!RM){
   $$('.hcta .btn, #play, .cta').forEach(el=>{
     el.addEventListener('pointermove',e=>{ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5; el.style.transform=`translate(${x*8}px,${y*6-2}px)`; });
@@ -204,7 +204,7 @@ function fitTitle(){
   if(phone()){ const w=Math.max(1,...name.split(' ').map(x=>mctx.measureText(x).width)); const base=clamp(innerWidth*.125,40,64); titleEl.style.fontSize=Math.min(base,(innerWidth-36)*100/w)+'px'; }
   else { const w=Math.max(1,mctx.measureText(name).width); titleEl.style.fontSize=Math.min(88*u,760*u*100/w)+'px'; }
 }
-function letterHTML(name){ return name.split(' ').map(w=>`<span class="wd">${[...w].map(ch=>`<span class="ltr">${ch}</span>`).join('<br>')}</span>`).join('<br>'); }
+function letterHTML(name){ return name.split(' ').map(w=>`<span class="wd">${[...w].map(ch=>`<span class="ltr">${ch}</span>`).join('')}</span>`).join(' '); }
 function setTitle(name,dir=1,instant=false){
   const olds=$$('.tl',titleEl); const nl=document.createElement('span'); nl.className='tl'; nl.innerHTML=letterHTML(name); titleEl.appendChild(nl); fitTitle();
   if(instant||RM){ olds.forEach(o=>o.remove()); return; }
@@ -223,7 +223,7 @@ let revealAnim=null;
 function startReveal(color){
   if(revealAnim) finishReveal();
   reveal.style.setProperty('--rv',color); reveal.style.clipPath='none';
-  const hr=hero.getBoundingClientRect(); const ax=hr.width/2, ay=phone()?hr.height*.4:hr.height/2-78*u;
+  const hr=hero.getBoundingClientRect(); const ax=hr.width/2, ay=hr.height*.34;
   const R=1.45*Math.hypot(Math.max(ax,hr.width-ax),Math.max(ay,hr.height-ay));
   revealAnim={t0:now,color,ax,ay,R};
 }
@@ -311,7 +311,7 @@ function startBits(){
 }
 
 /* ---------------- section 2 ---------------- */
-function applyHead(s){ if(s<3){ inHead.innerHTML=STEPS[s].h.map(l=>`<span>${l}</span>`).join('<br>'); inHead.classList.remove('sm'); } else { const n=MATS[active].name.toUpperCase(); inHead.innerHTML=`<span>${n}</span>`; inHead.classList.toggle('sm',n.length>9); } }
+function applyHead(s){ if(s<3){ inHead.innerHTML=STEPS[s].h.map(l=>`<span>${l}</span>`).join(''); inHead.classList.remove('sm'); } else { const n=MATS[active].name.toUpperCase(); inHead.innerHTML=`<span>${n}</span>`; inHead.classList.toggle('sm',n.length>9); } }
 function applyStep(s){ inEyebrow.textContent=STEPS[s].eb; applyHead(s); inCap.innerHTML=STEPS[s].c.join('<br>'); inNum.textContent='0'+(s+1); icons.forEach((b,i)=>b.classList.toggle('on',i===s)); }
 function setStep(s,init){
   step=s; const ang=s===3?720:s*180; flipFrom=flipAngle; flipTo=ang; const halves=clamp(Math.abs(ang-flipAngle)/180,.4,2); flipDur=(init||RM)?0:720*halves; flipT0=now;
@@ -360,7 +360,7 @@ function centerCard(i){ const c=cards[i]; cardsEl.scrollTo({left:c.offsetLeft-(c
 const enquiry=[];
 function renderEnq(){
   if(badge){ badge.textContent=enquiry.length; badge.classList.toggle('show',enquiry.length>0); }
-  chips.innerHTML=enquiry.length?enquiry.map((l,i)=>`<span class="qc">${l}<button type="button" data-i="${i}" aria-label="Remove ${l}">×</button></span>`).join('<br>'):'<span class="qc empty">Nothing added yet — use the + buttons or the pack on the left.</span>';
+  chips.innerHTML=enquiry.length?enquiry.map((l,i)=>`<span class="qc">${l}<button type="button" data-i="${i}" aria-label="Remove ${l}">×</button></span>`).join(''):'<span class="qc empty">Nothing added yet — use the + buttons or the pack on the left.</span>';
 }
 chips.addEventListener('click',e=>{ const b=e.target.closest('button[data-i]'); if(!b) return; enquiry.splice(+b.dataset.i,1); renderEnq(); });
 function bump(){ if(RM||!basket) return; basket.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'}); }
@@ -463,34 +463,16 @@ if(FINE&&!RM){
 }
 function tickSmooth(dt){ if(!smooth.active) return; smooth.cur+=(smooth.target-smooth.cur)*(1-Math.exp(-dt/120)); if(Math.abs(smooth.target-smooth.cur)<.5){ smooth.cur=smooth.target; } scrollTo(0,smooth.cur); if(smooth.cur===smooth.target) smooth.active=false; }
 
-/* ---------------- intro ---------------- */
-const intro=$('#intro'), vid=$('#ivid');
-function enterHero(){
-  if(entered) return; entered=true; intro.classList.add('out'); later(()=>intro.remove(),600); body.classList.remove('locked'); nav.classList.add('in'); hero.classList.add('in');
-  if(RM) pos=0; else tween={from:-3,to:0,t0:performance.now(),dur:1700,ease:entrance,fired:true,phase:null};
-  startBits(); interact(); placeHL();
-}
-function runIntro(){
-  if(RM){ enterHero(); return; }
-  let started=false, logoShown=false;
-  const showLogo=()=>{ if(logoShown||entered) return; logoShown=true; try{vid.pause();}catch(_){} intro.classList.add('logo'); later(enterHero,1030); };
-  const start=()=>{ if(started) return; started=true; try{vid.currentTime=.55;}catch(_){} const p=vid.play(); if(p&&p.catch) p.catch(()=>showLogo()); };
-  vid.addEventListener('timeupdate',()=>{ if(vid.currentTime>=4.6) showLogo(); });
-  vid.addEventListener('ended',showLogo); vid.addEventListener('error',showLogo);
-  if(vid.readyState>=3) start(); else vid.addEventListener('canplay',start,{once:true});
-  later(()=>{ if(!started||vid.paused||vid.currentTime<.6) showLogo(); },3500);
-  later(enterHero,9000);
-  $('#skip').addEventListener('click',enterHero);
-}
-
 /* ---------------- init ---------------- */
-setTitle(MATS[0].name.toUpperCase(),1,true); countEl.textContent='01'; tagEl.textContent=MATS[0].tag; cards[0].classList.add('live'); autoBtn.setAttribute('aria-pressed',String(auto));
+titleEl.textContent=''; setTitle(MATS[0].name.toUpperCase(),1,true); countEl.textContent='01'; tagEl.textContent=MATS[0].tag; cards[0].classList.add('live'); autoBtn.setAttribute('aria-pressed',String(auto));
 setStep(0,true);
 document.fonts.load('700 100px "Barlow Condensed"').then(()=>{ if(!cancelled) fitTitle(); }).catch(()=>{});
 const fontsDone=()=>{ if(!cancelled) fitTitle(); };
 document.fonts.addEventListener?.('loadingdone',fontsDone);
 on(window, 'resize',()=>{ resizeGL(); heroUnit(); fitTitle(); sizeBits(); sizeStorm(); placeHL(); });
-runIntro();
+entered=true; nav.classList.add('in'); hero.classList.add('in');
+if(RM) pos=0; else tween={from:-3,to:0,t0:performance.now(),dur:1700,ease:entrance,fired:true,phase:null};
+startBits(); interact(); placeHL();
 
 /* ---------------- frame loop ---------------- */
 let last=performance.now();
@@ -500,7 +482,7 @@ function frame(t){
   const dt=Math.min(64,t-last); last=t; now=t;
   tickSmooth(dt); tickTween(); tickReveal();
   const hr=hero.getBoundingClientRect(); heroUnit();
-  cx=vw/2; cy=hr.top+(phone()?heroH*.4:heroH/2-78*u);
+  cx=vw/2; cy=hr.top+heroH*.34;
   heroVis=hr.height>0?clamp((Math.min(hr.bottom,vh)-Math.max(hr.top,0))/hr.height):0;
   if(auto&&entered&&!drag&&!tween&&!document.hidden&&heroVis>=.6&&t-lastInteract>3200) goTo(target+1);
 
@@ -616,7 +598,7 @@ raf=requestAnimationFrame(frame);
     try { detachForm(); detachImages(); } catch(_) {}
     try { document.fonts.removeEventListener?.('loadingdone', fontsDone); } catch(_) {}
     document.body.classList.remove('locked', 'dragging');
-    try { heroVid?.pause(); vid?.pause(); } catch(_) {}
+    try { heroVid?.pause(); } catch(_) {}
     try {
       scene.traverse((o) => {
         if (o.geometry && o.geometry.dispose) o.geometry.dispose();
@@ -753,6 +735,7 @@ function staticFallback(host, on, getLabels, ac) {
     .home3d .inside, .home3d .spot, .home3d #inFront, .home3d #spotFront,
     .home3d #gl, .home3d #gearsWorld, .home3d .hero-ghost { display:none!important }
     .home3d .hero { min-height:72svh }
+    .home3d #play, .home3d #auto { display:none!important }
     .home3d .proc, .home3d .quote { background:#0b1220!important }
     .home3d .cat { background:var(--cream)!important }
     /* Services3DSection keeps its own scroll-linked canvas and cards. */

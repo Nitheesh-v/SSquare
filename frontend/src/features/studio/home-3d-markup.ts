@@ -6,13 +6,6 @@
  */
 export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
 <div id="scrollProgress" aria-hidden="true"></div>
-<!-- ============ INTRO ============ -->
-<div id="intro">
-  <video id="ivid" muted playsinline preload="auto" src="https://videos.pexels.com/video-files/18883365/18883365-hd_1920_1080_50fps.mp4"></video>
-  <button id="skip">Skip intro</button>
-  <div class="stamp" aria-hidden="true"><div class="smark">S</div><div class="sword">S SQUARE<small>Engineering Services</small></div></div>
-</div>
-
 <!-- Top navigation is rendered by the shared Navbar component (app/page.tsx). -->
 <nav class="rail" id="rail" aria-label="Chapters">
   <button type="button" data-h="#home" class="on" aria-label="Hero"></button>
@@ -24,15 +17,15 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
 </nav>
 
 <!-- ============ 1. HERO ============ -->
-<section id="home" class="hero" data-nav="dark">
+<section id="home" class="hero in" data-nav="dark">
   <div class="reveal"></div>
   <div class="rings"></div>
   <div class="bits" id="bits"></div>
   <div class="arc" id="arc" aria-label="Material carousel. Drag or use the arrow keys."></div>
   <div class="eyebrow"><span>Custom components</span><i></i><span>Engineered in Coimbatore</span><i></i><span>Since 2003</span></div>
   <button id="play" aria-label="Next material"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></button>
-  <h1 id="title" class="disp" aria-live="polite"></h1>
-  <p class="tag" id="tag"></p>
+  <h1 id="title" class="disp" aria-live="polite">RUBBER</h1>
+  <p class="tag" id="tag">Seals, gaskets, O-rings, cords, sheets &amp; rubber-to-metal bonded components.</p>
   <div id="count" class="disp" aria-hidden="true">01</div>
   <button id="auto" aria-pressed="true" aria-label="Toggle autoplay"><span class="ring"><svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1.8"/><rect x="14" y="4" width="5" height="16" rx="1.8"/></svg><svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg></span><span class="lbl">Autoplay</span></button>
   <div class="hcta"><a class="btn ob" href="#quote">Request a Quote</a><a class="btn gb" id="explore" href="#materials"><span>Explore rubber</span>→</a></div>

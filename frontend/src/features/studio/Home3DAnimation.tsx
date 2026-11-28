@@ -10,6 +10,7 @@ import {
 } from "./home-3d-markup";
 import { Services3DSection } from "./Services3DSection";
 import "./home-3d.css";
+import "./home-3d-hero.css";
 
 /**
  * Next.js port of the supplied standalone 3D homepage HTML.
@@ -29,6 +30,7 @@ const STATIC_CSS = `
     display: none !important;
   }
   .home3d .hero { min-height: 72svh; }
+  .home3d #play, .home3d #auto { display: none !important; }
   .home3d .proc, .home3d .quote { background: #0b1220 !important; }
   .home3d .cat { background: var(--cream) !important; }
   .home3d .nav { opacity: 1 !important; transform: none !important; }
@@ -70,18 +72,11 @@ export function Home3DAnimation() {
     if (!host) return;
     const body = document.body;
 
-    body.classList.add("home3d-active", "locked");
+    body.classList.add("home3d-active");
     let cancelled = false;
     let dispose = () => {};
 
-    // Never leave the page scroll-locked if the engine chunk or WebGL fails.
-    const safety = window.setTimeout(() => {
-      if (!cancelled) body.classList.remove("locked");
-    }, 9500);
-
     const revealStatic = () => {
-      body.classList.remove("locked");
-      host.querySelector("#intro")?.remove();
       host.querySelector("#home")?.classList.add("in");
       const title = host.querySelector("#title");
       if (title && !title.textContent?.trim()) title.textContent = "RUBBER";
@@ -117,7 +112,6 @@ export function Home3DAnimation() {
 
     return () => {
       cancelled = true;
-      window.clearTimeout(safety);
       dispose();
       body.classList.remove("home3d-active", "locked", "dragging");
     };
