@@ -1,0 +1,124 @@
+/* Homepage viewport tiers
+   Keep the layout changes aligned to familiar responsive sizes:
+   sm < 640px, md 640–1023px, lg >= 1024px. The base styles remain the
+   large-screen layout; these rules only refine tablet and phone ergonomics. */
+
+/* sm — phones */
+@media (max-width: 639px) {
+  .studio-home.ar-home {
+    --ar-shell-x: clamp(16px, 5vw, 20px);
+    --reveal-x: 28px;
+  }
+
+  .ar-home .studio-section {
+    padding-block: clamp(54px, 16vw, 68px);
+  }
+
+  .ar-home .home-section-heading,
+  .ar-home .home-products-intro h2,
+  .ar-home .home-facts-heading {
+    font-size: clamp(30px, 10vw, 40px);
+    line-height: 1.08;
+  }
+
+  .ar-home .home-products-intro,
+  .ar-home .home-facts-head {
+    margin-bottom: 28px;
+  }
+
+  .ar-home .home-editorial-grid {
+    gap: 28px;
+  }
+
+  .ar-home .home-editorial-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .ar-home .home-service-card {
+    padding: 34px 22px 28px;
+  }
+
+  .ar-home .home-quick-photos {
+    min-height: clamp(190px, 62vw, 235px);
+  }
+
+  .ar-home .home-quick-copy {
+    padding: 34px var(--ar-shell-x) 40px;
+  }
+
+  .ar-home .home-quick-quote {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ar-home .home-quick-location {
+    align-items: flex-start;
+  }
+
+  .ar-tabs {
+    gap: 4px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .ar-tabs::-webkit-scrollbar { display: none; }
+  .ar-tabs button {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding-inline: 9px;
+  }
+}
+
+/* md — larger phones and tablets */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .studio-home.ar-home {
+    --ar-shell-x: clamp(24px, 4vw, 36px);
+    --reveal-x: 44px;
+  }
+
+  .ar-home .studio-section {
+    padding-block: clamp(68px, 9vw, 86px);
+  }
+
+  .ar-home .home-section-heading,
+  .ar-home .home-products-intro h2 {
+    font-size: clamp(40px, 6vw, 54px);
+  }
+
+  .ar-home .home-quick-copy {
+    padding-inline: var(--ar-shell-x);
+  }
+}
+
+/* The compact end of md benefits from two cards per row instead of three
+   narrow cards. Standard md tablets (768px+) retain the three-card overview. */
+@media (min-width: 640px) and (max-width: 767px) {
+  .ar-home .studio-material-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ar-home .studio-material-card:last-child {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .ar-home .studio-material-card:last-child .studio-material-photo {
+    min-height: 100%;
+    aspect-ratio: auto;
+  }
+}
+
+/* lg — laptops and desktops */
+@media (min-width: 1024px) {
+  .studio-home.ar-home { --reveal-x: 64px; }
+}
+
+/* Touch screens do not have a durable hover state. Avoid leaving cards
+   visually lifted after a tap while preserving keyboard focus behavior. */
+@media (hover: none) and (pointer: coarse) {
+  .ar-home .studio-material-card:hover,
+  .ar-home .home-service-card:hover,
+  .ar-home .home-fact:hover {
+    transform: none;
+  }
+}

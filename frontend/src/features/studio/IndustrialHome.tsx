@@ -25,6 +25,7 @@ import { ServiceStory } from "./immersive/ServiceStory";
 import { STUDIO_MATERIALS } from "./materials";
 import "./home-content.css";
 import "./immersive/ar-home.css";
+import "./immersive/responsive-home.css";
 import "./immersive/service-journey.css";
 
 const MACHINED_COMPONENTS = "/images/ssquare/machined-components.jpg";
