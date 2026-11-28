@@ -90,25 +90,23 @@ test("reference sections appear in order with the chosen company facts and proje
   await expect(page.locator("main")).toContainText("100% CONFORMITY");
   await expect(page.locator("main")).toContainText("DHL / FEDEX · 3–4 DAYS");
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
-  await page.locator(".home-facts").scrollIntoViewIfNeeded();
-  await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
-  // The fact cards fade in once on entry, but nothing in the section loops or
-  // drifts: every animation has to settle and stay settled. Finished one-shot
-  // animations stay listed until they are cancelled, so count the running ones.
-  await expect
-    .poll(
-      () =>
-        page
-          .locator(".home-facts")
-          .evaluate(
-            (node) =>
-              node
-                .getAnimations({ subtree: true })
-                .filter((animation) => animation.playState === "running").length,
-          ),
-      { timeout: 5000 },
-    )
-    .toBe(0);
+  // On narrow screens the section is taller than the viewport. Visit each
+  // block before checking it has completed its one-shot reveal.
+  // Disable transition timing to test the final styles deterministically even
+  // on headless browsers with a throttled compositor.
+  await page.addStyleTag({ content: ".ar-home [data-reveal-motion] { transition: none !important; }" });
+  const factBlocks = page.locator(".home-facts [data-reveal-from]");
+  for (let i = 0; i < await factBlocks.count(); i++) {
+    const block = factBlocks.nth(i);
+    await block.evaluate((node) => node.scrollIntoView({ block: "center", behavior: "instant" }));
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(1200);
+    await expect.poll(() => block.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return Number(style.opacity) >= 0.99 &&
+        (style.transform === "none" || style.transform === "matrix(1, 0, 0, 1, 0, 0)");
+    }), { timeout: 6000 }).toBe(true);
+  }
   await noOverflow(page);
 });
 

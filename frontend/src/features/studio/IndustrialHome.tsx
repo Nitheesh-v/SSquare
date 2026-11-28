@@ -119,7 +119,8 @@ export function IndustrialHome() {
               <Reveal
                 paused={paused}
                 key={item.slug}
-                delay={i * 65}
+                delay={i * 110}
+                from={i % 2 === 0 ? "left" : "right"}
                 className="studio-material-card"
               >
                 <Link
@@ -166,7 +167,7 @@ export function IndustrialHome() {
         aria-labelledby="about-heading"
       >
         <div className="studio-shell home-editorial-grid">
-          <Reveal paused={paused} className="home-editorial-copy">
+          <Reveal paused={paused} from="left" className="home-editorial-copy">
             <p className="studio-kicker">About Us</p>
             <h2 id="about-heading" className="home-section-heading">
               Who We Are
@@ -195,7 +196,7 @@ export function IndustrialHome() {
               More About Us <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
           </Reveal>
-          <Reveal paused={paused} delay={90} className="home-editorial-figure">
+          <Reveal paused={paused} delay={120} from="right" className="home-editorial-figure">
             <div className="home-editorial-photo">
               <SmartProductImage
                 src={MACHINED_COMPONENTS}
@@ -218,7 +219,7 @@ export function IndustrialHome() {
         aria-labelledby="capabilities-heading"
       >
         <div className="studio-shell home-editorial-grid">
-          <Reveal paused={paused} className="home-editorial-copy">
+          <Reveal paused={paused} from="right" className="home-editorial-copy">
             <p className="studio-kicker">From your drawing to your component</p>
             <h2 id="capabilities-heading" className="home-section-heading">
               What We Do
@@ -246,7 +247,7 @@ export function IndustrialHome() {
               More About Us <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
           </Reveal>
-          <Reveal paused={paused} delay={90} className="home-editorial-figure">
+          <Reveal paused={paused} delay={120} from="left" className="home-editorial-figure">
             <div className="home-editorial-photo">
               <SmartProductImage
                 src={ALUMINIUM_TOOLING}
@@ -288,7 +289,8 @@ export function IndustrialHome() {
               return (
                 <Reveal
                   paused={paused}
-                  delay={i * 70}
+                  delay={i * 110}
+                  from="left"
                   key={fact.label}
                   className="home-fact"
                 >
@@ -314,7 +316,7 @@ export function IndustrialHome() {
         className="home-quick-service"
         aria-labelledby="quick-service-heading"
       >
-        <div className="home-quick-photos">
+        <Reveal paused={paused} from="left" className="home-quick-photos">
           <div className="home-quick-photo">
             <SmartProductImage
               src="/images/division-rubber.jpg"
@@ -344,8 +346,8 @@ export function IndustrialHome() {
             <span className="home-quick-tag">03 / ALUMINIUM</span>
           </div>
           <p>RUBBER / STEEL / ALUMINIUM</p>
-        </div>
-        <Reveal paused={paused} className="home-quick-copy">
+        </Reveal>
+        <Reveal paused={paused} from="right" className="home-quick-copy">
           <p className="studio-kicker">Quick Service on Your Needs</p>
           <h2 id="quick-service-heading">Call {COMPANY_INFO.hours}</h2>
           <p>

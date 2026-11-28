@@ -1223,11 +1223,14 @@ body:has(.ar-home)::-webkit-scrollbar {
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
   align-items: stretch;
 }
+/* Both halves are `Reveal` wrappers, so the grid items are the wrappers
+   themselves — the display and overflow still live on this element. */
 .ar-home .home-quick-photos {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: 1fr;
+  min-width: 0;
   min-height: clamp(360px, 44vw, 520px);
   overflow: hidden;
   background: #0b0c0e;
@@ -1293,6 +1296,7 @@ body:has(.ar-home)::-webkit-scrollbar {
   position: relative;
   display: flex;
   min-width: 0;
+  overflow-x: clip;
   flex-direction: column;
   justify-content: center;
   padding: clamp(34px, 4.4vw, 66px);
@@ -1832,6 +1836,48 @@ dialog.ar-station-drawer[open] {
   }
   .ar-bottom-bar { left: var(--ar-shell-x); right: var(--ar-shell-x); }
 }
+/* ── Scroll reveals ────────────────────────────────────────────────────────
+   Blocks slide in from the left or the right as they enter the viewport (see
+   `Reveal` in components/shared/MotionPrimitives.tsx). The horizontal travel
+   is clipped here so a section that is still off to the side can never widen
+   the document; `clip` rather than `hidden` keeps `position: sticky` working
+   for the pinned hero and services stage. */
+.studio-home.ar-home {
+  overflow-x: clip;
+}
+.studio-home .studio-shell,
+.ar-home .home-quick-service,
+.ar-home .home-facts,
+.ar-home .studio-material-grid {
+  min-width: 0;
+}
+
+/* One class drives the whole reveal: the block rests at its `--reveal-from`
+   offset and transitions to its natural position when it scrolls into view.
+   `Reveal` adds `.is-revealed` from an IntersectionObserver; nothing here
+   blocks first paint, and without JS the class never arrives, so the resting
+   transform has to be the visible one — hence the transition, not a keyframe,
+   and the fallback below. */
+.studio-home [data-reveal-motion="on"] {
+  opacity: 0;
+  transform: var(--reveal-from, translate3d(0, 0, 0));
+  transition:
+    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 0.78s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.studio-home [data-reveal-motion="on"].is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-home [data-reveal-motion="on"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ── Keep the fixed atmosphere behind the homepage and its shared footer ─── */
 /* The ambient field is `position: fixed; z-index: 0`, and `.ar-home` is an
    isolated stacking context, so a root-level footer has to sit above both. */
