@@ -18,10 +18,10 @@ import "./home-3d.css";
  * and imperative Three.js/WebGL module). Its top header nav was removed in
  * favour of the shared site Navbar rendered by app/page.tsx. Most of it is
  * mounted as scoped static markup; the "OUR SERVICES" block is a real React
- * component with its own scroll-linked Three.js scene. The old full-screen
- * background canvas/gear world was removed, and the main engine is held in its
- * static fallback so the services section is the only WebGL animation. All CSS
- * lives under `.home3d`, so the shared site styles are untouched.
+ * component with its own scroll-linked Three.js scene. The original product
+ * carousel and travelling component animations remain, while the background
+ * gear layers are removed. All CSS lives under `.home3d`, so the shared site
+ * styles are untouched.
  */
 const STATIC_CSS = `
   .home3d #intro, .home3d #gl, .home3d #gearsWorld, .home3d .hero-ghost,
@@ -129,7 +129,6 @@ export function Home3DAnimation() {
       className="home3d"
       ref={hostRef}
       tabIndex={-1}
-      data-home3d-static="true"
     >
       <div
         className="home3d-segment"

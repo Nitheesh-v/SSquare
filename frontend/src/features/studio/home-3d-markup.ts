@@ -4,7 +4,8 @@
  * the page is driven by imperative DOM code (see home-3d-engine.ts).
  * The <script> block is deliberately NOT included here.
  */
-export const HOME_3D_MARKUP_BEFORE = String.raw`<div id="scrollProgress" aria-hidden="true"></div>
+export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
+<div id="scrollProgress" aria-hidden="true"></div>
 <!-- ============ INTRO ============ -->
 <div id="intro">
   <video id="ivid" muted playsinline preload="auto" src="https://videos.pexels.com/video-files/18883365/18883365-hd_1920_1080_50fps.mp4"></video>
@@ -19,7 +20,6 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<div id="scrollProgress" aria-hi
   <button type="button" data-h="#materials" aria-label="Materials"></button>
   <button type="button" data-h="#components" aria-label="Parts"></button>
   <button type="button" data-h="#process" aria-label="Services"></button>
-  <button type="button" data-h="#compare" aria-label="Compare"></button>
   <button type="button" data-h="#quote" aria-label="Quote"></button>
 </nav>
 
@@ -140,11 +140,6 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<div id="scrollProgress" aria-hi
 <!-- ============ 4b. SPOTLIGHT CARDS ============ -->
 <section id="catalog" class="cat rvw" data-nav="light">
   <div class="gveil"></div>
-  <div class="cat-cogs" aria-hidden="true">
-    <div class="cog a"><svg viewBox="0 0 100 100"><path fill="currentColor" d="M48 4h4l1.2 8.2 7.6-3.3 2 3.5-6.2 5.4 5.4 6.2 3.5-2 3.3 7.6L77 32v4l-8.2 1.2 3.3 7.6-3.5 2-5.4-6.2-6.2 5.4 2 3.5-7.6 3.3L52 61h-4l-1.2-8.2-7.6 3.3-2-3.5 6.2-5.4-5.4-6.2-3.5 2-3.3-7.6L23 36v-4l8.2-1.2-3.3-7.6 3.5-2 5.4 6.2 6.2-5.4-2-3.5 7.6-3.3L48 4zM50 38a12 12 0 1 0 0 24 12 12 0 0 0 0-24z"/></svg></div>
-    <div class="cog b"><svg viewBox="0 0 100 100"><path fill="currentColor" d="M48 4h4l1.2 8.2 7.6-3.3 2 3.5-6.2 5.4 5.4 6.2 3.5-2 3.3 7.6L77 32v4l-8.2 1.2 3.3 7.6-3.5 2-5.4-6.2-6.2 5.4 2 3.5-7.6 3.3L52 61h-4l-1.2-8.2-7.6 3.3-2-3.5 6.2-5.4-5.4-6.2-3.5 2-3.3-7.6L23 36v-4l8.2-1.2-3.3-7.6 3.5-2 5.4 6.2 6.2-5.4-2-3.5 7.6-3.3L48 4zM50 38a12 12 0 1 0 0 24 12 12 0 0 0 0-24z"/></svg></div>
-    <div class="cog c"><svg viewBox="0 0 100 100"><path fill="currentColor" d="M48 4h4l1.2 8.2 7.6-3.3 2 3.5-6.2 5.4 5.4 6.2 3.5-2 3.3 7.6L77 32v4l-8.2 1.2 3.3 7.6-3.5 2-5.4-6.2-6.2 5.4 2 3.5-7.6 3.3L52 61h-4l-1.2-8.2-7.6 3.3-2-3.5 6.2-5.4-5.4-6.2-3.5 2-3.3-7.6L23 36v-4l8.2-1.2-3.3-7.6 3.5-2 5.4 6.2 6.2-5.4-2-3.5 7.6-3.3L48 4zM50 38a12 12 0 1 0 0 24 12 12 0 0 0 0-24z"/></svg></div>
-  </div>
   <div class="cat-top">
     <p class="cat-kicker">Spotlight <b>· 3 of many</b></p>
     <a class="lnk" href="#quote">Request the full catalogue →</a>
@@ -204,43 +199,12 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<div id="scrollProgress" aria-hi
   </div>
 </section>`;
 
-export const HOME_3D_MARKUP_AFTER = String.raw`<!-- ============ 6. COMPARE ============ -->
-<section id="compare" class="cmp" data-nav="light">
-  <div id="cmpStage" aria-hidden="true"></div>
-  <div class="rvw">
-    <div class="srow">
-      <div><p class="eb">04 / A material starting point</p><h2 class="disp">Match the material
-to the challenge.</h2></div>
-      <p>A general selection guide, not a product datasheet. Final material compatibility and specifications require application review.</p>
-    </div>
-    <div class="filters">
-      <div class="fl" id="filters"><button class="fchip on" data-f="all">All materials</button><button class="fchip" data-f="rubber">Rubber</button><button class="fchip" data-f="steel">Steel</button><button class="fchip" data-f="aluminium">Aluminium</button></div>
-      <span class="mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">Compare material families</span>
-    </div>
-    <div class="tw">
-      <table class="tbl" id="tbl">
-        <thead><tr><th>Material family</th><th>Application context</th><th>General characteristics</th><th>Component types</th><th></th></tr></thead>
-        <tbody>
-          <tr data-m="rubber"><td><b>Viton (FKM) Elastomer</b><small>Rubber · Fluoroelastomer</small></td><td>High-heat &amp; chemical service</td><td>Fuel, oil, chemical and elevated-temperature resistance</td><td>Seals, gaskets, diaphragms</td><td><button class="tadd" data-add="Viton (FKM) elastomer" aria-label="Add Viton to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="rubber"><td><b>Silicone Elastomer</b><small>Rubber · VMQ</small></td><td>Wide temperature range</td><td>Thermal stability, flexibility, food-grade options</td><td>Gaskets, cords, moulded parts</td><td><button class="tadd" data-add="Silicone elastomer" aria-label="Add silicone to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="rubber"><td><b>NBR / HNBR Nitrile</b><small>Rubber · Oil resistant</small></td><td>Hydraulic &amp; oil service</td><td>Petroleum oil, hydraulic fluid and abrasion resistance</td><td>O-rings, seals, bonded parts</td><td><button class="tadd" data-add="NBR / HNBR nitrile" aria-label="Add nitrile to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="rubber"><td><b>EPDM, Neoprene &amp; Natural Rubber</b><small>Rubber · General purpose</small></td><td>Weather, water &amp; dynamic flex</td><td>Ozone, weather and water resistance; resilience</td><td>Gaskets, mounts, bellows</td><td><button class="tadd" data-add="EPDM / Neoprene / Natural rubber" aria-label="Add EPDM to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="steel"><td><b>Stainless Steel</b><small>Steel · SS304 / SS316</small></td><td>Sanitary &amp; corrosive duty</td><td>Corrosion resistance, strength, hygiene</td><td>Valve bodies, blocks, fittings</td><td><button class="tadd" data-add="Stainless steel" aria-label="Add stainless steel to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="steel"><td><b>Custom Alloy &amp; Structural Steel</b><small>Steel · EN8 / EN24 / MS</small></td><td>Machinery &amp; heavy duty</td><td>Strength, machinability, toughness</td><td>Bushings, shafts, brackets</td><td><button class="tadd" data-add="Alloy & structural steel" aria-label="Add alloy steel to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-          <tr data-m="aluminium"><td><b>Aluminium (Grade 6061 &amp; Tooling)</b><small>Aluminium · Machined</small></td><td>Lightweight &amp; thermal</td><td>Low weight, machinability, conductivity</td><td>Die moulds, housings, plates</td><td><button class="tadd" data-add="Aluminium 6061 / tooling" aria-label="Add aluminium to the enquiry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="tnote">Material properties vary with grade, compound and process. Operating limits and specifications are confirmed during enquiry review.</p>
-  </div>
-</section>
-
-<!-- ============ 7. QUOTE + ENQUIRY PACK ============ -->
+export const HOME_3D_MARKUP_AFTER = String.raw`<!-- ============ 7. QUOTE + ENQUIRY PACK ============ -->
 <section id="quote" class="quote" data-nav="dark">
   <div class="gveil"></div>
   <div class="qgrid rvw">
     <div class="qleft">
-      <p class="eb">05 / Let's make it precise</p>
+      <p class="eb">04 / Let's make it precise</p>
       <h2 class="disp"><span class="ln"><span>The next component</span></span><span class="ln"><span>starts with a</span></span><span class="ln"><span class="o">conversation.</span></span></h2>
       <p class="qp">Tell us what you need to make. Share a material, a quantity and the details that matter. Drawings and samples can be coordinated directly by email or WhatsApp.</p>
       <div class="qcontact">
@@ -284,7 +248,7 @@ to the challenge.</h2></div>
 <footer>
   <div class="fgrid">
     <div><a class="brand" href="#home"><span class="mark" style="width:36px;height:36px;font-size:22px">S</span><span><b style="font:800 15.5px "Inter Variable", Inter, sans-serif;letter-spacing:.06em;color:#fff">S SQUARE</b><small style="font:500 9px 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.7">Engineering Services</small></span></a><p>Specialising in custom rubber, steel and aluminium manufacturing with a commitment to precision, durability and timely delivery.</p></div>
-    <div><h5>Quick links</h5><div class="fl"><a href="#home">Home</a><a href="#precision">Precision</a><a href="#materials">Materials</a><a href="#components">Components</a><a href="#process">Process</a><a href="#compare">Compare</a><a href="#quote">Request a Quote</a></div></div>
+    <div><h5>Quick links</h5><div class="fl"><a href="#home">Home</a><a href="#precision">Precision</a><a href="#materials">Materials</a><a href="#components">Components</a><a href="#process">Process</a><a href="#quote">Request a Quote</a></div></div>
     <div><h5>Contact info</h5><div class="fl"><a>S Square Engineering Services</a><a>56, Jeganathapuram, Avarampalayam Road,</a><a>Peelamedu, Coimbatore 641004</a><a href="tel:+917530080040">+91 75300 80040</a><a href="mailto:sales@ssquareengg.com">sales@ssquareengg.com</a></div></div>
   </div>
   <div class="fbot"><span>© 2026 S Square Engineering Services. All rights reserved.</span><span>Rubber · Steel · Aluminium · Coimbatore, India</span></div>

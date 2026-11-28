@@ -12,13 +12,6 @@ export async function createHome3DEngine(host: HTMLElement): Promise<() => void>
   const on = (target, type, fn, opts) =>
     target.addEventListener(type, fn, { ...(opts || {}), signal });
 
-  // The old full-screen WebGL background (gears/particles/traveller) is gone.
-  // Keep the non-WebGL behaviour: static reveal, quote form, image fallbacks,
-  // chapter links and cleanup. Services3DSection owns the only canvas now.
-  if (host.dataset.home3dStatic === "true") {
-    return staticFallback(host, on, () => [], ac);
-  }
-
   const THREE = await import("three");
   const { RoomEnvironment } = await import(
     "three/addons/environments/RoomEnvironment.js"
@@ -81,7 +74,6 @@ const sec2=$('#precision'), inBar=$('#inBar'), inFront=$('#inFront'), frontFrame
 const shop=$('#materials'), cardsEl=$('#cards'), cards=$$('.card'), pks=$$('.pk'), quoteSec=$('#quote'), basket=$('#basket'), badge=$('#badge'), chips=$('#chips');
 const secC=$('#components'), spotFront=$('#spotFront'), spotStage=$('#spotStage'), spotCard=$('#spotCard');
 const scTag=$('#scTag'), scTitle=$('#scTitle'), scCopy=$('#scCopy'), scSpec=$('#scSpec'), scRq=$('#scRq'), spotTicks=$$('#spotTicks button');
-const gw=$('#gearsWorld'), g1=$('#gearsWorld .g1'), g2=$('#gearsWorld .g2'), gearVid=$('#gearVid');
 const procSec=$('#process'), cmpSec=$('#compare'), procStage=$('#procStage'), cmpStage=$('#cmpStage'), railBtns=$$('#rail button'), railEl=$('#rail');
 const procSteps=$$('.step'), catSec=$('#catalog'), catCards=$$('.cat-card');
 const progress=$('#scrollProgress'), heroVid=$('#heroVid'), heroGhost=$('.hero-ghost');
@@ -145,20 +137,6 @@ const GEO={};
   GEO.housing=new THREE.LatheGeometry(P,96);
   GEO.shadow=new THREE.PlaneGeometry(1.25,1.04);
 }
-function gearGeo(teeth,r0,r1,hole,depth){
-  const sh=new THREE.Shape();
-  for(let i=0;i<teeth;i++){
-    const t=i/teeth*Math.PI*2, dt=Math.PI*2/teeth;
-    const p=(r,a)=>[Math.cos(a)*r,Math.sin(a)*r];
-    const a=p(r0,t), b=p(r1,t+dt*.2), c=p(r1,t+dt*.42), d=p(r0,t+dt*.62);
-    if(i) sh.lineTo(...a); else sh.moveTo(...a);
-    sh.lineTo(...b); sh.lineTo(...c); sh.lineTo(...d);
-  }
-  sh.closePath();
-  const h=new THREE.Path(); h.absarc(0,0,hole,0,Math.PI*2,true); sh.holes.push(h);
-  const g=new THREE.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelThickness:depth*.1,bevelSize:depth*.06,bevelSegments:1,curveSegments:2});
-  g.center(); return g;
-}
 const shadowTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); const g=x.createRadialGradient(128,128,8,128,128,128); g.addColorStop(0,'rgba(0,0,0,.62)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,256,256); return new THREE.CanvasTexture(c); })();
 const matRubber=()=>new THREE.MeshPhysicalMaterial({color:0x1e1f24,roughness:.7,metalness:0,clearcoat:.35,clearcoatRoughness:.45,envMapIntensity:.7});
 const matSteel=()=>new THREE.MeshPhysicalMaterial({color:0xd9dde2,roughness:.26,metalness:1,envMapIntensity:1});
@@ -183,25 +161,13 @@ function placeSlot(s,st){
   if(s.op!==st.op){ s.hit.forEach(m=>{ m.material.opacity=st.op; m.material.transparent=st.op<.999; }); s.op=st.op; }
   const h=st.h; s.g.position.set(st.x-vw/2,vh/2-st.y,st.z||0); s.g.scale.set(h*(st.sx||1),h*(st.sy||1),h);
   s.g.rotation.set((st.rx||0)*DEG,(st.ry||0)*DEG,-(st.rz||0)*DEG);
-  const inner=s.vars[s.flav]; if(inner&&inner.children[0]) inner.children[0].rotation.y=now*0.00045;
+  const inner=s.vars[s.flav]; if(inner&&inner.children[0]) inner.children[0].rotation.y=RM?0:now*0.00045;
   s.sh.position.set(s.g.position.x,s.g.position.y-.05*h,(st.z||0)-.32*h); s.sh.rotation.set(0,0,-(st.rz||0)*DEG);
   s.sh.scale.set(h*Math.max(.3,Math.abs(Math.cos((st.ry||0)*DEG))),h,1); s.sh.material.opacity=.5*st.op*(st.shadow??1);
 }
 const POOL=7, pool=[]; for(let i=0;i<POOL;i++) pool.push(makeSlot());
 const trav=makeSlot(), cardBars=[makeSlot(),makeSlot(),makeSlot()];
 const spotSlots=[makeSlot(),makeSlot(),makeSlot()];
-const gearGroup=new THREE.Group(); gearGroup.visible=false; scene.add(gearGroup);
-const GEARS=[
-  {teeth:16,r0:.3,r1:.46,hole:.12,d:.07,col:0x9aa3ad,x:.10,y:.30,s:380,spin:1.15,rx:.55},
-  {teeth:12,r0:.28,r1:.44,hole:.1,d:.09,col:0xb7bec6,x:.90,y:.24,s:300,spin:-1.35,rx:.4},
-  {teeth:20,r0:.32,r1:.48,hole:.14,d:.055,col:0x7d868f,x:.86,y:.78,s:460,spin:.72,rx:.65},
-  {teeth:10,r0:.26,r1:.4,hole:.1,d:.11,col:0xc5ccd3,x:.16,y:.82,s:240,spin:-1.7,rx:.35},
-  {teeth:14,r0:.24,r1:.38,hole:.09,d:.05,col:0x8e969f,x:.5,y:.48,s:200,spin:-2.2,rx:.9},
-  {teeth:9,r0:.22,r1:.34,hole:.08,d:.08,col:0xd0d5db,x:.72,y:.58,s:160,spin:1.8,rx:.25}
-].map(d=>{
-  const m=new THREE.Mesh(gearGeo(d.teeth,d.r0,d.r1,d.hole,d.d), new THREE.MeshPhysicalMaterial({color:d.col,roughness:.38,metalness:.95,envMapIntensity:.75,transparent:true,opacity:.55}));
-  gearGroup.add(m); return {...d,m};
-});
 
 /* ---------------- snapshots (2D images of each part) ---------------- */
 function snapshotAll(){
@@ -470,7 +436,6 @@ sendBtn.addEventListener('click',()=>{
 renderPack(); renderEnq();
 
 /* ---------------- compare filter + form ---------------- */
-$('#filters').addEventListener('click',e=>{ const b=e.target.closest('.fchip'); if(!b) return; $$('.fchip').forEach(x=>x.classList.toggle('on',x===b)); const f=b.dataset.f; $$('#tbl tbody tr').forEach(tr=>tr.classList.toggle('hide',f!=='all'&&tr.dataset.m!==f)); });
 const detachForm = attachRealQuoteForm(host, () => enquiry.slice());
 /* ---------------- reveals ---------------- */
 const io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.intersectionRatio>=.18||(en.isIntersecting&&en.boundingClientRect.height>innerHeight*.8)){ en.target.classList.add('on'); io.unobserve(en.target); } }),{threshold:[0,.18,.4]});
@@ -556,11 +521,11 @@ function frame(t){
 
   const shr=shop.getBoundingClientRect(); const shopIn=shr.bottom>0&&shr.top<vh;
   const cr=secC.getBoundingClientRect(); const inC=cr.bottom>0&&cr.top<vh;
-  const prr=procSec.getBoundingClientRect(); const cmr=cmpSec.getBoundingClientRect(); const qrr=quoteSec.getBoundingClientRect();
+  const prr=procSec.getBoundingClientRect();  const qrr=quoteSec.getBoundingClientRect();
   const p3=clamp((vh-shr.top)/(.7*vh));
   const pD=clamp((vh-cr.top)/(.78*vh));
   const pE=clamp((vh-prr.top)/(.78*vh));
-  const pF=clamp((vh-cmr.top)/(.78*vh));
+  const pF=0; // The comparison section is no longer present.
   const pG=clamp((vh-qrr.top)/(.82*vh));
 
   mx+=(mxT-mx)*.06; my+=(myT-my)*.06;
@@ -568,26 +533,13 @@ function frame(t){
   if(inC!==spotVis){ spotVis=inC; spotFront.style.visibility=inC?'visible':'hidden'; }
   const catr=catSec.getBoundingClientRect(); const catIn=catr.bottom>0&&catr.top<vh;
   const procIn=prr.bottom>0&&prr.top<vh, quoteIn=qrr.bottom>0&&qrr.top<vh;
-  const showGears=inC||catIn||procIn||quoteIn;
   const pCat=clamp((vh-catr.top)/(.75*vh));
-  gw.classList.toggle('show', showGears);
-  gearGroup.visible=showGears||catIn;
   const sp=inC||pD>0?clamp(-cr.top/Math.max(1,cr.height-vh)):0;
   const idx=sp*2; const si=clamp(Math.round(idx),0,2);
   if(inC&&si!==spotI) setSpot(si);
   if(inC){
     const pinY=cr.top>0?cr.top:(cr.bottom<vh?cr.bottom-vh:0);
     spotFront.style.transform=`translateY(${pinY.toFixed(2)}px)`;
-  }
-  if(showGears){
-    const gy=scrollY*.14, gs=1.1+scrollY*.00004;
-    g1.style.transform=`translate3d(${(mx*30).toFixed(1)}px,${(-gy+my*18).toFixed(1)}px,0) scale(${gs.toFixed(4)})`;
-    g2.style.transform=`translate3d(${(-mx*18).toFixed(1)}px,${(-gy*.45-my*10).toFixed(1)}px,0) scale(${(gs+.04).toFixed(4)}) rotate(${(scrollY*.015).toFixed(2)}deg)`;
-    if(gearVid){ if(gearVid.paused) gearVid.play().catch(()=>{}); const v=smooth.active?Math.abs(smooth.target-smooth.cur):8; gearVid.playbackRate=RM?.4:clamp(.45+v/90,.4,1.75); }
-  } else if(gearVid&&!gearVid.paused){ gearVid.pause(); }
-  if(catIn){
-    const layer=$('.cat-cogs');
-    if(layer) layer.style.transform=`translate3d(${(mx*16).toFixed(1)}px,${(catr.top*.12+my*10).toFixed(1)}px,0)`;
   }
 
   const stg=spotStage.getBoundingClientRect();
@@ -636,21 +588,7 @@ function frame(t){
     }
   }
 
-  if(showGears||catIn){
-    let gOp=.2; if(inC) gOp=.28+.3*(1-clamp(pE)); else if(catIn) gOp=.5; else if(procIn) gOp=.32; else if(quoteIn) gOp=.24;
-    const layout=catIn&&!inC?[
-      {x:.06,y:.14,s:300,z:-520},{x:.94,y:.12,s:240,z:-480},{x:.08,y:.88,s:360,z:-560},{x:.92,y:.86,s:260,z:-500},
-      {x:.5,y:.5,s:190,z:-640},{x:.7,y:.62,s:150,z:-580}
-    ]:null;
-    GEARS.forEach((g,i)=>{
-      const L=layout?layout[i]:null;
-      const gx=L?L.x:g.x, gy=L?L.y:g.y, gs=L?L.s:g.s, gz=L?L.z:-420;
-      g.m.position.set(gx*vw-vw/2+mx*40, vh/2-gy*vh-my*30, gz);
-      g.m.scale.setScalar(gs);
-      g.m.rotation.set(g.rx, (sp||pCat||pE||pG)*g.spin*.8, (RM?0:t*.00035)+(scrollY*.0012)*g.spin);
-      g.m.material.opacity=gOp*(.55+.45*(1-Math.abs(gx-.5)));
-    });
-  } else if(!inC){ spotSlots.forEach(hideSlot); }
+
 
   if(!RM&&prr.bottom>0&&prr.top<vh){
     procSteps.forEach(el=>{
@@ -678,7 +616,7 @@ raf=requestAnimationFrame(frame);
     try { detachForm(); detachImages(); } catch(_) {}
     try { document.fonts.removeEventListener?.('loadingdone', fontsDone); } catch(_) {}
     document.body.classList.remove('locked', 'dragging');
-    try { heroVid?.pause(); gearVid?.pause(); vid?.pause(); } catch(_) {}
+    try { heroVid?.pause(); vid?.pause(); } catch(_) {}
     try {
       scene.traverse((o) => {
         if (o.geometry && o.geometry.dispose) o.geometry.dispose();
