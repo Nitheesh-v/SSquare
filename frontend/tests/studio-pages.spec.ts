@@ -88,43 +88,29 @@ test("aperture hero keeps division selection, gear first impression and contextu
   await noOverflow(page);
 });
 
-test("pause also keeps the material photo planes still", async ({ page }) => {
+test("the hero has no pause control and stays put until the reader moves it", async ({
+  page,
+}) => {
   await page.goto("/");
   const hero = page.getByTestId("original-slideshow-hero");
-  // Pause first: the ring auto-advances every 5.5 s, so selecting a station
-  // before pausing leaves a window for autoplay to move it again.
-  await hero
-    .getByRole("button", { name: "Pause visual motion", exact: true })
-    .click();
-  await expect(page.getByTestId("industrial-home")).toHaveAttribute(
-    "data-motion-paused",
-    "true",
-  );
+  // The autoplay/pause pill was removed; nothing advances the stations.
+  await expect(
+    hero.getByRole("button", { name: /pause visual motion/i }),
+  ).toHaveCount(0);
+  await expect(hero).toHaveAttribute("data-autoplay", "false");
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
+  await page.waitForTimeout(6500);
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
+
   await hero.getByRole("button", { name: "01 RUBBER", exact: true }).click();
   await expect(hero).toHaveAttribute("data-active-slide", "rubber");
-  await expect(hero).toHaveAttribute("data-paused", "true");
   await expect(hero).toHaveAttribute("data-autoplay", "false");
-  await expect(hero.locator(".ar-plate img").first()).toHaveCSS(
-    "transition-duration",
-    "0s",
-  );
   await hero.getByRole("button", { name: "Next slide", exact: true }).click();
   await expect(hero).toHaveAttribute("data-active-slide", "steel");
-  await page.locator("#material-divisions").scrollIntoViewIfNeeded();
-  const plane = page
-    .locator(".studio-material-card [data-depth-image] > div")
-    .first();
-  await expect(plane).toHaveCSS("transform", "none");
-  await hero
-    .getByRole("button", { name: "Resume visual motion", exact: true })
-    .click();
-  await expect(hero).toHaveAttribute("data-paused", "false");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(hero).toHaveAttribute("data-reduced", "true");
   await expect(hero).toHaveAttribute("data-autoplay", "false");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "STEEL",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("STEEL");
 });
 
 test("without JavaScript the home exposes products and direct contact links", async ({

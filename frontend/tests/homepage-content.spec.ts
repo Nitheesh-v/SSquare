@@ -57,7 +57,7 @@ test("reference sections appear in order with the chosen company facts and proje
     "who-we-are",
     "what-we-do",
     "our-services",
-    "S Square at a glance",
+    "at-a-glance",
     "quick-service",
   ]);
   await expect(page.locator("#who-we-are")).toContainText(
@@ -92,11 +92,23 @@ test("reference sections appear in order with the chosen company facts and proje
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
   await page.locator(".home-facts").scrollIntoViewIfNeeded();
   await expect(page.locator(".home-facts dd")).toHaveText(FACTS);
-  expect(
-    await page
-      .locator(".home-facts")
-      .evaluate((node) => node.getAnimations({ subtree: true }).length),
-  ).toBe(0);
+  // The fact cards fade in once on entry, but nothing in the section loops or
+  // drifts: every animation has to settle and stay settled. Finished one-shot
+  // animations stay listed until they are cancelled, so count the running ones.
+  await expect
+    .poll(
+      () =>
+        page
+          .locator(".home-facts")
+          .evaluate(
+            (node) =>
+              node
+                .getAnimations({ subtree: true })
+                .filter((animation) => animation.playState === "running").length,
+          ),
+      { timeout: 5000 },
+    )
+    .toBe(0);
   await noOverflow(page);
 });
 

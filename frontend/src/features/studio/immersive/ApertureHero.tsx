@@ -7,10 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MoveHorizontal,
-  Pause,
   Phone,
-  Play,
-  Rotate3D,
 } from "lucide-react";
 import {
   useCallback,
@@ -220,13 +217,7 @@ function drawRing(ctx: CanvasRenderingContext2D, g: Geom, rot: number) {
 
 type Swap = "idle" | "out" | "in";
 
-export function ApertureHero({
-  paused,
-  onPause,
-}: {
-  paused: boolean;
-  onPause: () => void;
-}) {
+export function ApertureHero({ paused }: { paused: boolean }) {
   const reduced = useReducedMotion();
   const { openQuoteModal } = useQuoteModal();
   const motionEnabled = !paused && !reduced;
@@ -277,15 +268,16 @@ export function ApertureHero({
   motionRef.current = motionEnabled;
 
   const slide: RingSlide = RING_SLIDES[active];
+  const readout = `${slide.number} / ${RING_COUNT.toString().padStart(2, "0")} · ${slide.name}`;
   const shown: RingSlide = RING_SLIDES[display];
-  const autoplay =
-    motionEnabled &&
-    !hovered &&
-    !focused &&
-    !hidden &&
-    !blocked &&
-    !dragging &&
-    visible;
+  /**
+   * The hero no longer advances by itself. It used to move the ring every
+   * 5.5 s, which fought the reader on a page whose sections are read in order;
+   * the stations are now reached by scrolling, the tabs, the arrows or a drag.
+   * The attribute is kept (and always false) so the "nothing moves the page
+   * under you" contract stays assertable.
+   */
+  const autoplay = false;
 
   /**
    * Move the ring to a station.
@@ -677,15 +669,6 @@ export function ApertureHero({
     };
   }, []);
 
-  /* ── Autoplay: one timeout, no render loop ─────────────────────────────── */
-  useEffect(() => {
-    if (!autoplay) return;
-    const timer = setTimeout(() => {
-      goToRef.current((activeRef.current + 1) % RING_COUNT, false);
-    }, 5500);
-    return () => clearTimeout(timer);
-  }, [autoplay, active]);
-
   /* ── Copy swap, aperture scramble, accent broadcast ────────────────────── */
   useEffect(() => {
     const next = RING_SLIDES[active];
@@ -1014,24 +997,10 @@ export function ApertureHero({
             <MoveHorizontal size={14} /> SCROLL OR DRAG TO TURN THE RING
           </span>
           <div className="ar-bottom-controls">
-            <span className="ar-3d-badge">
-              <Rotate3D size={13} /> WEBGL FIELD
+            <span className="ar-station-readout">
+              <span className="ar-station-dot" aria-hidden="true" />
+              STATION {readout}
             </span>
-            <button
-              type="button"
-              className="ar-pause"
-              aria-label={paused ? "Resume visual motion" : "Pause visual motion"}
-              aria-pressed={paused}
-              disabled={reduced}
-              onClick={onPause}
-            >
-              {paused || reduced ? <Play size={12} /> : <Pause size={12} />}
-              {reduced
-                ? "REDUCED MOTION"
-                : paused
-                  ? "SLIDESHOW PAUSED"
-                  : "AUTOPLAY · 5.5 SEC"}
-            </button>
           </div>
         </div>
       </div>
@@ -1049,7 +1018,7 @@ export function ApertureHero({
       />
 
       <noscript>
-        <style>{`.ar-hero .ar-arrows,.ar-hero .ar-tabs,.ar-hero .ar-dots,.ar-hero .ar-pause,.ar-hero button.ar-quote-btn,.ar-hero .ar-specs-btn,.ar-hero .ar-bottom-bar{display:none}.ar-hero{height:auto!important}.ar-hero .ar-stage{position:relative!important;height:auto!important;min-height:0!important;padding-bottom:40px}.ar-hero .ar-copy{position:relative!important;width:auto!important;margin:0 auto!important;left:auto!important;top:auto!important}.ar-hero .ar-items{display:none}`}</style>
+        <style>{`.ar-hero .ar-arrows,.ar-hero .ar-tabs,.ar-hero .ar-dots,.ar-hero button.ar-quote-btn,.ar-hero .ar-specs-btn,.ar-hero .ar-bottom-bar{display:none}.ar-hero{height:auto!important}.ar-hero .ar-stage{position:relative!important;height:auto!important;min-height:0!important;padding-bottom:40px}.ar-hero .ar-copy{position:relative!important;width:auto!important;margin:0 auto!important;left:auto!important;top:auto!important}.ar-hero .ar-items{display:none}`}</style>
       </noscript>
     </section>
   );

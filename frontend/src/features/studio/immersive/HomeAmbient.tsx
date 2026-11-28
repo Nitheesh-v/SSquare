@@ -1,12 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
-
-const ThreeBackdrop = dynamic(() => import("./ThreeBackdrop"), {
-  ssr: false,
-  loading: () => null,
-});
+import { useEffect, useRef } from "react";
 
 type ScrollPhase = "aperture" | "materials" | "blueprint" | "services" | "dispatch";
 
@@ -34,10 +28,11 @@ const clamp = (value: number, min: number, max: number) =>
 
 /**
  * Fixed, pointer-transparent atmosphere behind the whole homepage: the
- * blueprint grid, glows, sweep, orbit and optional WebGL orrery all change
- * their colour, geometry and tempo with document scroll progress. A single
- * passive scroll callback writes CSS variables; WebGL receives the same
- * progress through one custom event. Reduced / paused motion stays still.
+ * blueprint grid, glows, sweep and orbit all change their colour, geometry and
+ * tempo with document scroll progress. A single passive scroll callback writes
+ * CSS variables. The optional Three.js orrery was removed at the user's
+ * request, so the homepage now runs no WebGL at all. Reduced / paused motion
+ * stays still.
  */
 export function HomeAmbient({
   paused,
@@ -46,25 +41,7 @@ export function HomeAmbient({
   paused: boolean;
   reduced: boolean;
 }) {
-  const [webgl, setWebgl] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (paused || reduced) {
-      setWebgl(false);
-      return;
-    }
-    try {
-      const probe = document.createElement("canvas");
-      const gl =
-        probe.getContext("webgl2") ||
-        probe.getContext("webgl") ||
-        probe.getContext("experimental-webgl");
-      setWebgl(Boolean(gl));
-    } catch {
-      setWebgl(false);
-    }
-  }, [paused, reduced]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -73,13 +50,12 @@ export function HomeAmbient({
     if (paused || reduced) {
       root.dataset.scrollPhase = "still";
       root.dataset.scrollProgress = "0";
-      root.style.setProperty("--ar-phase-color", "#3d7bff");
+      root.style.setProperty("--ar-phase-color", "#c9803f");
       return;
     }
 
     let frame = 0;
     let lastPhase = "";
-    let lastHeroActive: boolean | null = null;
 
     const update = () => {
       frame = 0;
@@ -110,29 +86,7 @@ export function HomeAmbient({
       root.style.setProperty("--ar-orbit-speed", `${settings.orbit}s`);
       root.style.setProperty("--ar-sweep-speed", `${settings.sweep}s`);
 
-      if (phase !== lastPhase) {
-        lastPhase = phase;
-        window.dispatchEvent(
-          new CustomEvent("ar:scene", {
-            detail: { phase, color: settings.color },
-          }),
-        );
-      }
-      // The orrery belongs to the hero. Past the first chapters it is hidden
-      // behind the content, so it stops rendering instead of burning a whole
-      // WebGL frame every scroll tick.
-      const heroActive = progress < 0.18;
-      if (heroActive !== lastHeroActive) {
-        lastHeroActive = heroActive;
-        window.dispatchEvent(
-          new CustomEvent("ar:hero-active", { detail: { active: heroActive } }),
-        );
-      }
-      window.dispatchEvent(
-        new CustomEvent("ar:scroll", {
-          detail: { progress, phase },
-        }),
-      );
+      if (phase !== lastPhase) lastPhase = phase;
     };
     const request = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -153,7 +107,6 @@ export function HomeAmbient({
       ref={rootRef}
       className="ar-ambient"
       data-testid="ar-ambient"
-      data-webgl={webgl}
       data-scroll-phase="aperture"
       data-scroll-progress="0"
       aria-hidden="true"
@@ -163,7 +116,6 @@ export function HomeAmbient({
       <div className="ar-ambient-glow ar-glow-b" />
       <div className="ar-ambient-orbit" />
       <div className="ar-ambient-sweep" />
-      {webgl && !paused && !reduced ? <ThreeBackdrop /> : null}
       <div className="ar-ambient-vignette" />
       <div className="ar-grain" />
     </div>

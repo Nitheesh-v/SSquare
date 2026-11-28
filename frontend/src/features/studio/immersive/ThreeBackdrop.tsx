@@ -6,6 +6,11 @@ import * as THREE from "three";
 /**
  * A lightweight, always-behind WebGL field for the animated homepage.
  *
+ * NOTE: no longer mounted anywhere. The homepage's WebGL orrery was removed at
+ * the user's request (`HomeAmbient.tsx` no longer imports it), so the homepage
+ * runs no WebGL at all. The source is kept, like the other retained unmounted
+ * hero sources, so the field can be re-enabled without rebuilding it.
+ *
  * It is deliberately *not* a product viewer: it draws a slow industrial
  * orrery (gears, rings and drifting swarf) that reacts to the active ring
  * station. One renderer, one canvas, no shadows, no post-processing, no

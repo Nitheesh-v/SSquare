@@ -16,16 +16,6 @@ async function enter(page: Page) {
   return hero;
 }
 
-async function allowAutoplay(page: Page) {
-  await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
-  await page.mouse.move(0, 0);
-  await expect(page.getByTestId("original-slideshow-hero")).toHaveAttribute(
-    "data-autoplay",
-    "true",
-  );
-  await page.waitForTimeout(60);
-}
-
 const STATIONS = ["00 INTRO", "01 RUBBER", "02 STEEL", "03 ALUMINIUM"];
 
 test("the four-station aperture hero stays first, branded as S SQUARE, with a live canvas field", async ({
@@ -160,38 +150,40 @@ test("all four stations open the existing quote with the matching division", asy
   }
 });
 
-test("autoplay advances at 5.5 s and suspends for hover, focus and dialogs", async ({
+test("the hero never advances on its own and never scrolls the page", async ({
   page,
-}, info) => {
+}) => {
   await page.clock.install();
   const hero = await enter(page);
-  await allowAutoplay(page);
-  const settle = async () => {
-    // Freeze the running autoplay before reading the current station.
-    await page.locator(".ar-stage").hover();
-    await expect(hero).toHaveAttribute("data-autoplay", "false");
-    await page.mouse.move(0, 0);
-    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
-    return (await hero.getAttribute("data-active-slide")) ?? "";
-  };
+  // Autoplay was removed at the user's request: the ring only moves on input.
+  await expect(hero).toHaveAttribute("data-autoplay", "false");
+  await page.clock.fastForward(20000);
+  await expect(hero).toHaveAttribute("data-active-slide", "intro");
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
-  // The ring now starts on the intro station and advances in order.
-  const before = (await hero.getAttribute("data-active-slide")) ?? "";
-  expect(before).toBe("intro");
-  await page.clock.fastForward(5600);
-  const first = await settle();
-  expect(first).not.toBe(before);
+  // Explicit input still moves it, and still leaves the scroll position alone.
+  await hero.getByRole("button", { name: "Next slide", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+  await page.clock.fastForward(12000);
+  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
+});
+
+test("hover, focus and dialogs leave the selected station untouched", async ({
+  page,
+}) => {
+  await page.clock.install();
+  const hero = await enter(page);
+  await hero.getByRole("button", { name: "02 STEEL", exact: true }).click();
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
 
   await page.locator(".ar-stage").hover();
-  await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", first);
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
+  await page.mouse.move(0, 0);
 
   await hero.getByRole("button", { name: "Next slide", exact: true }).focus();
-  await page.mouse.move(0, 0);
-  await expect(hero).toHaveAttribute("data-autoplay", "false");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", first);
+  await expect(hero).toHaveAttribute("data-active-slide", "steel");
 
   await hero
     .getByRole("button", { name: "Request a Quote", exact: true })
@@ -199,73 +191,28 @@ test("autoplay advances at 5.5 s and suspends for hover, focus and dialogs", asy
   await expect(
     page.getByRole("dialog", { name: "Request a Quote", exact: true }),
   ).toBeVisible();
-  const beforeDialog = await hero.getAttribute("data-active-slide");
   await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", beforeDialog ?? "");
-  await page.keyboard.press("Escape");
-
-  const menu =
-    info.project.name === "desktop"
-      ? page.getByRole("button", { name: "Products", exact: true })
-      : page.getByRole("button", { name: "Open navigation", exact: true });
-  await menu.click();
-  await expect(hero).toHaveAttribute("data-autoplay", "false");
-  const beforeMenu = await hero.getAttribute("data-active-slide");
-  await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", beforeMenu ?? "");
-  await page.keyboard.press("Escape");
-
-  await allowAutoplay(page);
-  const beforeResume = await hero.getAttribute("data-active-slide");
-  await page.clock.fastForward(5600);
-  await expect(hero).not.toHaveAttribute("data-active-slide", beforeResume ?? "");
-});
-
-test("autoplay turns the ring without hijacking the page scroll", async ({
-  page,
-}) => {
-  await page.clock.install();
-  const hero = await enter(page);
-  await allowAutoplay(page);
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  await page.clock.fastForward(5600);
-  await expect(hero).toHaveAttribute("data-active-slide", "rubber");
-  await page.clock.fastForward(5600);
   await expect(hero).toHaveAttribute("data-active-slide", "steel");
-  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  await page.keyboard.press("Escape");
 });
 
-test("offscreen and hidden-tab states suspend autoplay", async ({ page }) => {
-  await page.clock.install();
+test("the WebGL field and the autoplay control are gone", async ({ page }) => {
   const hero = await enter(page);
-  await allowAutoplay(page);
-  await page.evaluate(() => {
-    Object.defineProperty(document, "hidden", {
-      configurable: true,
-      get: () => true,
-    });
-    document.dispatchEvent(new Event("visibilitychange"));
-  });
-  await expect(hero).toHaveAttribute("data-autoplay", "false");
-  await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "intro");
-  await page.evaluate(() => {
-    delete (document as unknown as Record<string, unknown>).hidden;
-    document.dispatchEvent(new Event("visibilitychange"));
-  });
-  await expect(hero).toHaveAttribute("data-autoplay", "true");
-  // The hero is a tall pinned section: leave it completely before autoplay stops.
-  await page.evaluate(() =>
-    window.scrollTo(
-      0,
-      document.getElementById("material-divisions")!.offsetTop +
-        window.innerHeight,
-    ),
+  // The homepage runs no WebGL at all now: the only canvases are the two 2D
+  // ring canvases, and the ambient layer reports no WebGL field.
+  await expect(page.getByTestId("ar-ambient")).not.toHaveAttribute(
+    "data-webgl",
+    /.*/,
   );
-  await expect(hero).not.toBeInViewport();
-  await expect(hero).toHaveAttribute("data-autoplay", "false");
-  await page.clock.fastForward(12000);
-  await expect(hero).toHaveAttribute("data-active-slide", "intro");
+  await expect(hero.locator("canvas")).toHaveCount(2);
+  await expect(page.getByText("WEBGL FIELD", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: /pause visual motion/i }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/AUTOPLAY/)).toHaveCount(0);
+  await expect(hero.locator(".ar-station-readout")).toContainText(
+    "STATION 00 / 04",
+  );
 });
 
 test("reduced motion keeps the hero still with no canvas and all four selectors usable", async ({
@@ -275,9 +222,6 @@ test("reduced motion keeps the hero still with no canvas and all four selectors 
   const hero = await enter(page);
   await expect(hero).toHaveAttribute("data-autoplay", "false");
   await expect(page.locator("canvas")).toHaveCount(0);
-  await expect(
-    hero.getByRole("button", { name: "Pause visual motion", exact: true }),
-  ).toBeDisabled();
   await hero.getByRole("button", { name: "03 ALUMINIUM", exact: true }).click();
   await expect(hero.getByRole("heading", { level: 1 })).toContainText(
     "ALUMINIUM",
@@ -289,8 +233,6 @@ test("reduced motion keeps the hero still with no canvas and all four selectors 
   await hero.getByRole("button", { name: "Next slide", exact: true }).click();
   await expect(hero).toHaveAttribute("data-active-slide", "intro");
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await allowAutoplay(page);
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(hero).toHaveAttribute("data-autoplay", "false");
 });
 

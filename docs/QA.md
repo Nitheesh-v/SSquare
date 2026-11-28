@@ -37,7 +37,7 @@ Implementation: `frontend/src/features/studio/IndustrialHome.tsx` and new scoped
 - The machining/tooling images reuse local copies from S Square's published site. Rubber imagery is visibly labelled illustrative. Deliberately unavailable official photos fall back to local illustrations with labels rather than a broken or falsely attributed image. Asset provenance remains in `frontend/public/images/ssquare/README.md`.
 - Quick Service phone/email links use the genuine company details. The quote link has a native `/contact#quote` destination; ordinary activation with JavaScript opens the existing RFQ dialog with all three material divisions prefilled and editable. Escape closes it and restores focus. New-tab/modifier behavior is not intercepted by the implementation.
 - Without JavaScript, all new headings, copy, capabilities, product links, company facts and Quick Service contact/quote links remain available. Existing hero catalog/phone/quote-page links remain usable; inert slideshow controls are hidden.
-- The original four-slide navigation, wrapping arrows, keyboard selection, contextual RFQs, 5.5-second autoplay, shared pause, live reduced-motion response and hover/focus/menu/dialog/offscreen/hidden-tab suspension are regression-tested.
+- The four-station navigation, wrapping arrows, tabs, keyboard selection, contextual RFQs and live reduced-motion response are regression-tested. **Autoplay and the pause control were removed** at the user's request, so the suite now asserts that no timer ever moves the ring, that the WebGL badge/pause pill are gone, and that the hero holds its station through hover, focus, menus and dialogs.
 
 ## Build and dependency checks
 

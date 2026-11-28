@@ -5,7 +5,9 @@ import { useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
+  Award,
   Check,
+  Clock,
   Focus,
   Layers3,
   Mail,
@@ -47,14 +49,23 @@ const CAPABILITIES = [
 ];
 
 const COMPANY_FACTS = [
-  { value: COMPANY_INFO.experienceYears, label: "Years of experience" },
+  {
+    value: COMPANY_INFO.experienceYears,
+    label: "Years of experience",
+    note: "Supplying Coimbatore's industries since the start",
+    icon: Award,
+  },
   {
     value: String(STUDIO_MATERIALS.length).padStart(2, "0"),
     label: "Material disciplines",
+    note: "Rubber, steel and aluminium under one roof",
+    icon: Layers3,
   },
   {
     value: COMPANY_INFO.address.city,
     label: `Manufacturing base · ${COMPANY_INFO.address.country}`,
+    note: "Drawing or sample based, built to order",
+    icon: MapPin,
   },
 ];
 
@@ -69,7 +80,7 @@ export function IndustrialHome() {
       data-testid="industrial-home"
       data-motion-paused={paused || reduced}
     >
-      <ApertureHero paused={paused} onPause={() => setPaused((p) => !p)} />
+      <ApertureHero paused={paused} />
       <div className="studio-trust-strip">
         <div className="studio-shell">
           <span>
@@ -254,15 +265,48 @@ export function IndustrialHome() {
 
       <ServiceStory paused={paused} reduced={reduced} />
 
-      <section className="home-facts" aria-label="S Square at a glance">
-        <dl className="studio-shell home-facts-grid">
-          {COMPANY_FACTS.map((fact) => (
-            <div key={fact.label}>
-              <dt>{fact.label}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
+      <section
+        id="at-a-glance"
+        className="home-facts"
+        aria-labelledby="at-a-glance-heading"
+      >
+        <div className="studio-shell">
+          <Reveal paused={paused} className="home-facts-head">
+            <p className="studio-kicker">S Square at a glance</p>
+            <h2 id="at-a-glance-heading" className="home-facts-heading">
+              Twenty years on the same shop floor
+            </h2>
+            <p className="home-facts-lede">
+              A Coimbatore manufacturer of rubber, steel and aluminium
+              components — reviewed against your drawing, built to your sample
+              and dispatched worldwide.
+            </p>
+          </Reveal>
+          <dl className="home-facts-grid">
+            {COMPANY_FACTS.map((fact, i) => {
+              const Icon = fact.icon;
+              return (
+                <Reveal
+                  paused={paused}
+                  delay={i * 70}
+                  key={fact.label}
+                  className="home-fact"
+                >
+                  <dt className="home-fact-label">
+                    <span className="home-fact-name">{fact.label}</span>
+                    <span className="home-fact-note">{fact.note}</span>
+                  </dt>
+                  <dd className="home-fact-value">
+                    <span className="home-fact-icon" aria-hidden="true">
+                      <Icon size={18} />
+                    </span>
+                    {fact.value}
+                  </dd>
+                </Reveal>
+              );
+            })}
+          </dl>
+        </div>
       </section>
 
       <section
@@ -271,7 +315,7 @@ export function IndustrialHome() {
         aria-labelledby="quick-service-heading"
       >
         <div className="home-quick-photos">
-          <div>
+          <div className="home-quick-photo">
             <SmartProductImage
               src="/images/division-rubber.jpg"
               fallbackSrc="/images/division-rubber.jpg"
@@ -279,14 +323,25 @@ export function IndustrialHome() {
               alt="Rubber seals, gaskets and molded components"
               className="h-full w-full object-cover"
             />
+            <span className="home-quick-tag">01 / RUBBER</span>
           </div>
-          <div>
+          <div className="home-quick-photo">
             <SmartProductImage
               src={MACHINED_COMPONENTS}
               fallbackSrc="/images/division-steel.jpg"
               alt="Custom-machined metal component range"
               className="h-full w-full object-cover"
             />
+            <span className="home-quick-tag">02 / STEEL</span>
+          </div>
+          <div className="home-quick-photo">
+            <SmartProductImage
+              src={ALUMINIUM_TOOLING}
+              fallbackSrc="/images/division-aluminium.jpg"
+              alt="Aluminium profiles and precision tooling"
+              className="h-full w-full object-cover"
+            />
+            <span className="home-quick-tag">03 / ALUMINIUM</span>
           </div>
           <p>RUBBER / STEEL / ALUMINIUM</p>
         </div>
@@ -297,6 +352,20 @@ export function IndustrialHome() {
             Reach out to our team for expert guidance and reliable support on
             custom rubber, steel, and aluminium manufacturing.
           </p>
+          <ul className="home-quick-promises">
+            <li>
+              <Clock size={14} aria-hidden="true" />
+              <span>Same-day reply on drawings and samples</span>
+            </li>
+            <li>
+              <Layers3 size={14} aria-hidden="true" />
+              <span>One enquiry across all three disciplines</span>
+            </li>
+            <li>
+              <MapPin size={14} aria-hidden="true" />
+              <span>Door delivery to any part of the world</span>
+            </li>
+          </ul>
           <a href={`tel:${COMPANY_INFO.phoneRaw}`} className="home-quick-phone">
             <Phone size={24} aria-hidden="true" />
             {COMPANY_INFO.phone}
