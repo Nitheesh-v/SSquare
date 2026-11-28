@@ -241,7 +241,7 @@ export const HOME_3D_MARKUP_AFTER = String.raw`<!-- ============ 7. QUOTE + ENQU
 
 <footer>
   <div class="fgrid">
-    <div><a class="footer-logo" href="#home" aria-label="S Square Engineering Services — Home"><img src="/images/ssquare-logo.png" alt="S Square Engineering Services" width="215" height="75" loading="lazy" decoding="async"></a><p>Specialising in custom rubber, steel and aluminium manufacturing with a commitment to precision, durability and timely delivery.</p></div>
+    <div><a class="footer-logo" href="#home" aria-label="S Square Engineering Services — Home"><img src="/images/ssquare-logo-dark.png" alt="S Square Engineering Services" width="215" height="75" loading="lazy" decoding="async"></a><p>Specialising in custom rubber, steel and aluminium manufacturing with a commitment to precision, durability and timely delivery.</p></div>
     <div><h5>Quick links</h5><div class="fl"><a href="#home">Home</a><a href="#precision">Precision</a><a href="#materials">Materials</a><a href="#components">Components</a><a href="#process">Process</a><a href="#quote">Request a Quote</a></div></div>
     <div><h5>Contact info</h5><div class="fl"><a>S Square Engineering Services</a><a>56, Jeganathapuram, Avarampalayam Road,</a><a>Peelamedu, Coimbatore 641004</a><a href="tel:+917530080040">+91 75300 80040</a><a href="mailto:sales@ssquareengg.com">sales@ssquareengg.com</a></div></div>
   </div>

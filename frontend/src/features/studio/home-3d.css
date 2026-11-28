@@ -356,7 +356,7 @@ body.home3d-active.dragging *{cursor:grabbing!important}
 .home3d .submit:hover{transform:translateY(-2px)}
 .home3d .submit.sent{background:var(--sage);color:var(--ink)}
 .home3d footer{background:#070c16;color:rgba(243,241,236,.8);padding:calc(70*var(--w)) calc(50*var(--w)) 32px}
-.home3d .footer-logo{display:inline-flex;align-items:center;max-width:100%;padding:10px 14px;background:#fff;border-radius:8px}
+.home3d .footer-logo{display:inline-flex;align-items:center;max-width:100%}
 .home3d .footer-logo img{display:block;width:180px;max-width:100%;height:auto}
 .home3d .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
 .home3d footer h5{font:500 11px "DM Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,241,236,.55);margin-bottom:16px}
