@@ -26,7 +26,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link href="/" aria-label="S Square Engineering Services — Home">
-              <Logo theme="dark" />
+              <Logo />
             </Link>
             <p>
               Rubber, steel and aluminium components.
