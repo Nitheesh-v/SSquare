@@ -12,6 +12,7 @@ import { Services3DSection } from "./Services3DSection";
 import "./home-3d.css";
 import "./home-3d-hero.css";
 import "./home-3d-materials.css";
+import "./home-3d-responsive.css";
 
 /**
  * Next.js port of the supplied standalone 3D homepage HTML.

@@ -169,7 +169,7 @@ export function Services3DSection() {
               Scroll to animate · Drag to inspect · Click products for specs
             </span>
             <span className="services3d-control-touch">
-              Swipe to scroll · Drag to inspect · Tap products for specs
+              Swipe to scroll · Drag to inspect
             </span>
             <span className="services3d-percent" ref={percentRef}>
               00%

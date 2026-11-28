@@ -454,6 +454,7 @@
 
 .home3d .services3d[data-step="all"] .services3d-cards,
 .home3d .services3d[data-fallback="true"] .services3d-cards {
+  display: grid;
   position: relative;
   left: auto;
   right: auto;
@@ -511,7 +512,7 @@
 /* ---------- phone ---------- */
 @media (max-width: 819px) {
   .home3d .services3d {
-    --services-nav-offset: 104px;
+    --services-nav-offset: 113px;
     height: 360svh;
   }
   .home3d .services3d-pin::before {
@@ -526,12 +527,13 @@
     font-size: clamp(32px, 9vw, 48px);
   }
   .home3d .services3d-control {
-    top: 18px;
-    right: 16px;
-    max-width: 62vw;
+    top: 100px;
+    left: 16px;
+    right: auto;
+    max-width: calc(100% - 32px);
     padding: 6px 6px 6px 9px;
     gap: 6px;
-    font-size: 8.5px;
+    font-size: 9px;
     letter-spacing: 0;
   }
   .home3d .services3d-control-icon {
@@ -607,8 +609,7 @@
     font-size: 30px;
   }
   .home3d .services3d-control {
-    max-width: 58vw;
-    font-size: 7.5px;
+    font-size: 8.5px;
   }
   .home3d .services3d-card {
     flex-basis: 84vw;

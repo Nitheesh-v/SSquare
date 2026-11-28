@@ -118,7 +118,12 @@ function resizeGL(){
   camera.position.set(0,0,D); camera.fov=2*Math.atan((vh/2)/D)*180/Math.PI; camera.aspect=vw/vh; camera.near=10; camera.far=4*D; camera.updateProjectionMatrix();
   renderer.setPixelRatio(phone()?Math.min(devicePixelRatio,1.75):Math.min(devicePixelRatio,2));
   renderer.setSize(vw,vh,false); canvas.style.height=vh+'px';
-  host.style.setProperty('--k', phone()?Math.min(vw/390,vh/780):Math.min(vw/1440,vh/900));
+  // Keep the pinned precision frame inside the area below the shared header.
+  const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height || 113;
+  const availableH = Math.max(200, vh - headerH);
+  host.style.setProperty('--home-nav-height', headerH + 'px');
+  host.style.setProperty('--home-nav-half', (headerH / 2) + 'px');
+  host.style.setProperty('--k', phone()?Math.min(vw/390,availableH/780):Math.min(vw/1440,availableH/900));
 }
 resizeGL(); heroUnit();
 

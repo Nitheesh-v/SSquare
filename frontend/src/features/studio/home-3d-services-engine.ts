@@ -472,7 +472,12 @@ export async function createServices3DEngine(options) {
 
   /* ---------------- pose / scroll choreography ---------------- */
   function applyPose(p, t, dt) {
-    const truckT = clamp(0.06 + 0.88 * ease(p), 0, 1);
+    // Keep the whole truck in view on narrow screens while retaining a
+    // continuous scroll-linked journey along the same route at every size.
+    const viewWidth = 2 * Math.tan((camera.fov * Math.PI) / 360) *
+      camera.position.distanceTo(target) * camera.aspect;
+    const travel = clamp((viewWidth - 6.5 * stageScale - 0.8) / 20, 0.06, 0.88);
+    const truckT = 0.5 + (ease(p) - 0.5) * travel;
     const pos = route.getPointAt(truckT);
     const tan = route.getTangentAt(truckT);
     truck.position.set(pos.x, 0, pos.z);

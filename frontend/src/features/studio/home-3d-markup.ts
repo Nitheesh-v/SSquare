@@ -174,6 +174,7 @@ export const HOME_3D_MARKUP_BEFORE = String.raw`<canvas id="gl"></canvas>
         </div>
       </div>
     </article>
+  </div>
   <p class="floor-h">From the floor — your real stock</p>
   <div class="floor" id="floorStrip">
     <figure><img loading="lazy" src="https://ssquareengg.com/wp-content/uploads/2025/12/rubber-43.jpg" alt="Rubber parts batch"><figcaption>Rubber · 43</figcaption></figure>

@@ -1,0 +1,112 @@
+/* Responsive refinements for the homepage; inner pages keep their own layout. */
+.home3d {
+  --home-nav-height: 113px;
+  --home-nav-half: 56.5px;
+}
+
+/* Keep both halves of the pinned precision composition below the shared nav. */
+.home3d .frame {
+  top: calc(50% + var(--home-nav-half));
+}
+.home3d .spot-head {
+  top: max(22%, calc(var(--home-nav-height) + 18px));
+}
+
+.home3d .cat-grid,
+.home3d .floor,
+.home3d .qgrid,
+.home3d .qleft,
+.home3d .qform {
+  min-width: 0;
+}
+
+.home3d .cat-foot {
+  flex-wrap: wrap;
+}
+.home3d .cat-foot .rq {
+  min-height: 36px;
+}
+.home3d .floor {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+.home3d .qcontact a,
+.home3d footer a {
+  overflow-wrap: anywhere;
+}
+
+/* Medium tablets and compact laptops need room for the catalogue cards. */
+@media (min-width: 820px) and (max-width: 1199px) {
+  .home3d .cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .home3d .services3d-control-desktop {
+    white-space: normal;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 819px) {
+  .home3d .spot-head {
+    top: calc(var(--home-nav-height) + 18px);
+  }
+  .home3d .cat-top {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .home3d .cat-top .lnk {
+    white-space: normal;
+    line-height: 1.5;
+  }
+  .home3d .cat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home3d .cards,
+  .home3d .services3d-cards {
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .home3d .services3d-tag {
+    min-height: 36px;
+  }
+  .home3d .fld input,
+  .home3d .fld select,
+  .home3d .fld textarea {
+    font-size: 16px; /* Avoid automatic field zoom on iOS. */
+  }
+  .home3d footer .brand b,
+  .home3d footer .brand small {
+    display: block;
+  }
+  .home3d .fbot {
+    line-height: 1.6;
+  }
+}
+
+/* Short landscape phones: preserve content and controls within the viewport. */
+@media (max-width: 819px) and (max-height: 650px) {
+  .home3d .spot-head {
+    top: calc(var(--home-nav-height) + 10px);
+  }
+  .home3d .spot-head h2 {
+    margin-top: 8px;
+    font-size: clamp(26px, 5vw, 34px);
+  }
+  .home3d .spot-lead {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .home3d .spot-pills {
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .home3d .spot-pills button {
+    height: 34px;
+    padding-inline: 10px;
+  }
+  .home3d .services3d-head { top: 10px; }
+  .home3d .services3d-control { top: 86px; }
+}
