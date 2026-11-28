@@ -163,33 +163,59 @@ export async function createServices3DEngine(options) {
     );
   }
 
+  // Corrugated silver container with a bold red flowing graphic, inspired by
+  // the supplied truck reference. It is an original texture, not the screenshot.
   function makeTruckSideTexture() {
     const c = document.createElement("canvas");
-    c.width = 1024;
-    c.height = 512;
+    c.width = 1536;
+    c.height = 576;
     const x = c.getContext("2d");
-    x.fillStyle = "#f1ede5";
-    x.fillRect(0, 0, 1024, 512);
-    x.fillStyle = "#e84b3b";
-    x.fillRect(0, 0, 1024, 14);
-    x.fillStyle = "#0f141c";
-    x.font = '800 92px "Inter Variable", Arial, sans-serif';
-    x.fillText("S SQUARE", 64, 148);
-    x.fillStyle = "#7a7f88";
-    x.font = '500 32px "DM Mono", monospace';
-    x.fillText("CUSTOM METAL & RUBBER EXPRESS", 66, 208);
-    x.fillStyle = "#e84b3b";
-    x.fillRect(0, 360, 1024, 78);
-    x.fillStyle = "#fff";
-    x.font = '600 28px "DM Mono", monospace';
-    x.fillText("GLOBAL DOOR DELIVERY · 3-4 DAYS (DHL / FEDEX)", 34, 410);
-    x.fillStyle = "#f2c14e";
-    x.fillRect(0, 452, 1024, 16);
-    x.fillStyle = "#2f9f6f";
-    x.fillRect(0, 474, 1024, 12);
-    x.strokeStyle = "rgba(15,20,28,.12)";
-    x.lineWidth = 3;
-    x.strokeRect(2, 2, 1020, 508);
+    const base = x.createLinearGradient(0, 0, 0, c.height);
+    base.addColorStop(0, "#e9ebea");
+    base.addColorStop(.48, "#c9cfce");
+    base.addColorStop(1, "#9ea7a6");
+    x.fillStyle = base;
+    x.fillRect(0, 0, c.width, c.height);
+
+    x.fillStyle = "#bd2528";
+    x.beginPath();
+    x.moveTo(65, 490);
+    x.bezierCurveTo(110, 337, 255, 234, 432, 258);
+    x.bezierCurveTo(548, 273, 578, 385, 691, 397);
+    x.bezierCurveTo(836, 412, 934, 239, 1138, 135);
+    x.lineTo(1480, 20);
+    x.lineTo(1480, 220);
+    x.bezierCurveTo(1220, 256, 1093, 338, 931, 474);
+    x.bezierCurveTo(814, 571, 689, 584, 565, 535);
+    x.bezierCurveTo(430, 480, 373, 408, 264, 421);
+    x.bezierCurveTo(170, 432, 118, 469, 65, 490);
+    x.closePath();
+    x.fill();
+    x.fillStyle = "rgba(38, 45, 50, .78)";
+    x.beginPath();
+    x.moveTo(815, 447);
+    x.bezierCurveTo(982, 276, 1115, 194, 1365, 105);
+    x.lineTo(1510, 150);
+    x.bezierCurveTo(1272, 228, 1094, 349, 979, 482);
+    x.closePath();
+    x.fill();
+
+    // Narrow corrugations stay visible over the painted artwork.
+    for (let i = 0; i < c.width; i += 28) {
+      x.fillStyle = "rgba(255,255,255,.24)";
+      x.fillRect(i, 0, 6, c.height);
+      x.fillStyle = "rgba(24,35,40,.16)";
+      x.fillRect(i + 17, 0, 4, c.height);
+    }
+    x.fillStyle = "rgba(23,35,39,.86)";
+    x.font = '700 36px "Inter Variable", Arial, sans-serif';
+    x.fillText("S SQUARE", 58, 80);
+    x.fillStyle = "rgba(23,35,39,.64)";
+    x.font = '500 19px "DM Mono", monospace';
+    x.fillText("ENGINEERING SERVICES", 59, 111);
+    x.strokeStyle = "rgba(36,45,47,.48)";
+    x.lineWidth = 7;
+    x.strokeRect(4, 4, c.width - 8, c.height - 8);
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
@@ -349,78 +375,85 @@ export async function createServices3DEngine(options) {
     }
   });
 
-  /* ---------------- 03 delivery: branded container truck ---------------- */
+  /* ---------------- 03 delivery: articulated container truck ---------------- */
   const truck = new THREE.Group();
   scene.add(truck);
 
-  const chassis = new THREE.Mesh(new THREE.BoxGeometry(5.7, 0.26, 1.8), mat.dark);
-  chassis.position.y = 0.62;
-  truck.add(tag(chassis, 2));
-
-  const container = new THREE.Mesh(new THREE.BoxGeometry(4.15, 1.78, 1.86), mat.cream);
-  container.position.set(-0.65, 1.64, 0);
-  truck.add(tag(container, 2));
-
-  const truckTex = makeTruckSideTexture();
-  const truckLabel = new THREE.Mesh(
-    new THREE.PlaneGeometry(4.05, 1.72),
-    new THREE.MeshBasicMaterial({ map: truckTex, transparent: true }),
-  );
-  truckLabel.position.set(-0.65, 1.64, 0.94);
-  truck.add(tag(truckLabel, 2));
-
-  const ribGeo = new THREE.BoxGeometry(0.055, 1.8, 1.9);
-  for (let i = 0; i < 9; i++) {
-    const rib = new THREE.Mesh(ribGeo, mat.steelDark);
-    rib.position.set(-2.58 + i * 0.48, 1.64, 0.96);
-    rib.castShadow = true;
-    truck.add(rib);
+  function truckBox(size, position, material, clickable = false) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
+    mesh.position.set(...position);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    truck.add(clickable ? tag(mesh, 2) : mesh);
+    return mesh;
   }
 
-  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.38, 1.76), mat.red);
-  cab.position.set(2.15, 1.3, 0);
-  truck.add(tag(cab, 2));
+  // A low chassis, long ribbed cargo box and white cab follow the reference's
+  // side-on proportions. The inspected parts are carried inside the container.
+  truckBox([6.2, 0.22, 1.72], [-0.04, 0.61, 0], mat.dark, true);
+  truckBox([4.65, 1.82, 1.82], [-0.76, 1.64, 0], mat.cream, true);
+  const truckTex = makeTruckSideTexture();
+  const sideMaterial = new THREE.MeshStandardMaterial({
+    map: truckTex, roughness: 0.72, metalness: 0.16,
+  });
+  [-1, 1].forEach((side) => {
+    const panel = new THREE.Mesh(new THREE.PlaneGeometry(4.58, 1.76), sideMaterial);
+    panel.position.set(-0.76, 1.64, side * 0.917);
+    if (side < 0) panel.rotation.y = Math.PI;
+    truck.add(tag(panel, 2));
+  });
+  // Upper and lower container rails / rear framing.
+  [-1, 1].forEach((side) => {
+    truckBox([4.68, 0.065, 0.05], [-0.76, 2.55, side * 0.93], mat.steelDark);
+    truckBox([4.68, 0.07, 0.05], [-0.76, 0.74, side * 0.93], mat.steelDark);
+  });
+  truckBox([0.08, 1.82, 1.86], [-3.08, 1.64, 0], mat.steelDark);
 
-  const glass = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.58, 1.42), mat.glass);
-  glass.position.set(2.94, 1.52, 0);
-  truck.add(glass);
-
-  const bumper = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 1.82), mat.dark);
-  bumper.position.set(2.98, 0.72, 0);
-  truck.add(bumper);
-
-  const wheelGeo = new THREE.TorusGeometry(0.34, 0.12, 12, 28);
-  const hubGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.3, 16);
-  hubGeo.rotateX(Math.PI / 2);
-  const wheels = [];
-  [-2.15, -0.95, 1.7].forEach((x) => {
-    [-0.96, 0.96].forEach((z) => {
-      const wheel = new THREE.Mesh(wheelGeo, mat.dark);
-      wheel.position.set(x, 0.42, z);
-      wheel.castShadow = true;
-      truck.add(wheel);
-      wheels.push(wheel);
-      const hub = new THREE.Mesh(hubGeo, mat.steel);
-      hub.position.set(x, 0.42, z);
-      truck.add(hub);
-    });
+  // Cab, sleeper roof and separate dark windows make the tractor recognisable.
+  truckBox([1.48, 1.47, 1.72], [2.05, 1.35, 0], mat.cream, true);
+  truckBox([1.22, 0.32, 1.66], [2.0, 2.18, 0], mat.cream);
+  truckBox([0.08, 0.65, 1.42], [2.80, 1.76, 0], mat.glass);
+  [-1, 1].forEach((side) => {
+    truckBox([0.83, 0.55, 0.035], [2.25, 1.80, side * 0.872], mat.glass);
+    truckBox([0.035, 0.98, 0.035], [1.83, 1.46, side * 0.88], mat.steelDark);
+    truckBox([0.36, 0.045, 0.04], [2.15, 1.36, side * 0.89], mat.dark);
+    truckBox([0.28, 0.12, 0.11], [2.68, 1.78, side * 1.0], mat.dark);
+    truckBox([0.65, 0.14, 0.08], [1.76, 0.72, side * 0.92], mat.steelDark);
+  });
+  truckBox([0.16, 0.22, 1.78], [2.86, 0.70, 0], mat.dark);
+  truckBox([0.055, 0.36, 1.10], [2.82, 1.08, 0], mat.dark);
+  [-0.62, 0.62].forEach((z) => {
+    truckBox([0.065, 0.16, 0.28], [2.87, 0.91, z], mat.cream);
   });
 
-  const load = new THREE.Group();
-  load.position.set(-0.65, 2.68, 0);
-  truck.add(load);
-  const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.4), mat.dark);
-  pallet.castShadow = true;
-  load.add(pallet);
-  const loadHousing = new THREE.Mesh(makeHousingGeometry(), mat.steel.clone());
-  loadHousing.position.set(-0.65, 0.42, 0);
-  loadHousing.scale.setScalar(0.6);
-  loadHousing.rotation.set(-0.35, 0, 0.2);
-  load.add(tag(loadHousing, 2));
-  const loadBillet = makeBillet(2);
-  loadBillet.position.set(0.45, 0.02, 0);
-  loadBillet.scale.setScalar(0.7);
-  load.add(loadBillet);
+  const tireGeo = new THREE.CylinderGeometry(0.37, 0.37, 0.23, 28);
+  tireGeo.rotateX(Math.PI / 2);
+  const hubGeo = new THREE.CylinderGeometry(0.23, 0.23, 0.245, 24);
+  hubGeo.rotateX(Math.PI / 2);
+  const centerGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.26, 16);
+  centerGeo.rotateX(Math.PI / 2);
+  const lugGeo = new THREE.SphereGeometry(0.022, 8, 6);
+  const wheels = [];
+  // Three rear trailer axles and two tractor axles, as in the reference.
+  [-2.55, -1.95, -1.35, 1.2, 2.5].forEach((x) => {
+    [-1, 1].forEach((side) => {
+      const wheel = new THREE.Group();
+      wheel.position.set(x, 0.40, side * 0.90);
+      const tire = new THREE.Mesh(tireGeo, mat.rubber);
+      tire.castShadow = true;
+      wheel.add(tire);
+      wheel.add(new THREE.Mesh(hubGeo, mat.steelDark));
+      wheel.add(new THREE.Mesh(centerGeo, mat.steel));
+      for (let i = 0; i < 6; i++) {
+        const lug = new THREE.Mesh(lugGeo, mat.cream);
+        const a = (i / 6) * Math.PI * 2;
+        lug.position.set(Math.cos(a) * 0.15, Math.sin(a) * 0.15, side * 0.135);
+        wheel.add(lug);
+      }
+      truck.add(wheel);
+      wheels.push(wheel);
+    });
+  });
 
   /* tall dispatch gate behind the truck, as in the reference */
   const gate = new THREE.Group();
@@ -474,9 +507,6 @@ export async function createServices3DEngine(options) {
     scan.material.opacity = 0.2 * qaOn;
 
     const deliver = ease(clamp((p - 0.52) / 0.44));
-    load.visible = p > 0.5;
-    load.scale.setScalar(0.02 + deliver * 0.98);
-    load.rotation.y = t * 0.0004;
     gate.visible = p > 0.52;
     gate.scale.setScalar(stageScale * (0.02 + deliver * 0.98));
     routeMesh.material.opacity = 0.25 + 0.45 * deliver;
